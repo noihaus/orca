@@ -8,6 +8,7 @@ import {
 import { JiraIntegrationCard, LinearIntegrationCard } from './task-tracker-integration-cards'
 import { useIntegrationProviderStatusRefresh } from './use-integration-provider-status-refresh'
 import { translate } from '@/i18n/i18n'
+import { ExtensionIntegrationCards } from '@/extensions/extension-ui-slots' // fork-seam: integration-cards
 export { getIntegrationsPaneSearchEntries } from './integrations-search'
 
 export function IntegrationsPane(): React.JSX.Element {
@@ -49,6 +50,7 @@ export function IntegrationsPane(): React.JSX.Element {
           </p>
         </div>
         <div className="space-y-3">
+          <ExtensionIntegrationCards /> {/* fork-seam: integration-cards */}
           <LinearIntegrationCard />
           <JiraIntegrationCard />
         </div>

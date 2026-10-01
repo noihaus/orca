@@ -1,6 +1,12 @@
 import { useAppStore } from '@/store'
 import { getLocalPreflightContext, localPreflightContextKey } from '@/lib/local-preflight-context'
 import { getProviderRuntimeContextKey } from '@/lib/provider-runtime-context'
+import {
+  // fork-seam: integration-cards
+  connectedExtensionTaskSourceNames,
+  useExtensionTaskSourceFacts,
+  type ExtensionTaskSourceFact
+} from '@/extensions/extension-task-source-status'
 
 export type IntegrationStepState = 'active' | 'done' | 'upcoming'
 
@@ -28,7 +34,7 @@ export function deriveIntegrationStepStates(input: {
 
 export function deriveIntegrationFlowState(input: {
   reviewConnected: boolean
-  trackerProviderName: 'Linear' | 'Jira' | null
+  trackerProviderName: string | null // fork-seam: integration-cards
   codeHostTaskProviderName: 'GitHub' | 'GitLab' | null
   trackerChecking: boolean
 }): {
@@ -90,6 +96,8 @@ type ProviderStatusFacts = {
   jiraStatusChecked: boolean
   jiraStatusContextKey: string | null
   providerRuntimeContextKey: string
+  // Optional: only connected extension task sources count, so absence never blocks setup.
+  extensionTaskSources?: readonly ExtensionTaskSourceFact[] // fork-seam: integration-cards
 }
 
 export type IntegrationConnectionStatus = {
@@ -104,10 +112,10 @@ export type IntegrationConnectionStatus = {
   trackerConnected: boolean
   // Display name of the connected tracker, or null. Code hosts are surfaced
   // via reviewProviderName, so this only names Linear/Jira.
-  trackerProviderName: 'Linear' | 'Jira' | null
+  trackerProviderName: string | null // fork-seam: integration-cards
   // Every connected task source, trackers first, for "Linear and GitHub
   // connected for tasks" summaries that don't under-report what's usable.
-  taskSourceNames: ('Linear' | 'Jira' | 'GitHub' | 'GitLab')[]
+  taskSourceNames: string[] // fork-seam: integration-cards
   // True while the code-host check is unresolved, stale, loading, or errored.
   reviewChecking: boolean
   // True while either dedicated tracker check is unresolved or stale.
@@ -184,8 +192,14 @@ export function deriveIntegrationConnectionStatus(
             ? 'Gitea'
             : null
   const codeHostTaskProviderName = githubConnected ? 'GitHub' : gitlabConnected ? 'GitLab' : null
-  const trackerProviderName = linearConnected ? 'Linear' : jiraConnected ? 'Jira' : null
+  const extensionSourceNames = connectedExtensionTaskSourceNames(facts.extensionTaskSources) // fork-seam: integration-cards
+  const trackerProviderName = linearConnected
+    ? 'Linear'
+    : jiraConnected
+      ? 'Jira'
+      : (extensionSourceNames[0] ?? null)
   const taskSourceNames: IntegrationConnectionStatus['taskSourceNames'] = [
+    ...extensionSourceNames, // fork-seam: integration-cards
     ...(linearConnected ? (['Linear'] as const) : []),
     ...(jiraConnected ? (['Jira'] as const) : []),
     ...(githubConnected ? (['GitHub'] as const) : []),
@@ -236,6 +250,7 @@ export function useIntegrationConnectionStatus(): IntegrationConnectionStatus {
   )
 
   const providerRuntimeContextKey = getProviderRuntimeContextKey(settings)
+  const extensionTaskSources = useExtensionTaskSourceFacts() // fork-seam: integration-cards
 
   return deriveIntegrationConnectionStatus({
     preflightStatus,
@@ -250,6 +265,7 @@ export function useIntegrationConnectionStatus(): IntegrationConnectionStatus {
     jiraStatus,
     jiraStatusChecked,
     jiraStatusContextKey,
-    providerRuntimeContextKey
+    providerRuntimeContextKey,
+    extensionTaskSources // fork-seam: integration-cards
   })
 }

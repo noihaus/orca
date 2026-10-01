@@ -2,8 +2,10 @@ import { useEffect } from 'react'
 import { getLocalPreflightContext, localPreflightContextKey } from '@/lib/local-preflight-context'
 import { getProviderRuntimeContextKey } from '@/lib/provider-runtime-context'
 import { useAppStore } from '@/store'
+import { useExtensionTaskSourceStatusRefresh } from '@/extensions/extension-task-source-status' // fork-seam: integration-cards
 
 export function useIntegrationProviderStatusRefresh(): void {
+  useExtensionTaskSourceStatusRefresh() // fork-seam: integration-cards
   const settings = useAppStore((s) => s.settings)
   const preflightStatusChecked = useAppStore((s) => s.preflightStatusChecked)
   const preflightStatusContextKey = useAppStore((s) => s.preflightStatusContextKey)

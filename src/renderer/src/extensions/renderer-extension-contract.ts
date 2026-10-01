@@ -2,6 +2,7 @@ import type { ComponentType, LazyExoticComponent, ReactNode } from 'react'
 import type { StateCreator } from 'zustand'
 import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
 import type { AppState } from '@/store/types'
+import type { RepositoryPaneRepoUpdate } from '@/components/settings/RepositoryPane'
 import type { Repo } from '../../../shared/repo-types'
 import type { SupportedUiLocale } from '../../../shared/ui-locale'
 
@@ -14,7 +15,8 @@ export type TaskSourcePanelProps = {
 
 export type RepositorySettingsSectionProps = {
   repo: Repo
-  updateRepo: (repoId: string, updates: Partial<Repo>) => void | Promise<boolean>
+  // Same signature RepositoryPane hands its own sections, bound to the selected host.
+  updateRepo: (repoId: string, updates: RepositoryPaneRepoUpdate) => void | Promise<boolean>
   forceVisible: boolean
 }
 

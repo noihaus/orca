@@ -8,6 +8,7 @@ import { IntegrationStatusPill } from '@/components/integration-status-pill'
 import { cn } from '@/lib/utils'
 import { OnboardingInlineCommandTerminal } from './OnboardingInlineCommandTerminal'
 import { translate } from '@/i18n/i18n'
+import { ExtensionOnboardingIntegrationRows } from '@/extensions/extension-ui-slots' // fork-seam: onboarding-integration-rows
 
 type GitHubSetupState = 'checking' | 'connected' | 'not-installed' | 'not-authenticated'
 
@@ -259,6 +260,7 @@ export function IntegrationsStep(): React.JSX.Element {
       </ul>
 
       <div className="space-y-3">
+        <ExtensionOnboardingIntegrationRows /> {/* fork-seam: onboarding-integration-rows */}
         <GitHubRow />
         <div className="mt-4 rounded-xl border border-border bg-muted/10 px-5 py-4">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">

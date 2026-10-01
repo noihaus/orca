@@ -30,12 +30,13 @@ import { translate } from '@/i18n/i18n'
 import { RepositoryWindowsRuntimeSection } from './RepositoryWindowsRuntimeSection'
 import { matchesRepositoryIdentitySearch } from './repository-identity-search'
 import { RepositoryWorktreeDefaultsSection } from './RepositoryWorktreeDefaultsSection'
+import { ExtensionRepositorySettingsSections } from '@/extensions/extension-ui-slots' // fork-seam: repository-settings-sections
 import { getProjectRuntimeSessionSummary } from './repository-runtime-session-summary'
 import { getRepoOwnerWorktreeVisibilityDefaults } from '../../store/worktree-visibility-defaults-by-host'
 export { getRepositoryPaneSearchEntries }
 export { matchesRepositoryIdentitySearch } from './repository-identity-search'
 
-type RepositoryPaneRepoUpdate = Omit<
+export type RepositoryPaneRepoUpdate = Omit<
   Partial<Repo>,
   'sourceControlAi' | 'externalWorktreeVisibility' | 'ghAccount'
 > & {
@@ -385,6 +386,12 @@ export function RepositoryPane({
                   requireAuthoritative: true
                 })
               }
+              forceVisible={forceFullPaneForRepoMatch}
+            />
+
+            <ExtensionRepositorySettingsSections // fork-seam: repository-settings-sections
+              repo={repo}
+              updateRepo={updateSelectedRepo}
               forceVisible={forceFullPaneForRepoMatch}
             />
           </>
