@@ -1,3 +1,4 @@
+import { isRecord } from './dooray-json-guards'
 import type { DoorayViewer } from '../../../shared/extensions/dooray/dooray-types'
 
 // Injected so a plugin worker can supply its own fetch; no Electron imports here.
@@ -46,10 +47,6 @@ export async function withDoorayRequestSlot<T>(fn: () => Promise<T>): Promise<T>
       active -= 1
     }
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
 }
 
 function readHeader(body: unknown): { isSuccessful?: boolean; resultMessage?: string } {

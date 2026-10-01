@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type * as Client from './client'
@@ -132,5 +132,64 @@ describe('Dooray client', () => {
     await all
     expect(peak).toBe(4)
     expect(netFetchMock).toHaveBeenCalledTimes(7)
+  })
+  it('getDoorayStatus surfaces credentialError after a token decrypt failure', async () => {
+    const d = await loadClient()
+    const { setSecretStore } = await import('../../../shared/secret-store')
+    setSecretStore({
+      isEncryptionAvailable: () => true,
+      encryptString: (value) => Buffer.from(value),
+      decryptString: () => {
+        throw new Error('keychain locked')
+      },
+      describeProtectionGap: () => null
+    })
+    const dir = join(getDoorayTestHome(), '.orca')
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(
+      join(dir, 'dooray-account.json'),
+      JSON.stringify({ apiUrl: 'https://api.dooray.com', viewer: { id: 'm1', name: 'Kim' } })
+    )
+    // Control bytes: undecryptable and not a legacy plaintext token.
+    writeFileSync(join(dir, 'dooray-token.enc'), Buffer.from([1, 2, 3, 4]))
+    expect(() => d.requireDoorayClient()).toThrow()
+    const status = d.getDoorayStatus()
+    expect(status).toMatchObject({ connected: true })
+    expect(status.connected && status.credentialError).toBeTruthy()
+  })
+
+  it('a throwing fetch releases its slot so a queued 5th request proceeds', async () => {
+    const d = await loadClient()
+    const resolvers: (() => void)[] = []
+    let calls = 0
+    netFetchMock.mockImplementation(async () => {
+      calls += 1
+      if (calls === 1) {
+        await new Promise<void>((resolve) => resolvers.push(resolve))
+        throw new Error('network down')
+      }
+      if (calls <= 4) {
+        await new Promise<void>((resolve) => resolvers.push(resolve))
+      }
+      return jsonResponse({ header: { isSuccessful: true }, result: [] })
+    })
+    const client = {
+      apiUrl: 'https://api.dooray.com',
+      webUrl: null,
+      viewer: { id: '1', name: 'K', userCode: 'k', email: null },
+      authorization: 'dooray-api t',
+      transport: { fetch: (url: string, init?: RequestInit) => netFetchMock(url, init) }
+    }
+    const first = d.doorayRequest(client, '/x').catch((error: unknown) => error)
+    const rest = [1, 2, 3].map(() => d.doorayRequest(client, '/x'))
+    const fifth = d.doorayRequest(client, '/x')
+    await new Promise((resolve) => setTimeout(resolve, 10))
+    expect(netFetchMock).toHaveBeenCalledTimes(4)
+    resolvers[0]()
+    expect(await first).toBeInstanceOf(Error)
+    await expect(fifth).resolves.toMatchObject({ result: [] })
+    expect(netFetchMock).toHaveBeenCalledTimes(5)
+    resolvers.slice(1).forEach((resolve) => resolve())
+    await Promise.all(rest)
   })
 })

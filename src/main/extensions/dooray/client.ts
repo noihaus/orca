@@ -15,6 +15,7 @@ import {
   saveDoorayToken,
   writeDoorayAccount
 } from './dooray-credential-store'
+import { asRecord } from './dooray-json-guards'
 import { doorayRequest, type DoorayClient, type DoorayTransport } from './dooray-request'
 import { DEFAULT_DOORAY_API_URL, normalizeDoorayUrl } from './dooray-url'
 
@@ -27,12 +28,8 @@ const mainTransport: DoorayTransport = {
     withSpan('dooray.request', () => getMainHttpClient().fetch(url, init), { kind: 'client' })
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
-}
-
 export function toDoorayViewer(data: unknown): DoorayViewer {
-  const raw = isRecord(data) ? data : {}
+  const raw = asRecord(data)
   return {
     id: typeof raw.id === 'string' ? raw.id : '',
     name: typeof raw.name === 'string' ? raw.name : '',

@@ -8,6 +8,7 @@ import {
   writeCredentialFileAtomic,
   writeEncryptedCredential
 } from '../../integration-credential-file'
+import { isRecord } from './dooray-json-guards'
 import type { DoorayViewer } from '../../../shared/extensions/dooray/dooray-types'
 
 export type DoorayAccountFile = {
@@ -67,10 +68,6 @@ export function createFileDoorayCredentialBackend(): DoorayCredentialBackend {
     deleteToken: () => unlinkQuietly(tokenPath()),
     hasToken: () => credentialFileHasContent(tokenPath())
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
 }
 
 function parseAccount(text: string): DoorayAccountFile | null {
