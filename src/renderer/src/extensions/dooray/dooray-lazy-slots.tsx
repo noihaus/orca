@@ -1,15 +1,16 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
+import { deferredLazyComponent } from '../deferred-lazy-component'
 import type {
   RepositorySettingsSectionProps,
   TaskSourcePanelProps
 } from '../renderer-extension-contract'
 
 // Lazy so the installed-extension list stays free of eager store-importing components.
-const LazyCard = lazy(() =>
-  import('./DoorayIntegrationCard').then((m) => ({ default: m.DoorayIntegrationCard }))
+const LazyCard = deferredLazyComponent(() =>
+  import('./DoorayIntegrationCard').then((m) => m.DoorayIntegrationCard)
 )
-const LazyRow = lazy(() =>
-  import('./DoorayOnboardingRow').then((m) => ({ default: m.DoorayOnboardingRow }))
+const LazyRow = deferredLazyComponent(() =>
+  import('./DoorayOnboardingRow').then((m) => m.DoorayOnboardingRow)
 )
 
 export function DoorayIntegrationCardSlot(): React.JSX.Element {
@@ -28,8 +29,8 @@ export function DoorayOnboardingRowSlot(): React.JSX.Element {
   )
 }
 
-const LazyTaskSourcePanel = lazy(() =>
-  import('./tasks/DoorayTaskSourcePanel').then((m) => ({ default: m.DoorayTaskSourcePanel }))
+const LazyTaskSourcePanel = deferredLazyComponent(() =>
+  import('./tasks/DoorayTaskSourcePanel').then((m) => m.DoorayTaskSourcePanel)
 )
 
 export function DoorayTaskSourcePanelSlot(props: TaskSourcePanelProps): React.JSX.Element {
@@ -40,15 +41,13 @@ export function DoorayTaskSourcePanelSlot(props: TaskSourcePanelProps): React.JS
   )
 }
 
-// The sidebar tab contract wants a LazyExoticComponent, so this is exported unwrapped.
-export const DoorayRightSidebarTasksPanel = lazy(() =>
-  import('./sidebar/DoorayTasksPanel').then((m) => ({ default: m.DoorayTasksPanel }))
+// Unwrapped: the right sidebar renders tab panels inside its own Suspense.
+export const DoorayRightSidebarTasksPanel = deferredLazyComponent(() =>
+  import('./sidebar/DoorayTasksPanel').then((m) => m.DoorayTasksPanel)
 )
 
-const LazyRepositoryStartSection = lazy(() =>
-  import('./settings/DoorayRepositoryStartSection').then((m) => ({
-    default: m.DoorayRepositoryStartSection
-  }))
+const LazyRepositoryStartSection = deferredLazyComponent(() =>
+  import('./settings/DoorayRepositoryStartSection').then((m) => m.DoorayRepositoryStartSection)
 )
 
 export function DoorayRepositoryStartSectionSlot(

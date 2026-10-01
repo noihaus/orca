@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, type Context } from 'react'
 
 export type DoorayBaseRefRequest = {
   branch: string
@@ -18,10 +18,16 @@ export type DoorayBaseRefPrompt = (
   request: DoorayBaseRefRequest
 ) => Promise<DoorayBaseRefChoice | 'cancel'>
 
-// React-only on purpose: the provider is registered eagerly and must not pull in the store.
-export const DoorayTaskBaseRefContext = createContext<DoorayBaseRefPrompt | null>(null)
+let baseRefContext: Context<DoorayBaseRefPrompt | null> | null = null
+
+// React-only and created on first use: the provider is registered eagerly, so importing it must
+// neither pull in the store nor call React.
+export function getDoorayTaskBaseRefContext(): Context<DoorayBaseRefPrompt | null> {
+  baseRefContext ??= createContext<DoorayBaseRefPrompt | null>(null)
+  return baseRefContext
+}
 
 // Null outside the provider; callers then switch without asking for a base.
 export function useDoorayTaskBaseRefPrompt(): DoorayBaseRefPrompt | null {
-  return useContext(DoorayTaskBaseRefContext)
+  return useContext(getDoorayTaskBaseRefContext())
 }

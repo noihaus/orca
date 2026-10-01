@@ -1,14 +1,15 @@
-import { lazy, Suspense, useCallback, useRef, useState, type ReactNode } from 'react'
+import { Suspense, useCallback, useRef, useState, type ReactNode } from 'react'
 import {
-  DoorayTaskBaseRefContext,
+  getDoorayTaskBaseRefContext,
   type DoorayBaseRefChoice,
   type DoorayBaseRefPrompt,
   type DoorayBaseRefRequest
 } from './dooray-task-base-ref-context'
+import { deferredLazyComponent } from '../../deferred-lazy-component'
 
 // The dialog body pulls in the store and BaseRefPicker, so it loads only when first asked.
-const LazyBaseRefDialog = lazy(() =>
-  import('./DoorayTaskBaseRefDialog').then((m) => ({ default: m.DoorayTaskBaseRefDialog }))
+const LazyBaseRefDialog = deferredLazyComponent(() =>
+  import('./DoorayTaskBaseRefDialog').then((m) => m.DoorayTaskBaseRefDialog)
 )
 
 type QueuedRequest = DoorayBaseRefRequest & {
@@ -44,14 +45,15 @@ export function DoorayTaskBaseRefDialogProvider({
     },
     [active]
   )
+  const BaseRefContext = getDoorayTaskBaseRefContext()
   return (
-    <DoorayTaskBaseRefContext.Provider value={prompt}>
+    <BaseRefContext.Provider value={prompt}>
       {children}
       {active ? (
         <Suspense fallback={null}>
           <LazyBaseRefDialog key={active.id} request={active} onSettle={settle} />
         </Suspense>
       ) : null}
-    </DoorayTaskBaseRefContext.Provider>
+    </BaseRefContext.Provider>
   )
 }

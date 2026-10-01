@@ -1,4 +1,4 @@
-import type { ComponentType, LazyExoticComponent, ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import type { StateCreator } from 'zustand'
 import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
 import type { AppState } from '@/store/types'
@@ -34,7 +34,8 @@ export type ExtensionRightSidebarTab = {
   id: `ext:${string}`
   title: () => string
   Icon: ExtensionIcon
-  Panel: LazyExoticComponent<ComponentType>
+  // Rendered inside the right sidebar's Suspense, so it may suspend.
+  Panel: ComponentType
 }
 
 // Loaders resolve to the nested catalog shape core uses, rooted at `auto.ext.<id>`.
