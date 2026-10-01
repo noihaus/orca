@@ -23,6 +23,15 @@ export function getMainExtensionRpcMethods(
   return extensions.flatMap((extension) => extension.rpcMethods)
 }
 
+// Extension methods join only the full core list, so a dispatcher built from an explicit subset stays that subset.
+export function withMainExtensionRpcMethods(
+  methods: readonly RpcAnyMethodDeclaration[],
+  coreMethods: readonly RpcAnyMethodDeclaration[],
+  extensions: readonly MainExtension[] = INSTALLED_MAIN_EXTENSIONS
+): readonly RpcAnyMethodDeclaration[] {
+  return methods === coreMethods ? [...methods, ...getMainExtensionRpcMethods(extensions)] : methods
+}
+
 export function bindMainExtensionRuntimeCommands(
   runtime: RuntimeInstalledCommandSurfaces,
   reserved: object,

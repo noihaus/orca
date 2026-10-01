@@ -9,6 +9,7 @@ import type { ExtensionTaskProviderMeta } from '../../shared/extensions/extensio
 import { normalizeRightSidebarTab } from '../persistence/applying-settings/ui-selection-normalization'
 import { ALL_RPC_METHODS } from '../runtime/rpc/methods'
 import { INSTALLED_MAIN_EXTENSIONS } from './installed-main-extensions'
+import { withMainExtensionRpcMethods } from './register-main-extensions'
 
 describe('installed extensions reach every seam', () => {
   it('lists each installed task provider in TASK_PROVIDERS', () => {
@@ -31,7 +32,9 @@ describe('installed extensions reach every seam', () => {
   })
 
   it('exposes each installed main extension RPC method', () => {
-    const exposed = new Set(ALL_RPC_METHODS.map((method) => method.name))
+    const exposed = new Set(
+      withMainExtensionRpcMethods(ALL_RPC_METHODS, ALL_RPC_METHODS).map((method) => method.name)
+    )
     for (const extension of INSTALLED_MAIN_EXTENSIONS) {
       for (const method of extension.rpcMethods) {
         expect(exposed.has(method.name), `seam "runtime-rpc-methods": ${method.name}`).toBe(true)

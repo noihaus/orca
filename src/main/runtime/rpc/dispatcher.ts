@@ -11,6 +11,7 @@ import {
 
 import { errorResponse, successResponse } from './errors'
 import { ALL_RPC_METHODS } from './methods'
+import { withMainExtensionRpcMethods } from '../../extensions/register-main-extensions' // fork-seam: runtime-rpc-methods
 import { emulatorProbe, emulatorProbeError } from '../../emulator/emulator-probe'
 import type { OrcaRuntimeService } from '../orca-runtime'
 import {
@@ -46,7 +47,7 @@ export class RpcDispatcher {
 
   constructor({ runtime, methods = ALL_RPC_METHODS }: DispatcherOptions) {
     this.runtime = runtime
-    this.registry = buildRegistry(methods)
+    this.registry = buildRegistry(withMainExtensionRpcMethods(methods, ALL_RPC_METHODS)) // fork-seam: runtime-rpc-methods
     this.orchestrationMutations = getOrchestrationMutationExecutor(runtime)
     this.legacyOrchestration = new OrchestrationLegacyCompatibility(runtime)
     this.streamingDispatcher = new RpcStreamingDispatcher({

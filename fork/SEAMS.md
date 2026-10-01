@@ -181,13 +181,10 @@
 
 ### `runtime-rpc-methods`
 
-- 목적: 확장 RPC 메서드를 `ALL_RPC_METHODS`와 파라미터 카탈로그 생성에 합친다.
+- 목적: 디스패처가 전체 core 목록(`ALL_RPC_METHODS`)으로 만들어질 때 확장 RPC 메서드를 registry에 합친다. `ALL_RPC_METHODS` 선언과 파라미터 카탈로그 생성은 upstream 그대로라서, 확장 메서드는 카탈로그와 core 타입 계약에 들어가지 않는다. 명시적인 부분 목록으로 만든 디스패처(테스트 등)에는 합치지 않는다.
 - 확장 등록: `MainExtension.rpcMethods`에 `defineMethod` 선언 추가. 웹 클라이언트가 쓰면 `INSTALLED_RUNTIME_NAMESPACE_API_KEYS`(shared manifest)도 추가.
 - 파일:
-  - `config/scripts/generate-rpc-params-catalog.mjs`
-  - `src/main/runtime/rpc/core-typed-method-contract.test.ts`
-  - `src/main/runtime/rpc/methods/index.ts`
-  - `src/main/runtime/rpc/rpc-params-type-parity.ts`
+  - `src/main/runtime/rpc/dispatcher.ts`
 
 ### `store-slices`
 

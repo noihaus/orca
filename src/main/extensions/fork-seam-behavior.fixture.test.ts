@@ -35,11 +35,19 @@ describe('fork seams with a fixture extension installed', () => {
     ).toBe('ext:fixture/panel')
   })
 
-  it('includes the fixture RPC method in the runtime method list', async () => {
+  it('dispatches the fixture RPC method through the full runtime method list', async () => {
     const { ALL_RPC_METHODS } = await import('../runtime/rpc/methods')
-    expect(
-      ALL_RPC_METHODS.map((method) => method.name),
-      'seam "runtime-rpc-methods"'
-    ).toContain('fixture.ping')
+    const { RpcDispatcher } = await import('../runtime/rpc/dispatcher')
+    const runtime = { getRuntimeId: () => 'runtime-fixture' }
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: fixture.ping reads nothing from the runtime
+    const dispatcher = new RpcDispatcher({ runtime: runtime as never, methods: ALL_RPC_METHODS })
+    const response = await dispatcher.dispatch({
+      id: '1',
+      authToken: 'fixture',
+      method: 'fixture.ping'
+    })
+    expect(response, 'seam "runtime-rpc-methods"').toMatchObject({ ok: true, result: 'pong' })
+    // The generated params catalog reads ALL_RPC_METHODS, so extension methods stay out of it.
+    expect(ALL_RPC_METHODS.map((method) => method.name)).not.toContain('fixture.ping')
   })
 })
