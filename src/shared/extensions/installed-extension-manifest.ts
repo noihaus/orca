@@ -8,5 +8,5 @@ export const INSTALLED_CREDENTIAL_SERVICES = [] as const satisfies readonly stri
 
 export type ExtensionCredentialService = (typeof INSTALLED_CREDENTIAL_SERVICES)[number]
 
-// Preload extension keys the web client serves over runtime RPC (the preload list itself can't load in a browser).
+// Subset of INSTALLED_PRELOAD_EXTENSIONS keys the web client serves over runtime RPC (that list can't load in a browser).
 export const INSTALLED_RUNTIME_NAMESPACE_API_KEYS = [] as const satisfies readonly string[]

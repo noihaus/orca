@@ -1,9 +1,14 @@
 import { INSTALLED_PRELOAD_EXTENSIONS } from './installed-preload-extensions'
 import type { PreloadExtension, PreloadExtensionApis } from './preload-extension-contract'
 
-export type InstalledPreloadExtensionApis = PreloadExtensionApis<
-  typeof INSTALLED_PRELOAD_EXTENSIONS
->
+type InstalledPreloadExtensionApis = PreloadExtensionApis<typeof INSTALLED_PRELOAD_EXTENSIONS>
+
+// Collapses to never on a key collision with the core api, so `pnpm tc` fails.
+export type ExtensionApisDisjointFrom<Core> = [
+  Extract<keyof InstalledPreloadExtensionApis, keyof Core>
+] extends [never]
+  ? InstalledPreloadExtensionApis
+  : never
 
 export function preloadExtensionApis<const L extends readonly PreloadExtension[]>(
   extensions: L
