@@ -28,6 +28,20 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
 }
 
+// Why: a user's submodule.recurse=true would make reset/checkout/fetch reach into unselected submodules.
+const NO_SUBMODULE_RECURSION = ['-c', 'submodule.recurse=false']
+
+function runTargetGit(
+  target: TaskBranchTarget,
+  args: string[],
+  options: GitRuntimeOptions = {}
+): Promise<{ stdout: string; stderr: string }> {
+  return gitExecFileAsync(
+    [...NO_SUBMODULE_RECURSION, ...args],
+    gitOptionsForWorktree(target.absolutePath, options)
+  )
+}
+
 function isSafeRelativeSubmodulePath(value: string): boolean {
   if (value.length === 0 || value.includes('\0') || value.includes('\\')) {
     return false
@@ -92,9 +106,10 @@ async function countTrackedChanges(
   ignoreSubmodules: boolean,
   options: GitRuntimeOptions
 ): Promise<number> {
-  const { stdout } = await gitExecFileAsync(
+  const { stdout } = await runTargetGit(
+    target,
     ['status', '--porcelain', ...(ignoreSubmodules ? ['--ignore-submodules=all'] : [])],
-    gitOptionsForWorktree(target.absolutePath, options)
+    options
   )
   return stdout.split('\n').filter((line) => line.trim().length > 0 && !line.startsWith('??'))
     .length
@@ -137,10 +152,7 @@ export async function stashTaskBranchTargets(
   await runWithGitReadCacheInvalidation(async () => {
     for (const { target } of dirty.toReversed()) {
       // Tracked changes only: untracked files stay put across the switch.
-      await gitExecFileAsync(
-        ['stash', 'push', '-m', input.message],
-        gitOptionsForWorktree(target.absolutePath, input.options)
-      )
+      await runTargetGit(target, ['stash', 'push', '-m', input.message], input.options)
     }
   })
 }
@@ -150,12 +162,43 @@ export async function discardTaskBranchTargets(input: TargetsInput): Promise<voi
   await runWithGitReadCacheInvalidation(async () => {
     for (const target of targets.toReversed()) {
       // No `git clean`: untracked files are deliberately kept.
-      await gitExecFileAsync(
-        ['reset', '--hard', 'HEAD', '--'],
-        gitOptionsForWorktree(target.absolutePath, input.options)
-      )
+      await runTargetGit(target, ['reset', '--hard', 'HEAD', '--'], input.options)
     }
   })
+}
+
+// Rejects refspec syntax (`:` `+`), globs, revision suffixes and `@{` so the name stays a plain branch.
+const UNSAFE_FETCH_BRANCH = /[\s:+*?^~[\\]|\.\.|@\{|^[-/]|\/$|\.lock$/
+
+async function isFetchableBaseBranch(
+  target: TaskBranchTarget,
+  branch: string,
+  options: GitRuntimeOptions
+): Promise<boolean> {
+  if (branch.length === 0 || UNSAFE_FETCH_BRANCH.test(branch)) {
+    return false
+  }
+  try {
+    await runTargetGit(target, ['check-ref-format', '--branch', branch], options)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function listRemotes(
+  target: TaskBranchTarget,
+  options: GitRuntimeOptions
+): Promise<string[]> {
+  try {
+    const { stdout } = await runTargetGit(target, ['remote'], options)
+    return stdout
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+  } catch {
+    return []
+  }
 }
 
 async function fetchBaseRef(
@@ -169,16 +212,22 @@ async function fetchBaseRef(
   }
   const remote = baseRef.slice(0, slash)
   const branch = baseRef.slice(slash + 1)
-  if (branch.length === 0 || branch.startsWith('-')) {
+  // Why: only configured remotes, so a "host:repo" baseRef can never contact an arbitrary host.
+  if (remote.startsWith('-') || !(await listRemotes(target, options)).includes(remote)) {
+    return
+  }
+  if (!(await isFetchableBaseBranch(target, branch, options))) {
     return
   }
   try {
-    await gitExecFileAsync(
-      ['fetch', remote, branch],
-      gitOptionsForWorktree(target.absolutePath, options)
+    // Explicit refspec: the destination is always this remote's tracking namespace, never a local branch.
+    await runTargetGit(
+      target,
+      ['fetch', remote, `+refs/heads/${branch}:refs/remotes/${remote}/${branch}`],
+      options
     )
   } catch {
-    // Best effort: offline or a target without this remote falls back to local refs.
+    // Best effort: offline or a target without this branch falls back to local refs.
   }
 }
 
@@ -188,10 +237,7 @@ async function resolvesToCommit(
   options: GitRuntimeOptions
 ): Promise<boolean> {
   try {
-    await gitExecFileAsync(
-      ['rev-parse', '--verify', '--quiet', `${ref}^{commit}`],
-      gitOptionsForWorktree(target.absolutePath, options)
-    )
+    await runTargetGit(target, ['rev-parse', '--verify', '--quiet', `${ref}^{commit}`], options)
     return true
   } catch {
     return false
@@ -205,13 +251,12 @@ async function switchTarget(
   input: SwitchInput
 ): Promise<'already-on' | 'switched' | 'created'> {
   const options = input.options ?? {}
-  const gitOptions = gitOptionsForWorktree(target.absolutePath, options)
   const { current, branches } = await listLocalBranches(target.absolutePath, options)
   if (current === input.branch) {
     return 'already-on'
   }
   if (branches.includes(input.branch)) {
-    await gitExecFileAsync(['checkout', input.branch, '--'], gitOptions)
+    await runTargetGit(target, ['checkout', input.branch, '--'], options)
     return 'switched'
   }
   if (input.baseRef && input.fetchBase) {
@@ -219,7 +264,7 @@ async function switchTarget(
   }
   const startPoint =
     input.baseRef && (await resolvesToCommit(target, input.baseRef, options)) ? [input.baseRef] : []
-  await gitExecFileAsync(['checkout', '-b', input.branch, ...startPoint, '--'], gitOptions)
+  await runTargetGit(target, ['checkout', '-b', input.branch, ...startPoint, '--'], options)
   return 'created'
 }
 

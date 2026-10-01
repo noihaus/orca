@@ -62,6 +62,7 @@ function createFixture(root: string): Fixture {
   return { root, parent, sub: join(parent, 'libs/sub'), subSource }
 }
 
+let taskBranchCounter = 0
 const currentBranch = (cwd: string): string => git(cwd, 'symbolic-ref', '--short', 'HEAD')
 
 describe('task-branch git operations (real git)', () => {
@@ -137,6 +138,55 @@ describe('task-branch git operations (real git)', () => {
     // The submodule has no "origin/release": its fetch fails silently and it starts from HEAD.
     expect(results.map((result) => result.status)).toEqual(['created', 'created'])
     expect(git(fixture.parent, 'rev-parse', 'HEAD')).toBe(git(scratch, 'rev-parse', 'HEAD'))
+  })
+
+  it('never fetches a refspec-like base branch or an unconfigured remote', async () => {
+    const remote = join(fixture.root, 'remote.git')
+    git(fixture.root, 'clone', '--quiet', '--bare', fixture.parent, remote)
+    git(remote, 'branch', 'feature', 'base')
+    git(fixture.parent, 'remote', 'add', 'origin', remote)
+    // A path-shaped "remote" git would happily fetch from if it were passed through.
+    git(fixture.parent, 'clone', '--quiet', '--bare', remote, 'rogue')
+    const mainBefore = git(fixture.parent, 'rev-parse', 'refs/heads/main')
+
+    for (const baseRef of ['origin/+feature:refs/heads/main', 'rogue/feature', 'origin/feat ure']) {
+      const results = await switchTaskBranchTargets({
+        worktreePath: fixture.parent,
+        branch: `task/${taskBranchCounter++}`,
+        baseRef,
+        fetchBase: true
+      })
+      expect(results).toEqual([{ submodulePath: '', status: 'created' }])
+      git(fixture.parent, 'checkout', '--quiet', 'main')
+    }
+    expect(git(fixture.parent, 'rev-parse', 'refs/heads/main')).toBe(mainBefore)
+    expect(git(fixture.parent, 'for-each-ref', 'refs/remotes')).toBe('')
+    expect(existsSync(join(fixture.parent, '.git/FETCH_HEAD'))).toBe(false)
+  })
+
+  it('does not recurse into unselected submodules when submodule.recurse=true', async () => {
+    git(fixture.parent, 'config', 'submodule.recurse', 'true')
+    writeFileSync(join(fixture.sub, 'tracked.txt'), 'sub change\n')
+    writeFileSync(join(fixture.parent, 'tracked.txt'), 'parent change\n')
+    await discardTaskBranchTargets({ worktreePath: fixture.parent })
+    expect(readFileSync(join(fixture.parent, 'tracked.txt'), 'utf8')).toBe('base\n')
+    expect(readFileSync(join(fixture.sub, 'tracked.txt'), 'utf8')).toBe('sub change\n')
+
+    // Moving the parent to a commit with a different gitlink would otherwise update the submodule.
+    git(fixture.sub, 'stash', '--quiet')
+    writeFileSync(join(fixture.sub, 'next.txt'), 'next\n')
+    git(fixture.sub, 'add', 'next.txt')
+    git(fixture.sub, 'commit', '--quiet', '-m', 'next')
+    git(fixture.parent, 'checkout', '--quiet', '-b', 'moved')
+    git(fixture.parent, 'add', 'libs/sub')
+    git(fixture.parent, 'commit', '--quiet', '-m', 'bump sub')
+    git(fixture.parent, 'checkout', '--quiet', 'main')
+    git(fixture.sub, 'checkout', '--quiet', 'main')
+    git(fixture.sub, 'stash', 'pop', '--quiet')
+    const results = await switchTaskBranchTargets({ worktreePath: fixture.parent, branch: 'moved' })
+    expect(results).toEqual([{ submodulePath: '', status: 'switched' }])
+    expect(currentBranch(fixture.sub)).toBe('main')
+    expect(readFileSync(join(fixture.sub, 'tracked.txt'), 'utf8')).toBe('sub change\n')
   })
 
   it('stops before touching submodules when the parent cannot switch', async () => {

@@ -96,6 +96,7 @@
 
 - 목적: main 프로세스 시작 시 확장의 IPC 핸들러를 등록한다.
 - 확장 등록: `INSTALLED_MAIN_EXTENSIONS`(`src/main/extensions/installed-main-extensions.ts`)에 `registerIpcHandlers`를 가진 `MainExtension` 추가.
+- 계약: `registerIpcHandlers(context: MainExtensionIpcContext)`. `context`는 `{ store }`(main `Store`)이고, 연결 지점 호출은 `registerMainExtensionIpc({ store })`다. 등록된 워크트리 검증처럼 store가 필요한 핸들러(예: 두레이 `taskBranch`)가 이 값을 쓴다.
 - 파일:
   - `src/main/ipc/register-core-handlers/register-core-handlers.ts`
 
