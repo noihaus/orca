@@ -249,6 +249,7 @@ async function switchToTaskBranch(
       branch,
       repoId: worktree.repoId,
       worktreePath: worktree.path,
+      workspaceLabel: describeWorkspace(worktree, repo),
       defaultSubmodulePaths: submodulePaths
     })
     if (choice === 'cancel') {

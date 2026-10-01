@@ -31,7 +31,13 @@ function Capture(): null {
 function ask(branch: string): Promise<unknown> {
   let pending: Promise<unknown> = Promise.resolve()
   act(() => {
-    pending = prompt!({ branch, repoId: 'r', worktreePath: '/r', defaultSubmodulePaths: [] })
+    pending = prompt!({
+      branch,
+      repoId: 'r',
+      worktreePath: '/r',
+      workspaceLabel: 'r',
+      defaultSubmodulePaths: []
+    })
   })
   return pending
 }

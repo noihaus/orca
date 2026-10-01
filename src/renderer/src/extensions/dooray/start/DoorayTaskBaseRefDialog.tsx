@@ -89,6 +89,13 @@ export function DoorayTaskBaseRefDialog({
             )}
           </DialogTitle>
           <DialogDescription>
+            <span className="block font-medium text-foreground">
+              {translate(
+                'auto.ext.dooray.components.doorayTaskBaseRefDialog.target',
+                'Workspace: {{value0}}',
+                { value0: request.workspaceLabel }
+              )}
+            </span>
             {translate(
               'auto.ext.dooray.components.doorayTaskBaseRefDialog.description',
               'The new branch is created from the base you pick. If the branch already exists, it is switched to as-is.'

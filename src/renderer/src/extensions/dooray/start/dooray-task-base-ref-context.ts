@@ -4,6 +4,8 @@ export type DoorayBaseRefRequest = {
   branch: string
   repoId: string
   worktreePath: string
+  // Names the worktree (and project) being switched, which need not be the active one.
+  workspaceLabel: string
   defaultSubmodulePaths: readonly string[]
 }
 

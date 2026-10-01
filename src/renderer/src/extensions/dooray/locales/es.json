@@ -345,7 +345,8 @@
             "createFrom": "Create from {{value0}}",
             "pickBase": "Pick a base",
             "fetchFirst": "Fetch the base branch first (start from the latest tip)",
-            "submodulesLabel": "Also switch these submodules"
+            "submodulesLabel": "Also switch these submodules",
+            "target": "Workspace: {{value0}}"
           }
         },
         "store": {

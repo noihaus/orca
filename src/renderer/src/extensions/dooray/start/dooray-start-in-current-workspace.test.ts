@@ -155,6 +155,7 @@ describe('startDoorayTaskInCurrentWorkspace', () => {
       branch: BRANCH,
       repoId: 'repo-1',
       worktreePath: '/repo',
+      workspaceLabel: 'main · App',
       defaultSubmodulePaths: []
     })
     expect(taskBranch.inspect).not.toHaveBeenCalled()

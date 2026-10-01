@@ -21,6 +21,7 @@ const request = {
   branch: 'feature/A/1',
   repoId: 'repo-1',
   worktreePath: '/repo',
+  workspaceLabel: 'task-7 · App',
   defaultSubmodulePaths: ['libs/a']
 }
 
@@ -41,6 +42,8 @@ describe('DoorayTaskBaseRefDialog', () => {
   it('creates from the default base with fetch and the checked submodules', async () => {
     open()
     expect(screen.getByText('Where should feature/A/1 start?')).toBeTruthy()
+    // A non-active target must be identifiable before anything switches.
+    expect(screen.getByText('Workspace: task-7 · App')).toBeTruthy()
     fireEvent.click(await screen.findByRole('button', { name: 'Create from origin/main' }))
     expect(onSettle).toHaveBeenCalledWith({
       baseRef: 'origin/main',
