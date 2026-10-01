@@ -20,7 +20,7 @@ describe('main extension registration', () => {
   it('is a no-op with no installed extensions', () => {
     registerMainExtensionIpc()
     expect(getMainExtensionRpcMethods()).toEqual([])
-    expect(bindMainExtensionRuntimeCommands(Object.create(null))).toEqual({})
+    expect(bindMainExtensionRuntimeCommands(Object.create(null), {})).toEqual({})
   })
 
   it('registers IPC handlers of each extension', () => {
@@ -36,7 +36,7 @@ describe('main extension registration', () => {
   })
 
   it('binds runtime commands under the extension prefix', () => {
-    const bound = bindMainExtensionRuntimeCommands(Object.create(null), [createFakeExtension()])
+    const bound = bindMainExtensionRuntimeCommands(Object.create(null), {}, [createFakeExtension()])
     expect(Object.keys(bound)).toEqual(['fakePing'])
     expect(bound.fakePing()).toBe('pong')
   })
@@ -46,8 +46,27 @@ describe('main extension registration', () => {
       ...createFakeExtension(),
       runtimeCommands: { prefix: 'fake', create: () => ({ jiraConnect: () => 1 }) }
     }
-    expect(() => bindMainExtensionRuntimeCommands(Object.create(null), [extension])).toThrow(
+    expect(() => bindMainExtensionRuntimeCommands(Object.create(null), {}, [extension])).toThrow(
       /must start with "fake"/
+    )
+  })
+
+  it('rejects duplicate command names across extensions', () => {
+    const other: MainExtension = { ...createFakeExtension(), id: 'other' }
+    expect(() =>
+      bindMainExtensionRuntimeCommands(Object.create(null), {}, [createFakeExtension(), other])
+    ).toThrow(/"other" runtime command "fakePing" is already bound/)
+  })
+
+  it('rejects commands colliding with reserved or runtime-instance names', () => {
+    expect(() =>
+      bindMainExtensionRuntimeCommands(Object.create(null), { fakePing: () => 1 }, [
+        createFakeExtension()
+      ])
+    ).toThrow(/collides with an existing runtime command/)
+    const runtime = Object.assign(Object.create(null), { fakePing: () => 1 })
+    expect(() => bindMainExtensionRuntimeCommands(runtime, {}, [createFakeExtension()])).toThrow(
+      /collides/
     )
   })
 })

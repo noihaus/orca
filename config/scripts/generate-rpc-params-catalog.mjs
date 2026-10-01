@@ -80,7 +80,7 @@ function loadRegistryAndSchemas(modules) {
     writeFileSync(
       entry,
       [
-        `export { ALL_RPC_METHODS } from ${importOf(REGISTRY_ENTRY)}`,
+        `export { CORE_RPC_METHODS } from ${importOf(REGISTRY_ENTRY)}`, // fork-seam: runtime-rpc-methods
         'export const SCHEMA_MODULES = {',
         ...modules.map(
           (file) => `  ${JSON.stringify(repoPath(file))}: require(${importOf(file)}),`
@@ -99,7 +99,7 @@ function loadRegistryAndSchemas(modules) {
       packages: 'external'
     })
     const loaded = createRequire(import.meta.url)(outfile)
-    return { methods: loaded.ALL_RPC_METHODS, schemaModules: loaded.SCHEMA_MODULES }
+    return { methods: loaded.CORE_RPC_METHODS, schemaModules: loaded.SCHEMA_MODULES }
   } finally {
     rmSync(buildDir, { recursive: true, force: true })
   }

@@ -19,6 +19,7 @@ export function getMainExtensionRpcMethods(
 
 export function bindMainExtensionRuntimeCommands(
   runtime: RuntimeInstalledCommandSurfaces,
+  reserved: object,
   extensions: readonly MainExtension[] = INSTALLED_MAIN_EXTENSIONS
 ): Record<string, (...args: never[]) => unknown> {
   const bound: Record<string, (...args: never[]) => unknown> = {}
@@ -31,6 +32,14 @@ export function bindMainExtensionRuntimeCommands(
       if (!name.startsWith(commands.prefix)) {
         throw new Error(
           `Extension "${extension.id}" runtime command "${name}" must start with "${commands.prefix}"`
+        )
+      }
+      if (name in bound) {
+        throw new Error(`Extension "${extension.id}" runtime command "${name}" is already bound`)
+      }
+      if (name in reserved || name in runtime) {
+        throw new Error(
+          `Extension "${extension.id}" runtime command "${name}" collides with an existing runtime command`
         )
       }
       bound[name] = command
