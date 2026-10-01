@@ -12,7 +12,7 @@ import {
   type RpcMethod,
   type RpcStreamingMethod
 } from './core'
-import type { ALL_RPC_METHODS } from './methods'
+import type { CORE_RPC_METHODS } from './methods' // fork-seam: runtime-rpc-methods
 import { STATUS_METHODS } from './methods/status'
 import type { HOST_CAPABILITY_METHODS } from './methods/host-capabilities'
 
@@ -70,7 +70,7 @@ describe('defineMethod preserves the declared contract', () => {
     expectTypeOf<StatusGet['handler']>().returns.resolves.toExtend<{ runtimeId: string }>()
     expectTypeOf<ListDistros['handler']>().returns.toEqualTypeOf<Promise<string[]>>()
     // The manifest is the erasure boundary's input, so the literal names have to survive it too.
-    expectTypeOf<ByName<(typeof ALL_RPC_METHODS)[number], 'status.get'>>().not.toBeNever()
+    expectTypeOf<ByName<(typeof CORE_RPC_METHODS)[number], 'status.get'>>().not.toBeNever() // fork-seam: runtime-rpc-methods
   })
 })
 

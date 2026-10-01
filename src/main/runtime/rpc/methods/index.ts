@@ -29,6 +29,7 @@ import { HOSTED_REVIEW_METHODS } from './hosted-review'
 import { LINEAR_METHODS } from './linear'
 import { LINEAR_AGENT_ACCESS_METHODS } from './linear-agent-access'
 import { JIRA_METHODS } from './jira'
+import { getMainExtensionRpcMethods } from '../../../extensions/register-main-extensions' // fork-seam: runtime-rpc-methods
 import { SSH_METHODS } from './ssh'
 import { SPEECH_METHODS } from './speech'
 import { CLIENT_UI_METHODS } from './client-ui'
@@ -52,7 +53,8 @@ import { AGENT_LAUNCH_METHODS } from './agent-launch'
 // Why: a flat manifest keeps registration order explicit and provides one
 // grep-point for "what methods does the RPC server expose?" — useful when
 // auditing the security boundary or wiring new CLI commands.
-export const ALL_RPC_METHODS = [
+export const CORE_RPC_METHODS = [
+  // fork-seam: runtime-rpc-methods
   ...STATUS_METHODS,
   ...AGENT_HOOK_METHODS,
   ...AI_VAULT_METHODS,
@@ -104,3 +106,6 @@ export const ALL_RPC_METHODS = [
   ...PAIRING_METHODS,
   ...UPDATER_METHODS
 ]
+
+// Core stays literal-typed for type contracts; extension methods exist only at runtime. // fork-seam: runtime-rpc-methods
+export const ALL_RPC_METHODS = [...CORE_RPC_METHODS, ...getMainExtensionRpcMethods()]

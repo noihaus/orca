@@ -41,6 +41,7 @@ import { createEphemeralAgentSessionClaimSigner } from './agent-session-claim-id
 import { registerConptyDa1OverrideInstaller } from './terminal-model-query-authority'
 import { registerTerminalViewAttributesApplier } from './terminal-view-attribute-store'
 import { RuntimeMachineName } from './runtime-machine-name'
+import { bindMainExtensionRuntimeCommands } from '../extensions/register-main-extensions' // fork-seam: runtime-commands
 
 export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
   protected readonly prepareClaudeAuth?: PrepareClaudeAuth
@@ -192,7 +193,7 @@ export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
       )
     })
     installRuntimeSkillCommandSurface(runtime, this.skillCommands)
-    Object.assign(this, this.edgeCommands.surface)
+    Object.assign(this, this.edgeCommands.surface, bindMainExtensionRuntimeCommands(runtime)) // fork-seam: runtime-commands
     // Why: keep cache-boundary test seams live while the fetch owner holds the mutable maps.
     void this.canonicalFetchKeyCache
     void this.fetchLastCompletedAt
