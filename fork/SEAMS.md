@@ -221,14 +221,20 @@
 
 ## 버전업 절차
 
+이 저장소의 통합 브랜치는 `develop`이다. 기능 브랜치는 `develop`에 합치고, 버전업 때마다 `develop`에 `upstream/main`을 머지한다. 이 저장소는 Node 24와 pnpm 12(corepack)가 필요하므로 먼저 환경을 맞춘다.
+
 ```bash
+source ~/.nvm/nvm.sh && nvm use 24
 git fetch upstream
 git switch develop && git merge upstream/main      # 충돌은 fork-seam 줄만 남기고 upstream 쪽으로 해결
 pnpm install && pnpm tc
 pnpm test src/shared/extensions/fork-seams.test.ts # 실패 = 사라진 연결 지점, 메시지에 name/file 표시
 node fork/scripts/check-fork-seams.mjs             # upstream 파일 중 마커 없는 변경 파일이 0개여야 한다
 pnpm test src/main/extensions src/renderer/src/extensions
+ORCA_CODE_QUALITY_BASE=upstream/main pnpm run check:code-quality:changed
 ```
+
+마지막 명령에 `ORCA_CODE_QUALITY_BASE=upstream/main`이 필요한 이유: `origin/main`은 포크의 오래된 main이라, 지정하지 않으면 게이트가 수천 개의 upstream 커밋을 diff하느라 멈춘 것처럼 보인다.
 
 `check-fork-seams.mjs`는 `git diff upstream/main...HEAD`로 이 브랜치가 바꾼 upstream 파일(`extensions/`, `fork/` 제외, upstream에 없는 새 파일 제외) 중 마커가 없는 파일을 나열한다. 계약 테스트는 git 없이 도는 대신 이 검사를 하지 못하므로 머지 뒤 반드시 실행한다.
 
