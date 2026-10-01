@@ -684,7 +684,7 @@ module.exports = {
     // public GitHub release as soon as the first platform uploads, and
     // /releases/latest serves a missing Windows exe. release-cut undrafts
     // only after every required asset exists.
-    releaseType: devChannelRepo ? 'prerelease' : 'release' // fork-seam: publish-target
+    releaseType: devChannelRepo ? 'prerelease' : 'draft'
   }
 }
 
