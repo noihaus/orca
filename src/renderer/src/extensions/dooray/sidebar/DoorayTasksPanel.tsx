@@ -95,7 +95,8 @@ export function ConnectedDoorayTasksPanel({
       : start.onPrimaryStart
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
+      {/* Why: bottom room lets the comment composer scroll clear of the floating workspace launcher (bottom-right, ~84px up). */}
+      <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto pb-24">
         <DoorayActiveTaskCard
           activeBranch={activeBranch}
           projects={list.projects}
