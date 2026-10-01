@@ -20,20 +20,39 @@ export function isExtensionTaskProvider(value: unknown): value is ExtensionTaskP
 export const EXTENSION_TASK_PROVIDER_IDS: readonly ExtensionTaskProvider[] =
   EXTENSION_TASK_PROVIDERS.map((extension) => extension.id).filter(isExtensionTaskProvider)
 
-export function isExtensionTaskProviderAlwaysAvailable(provider: ExtensionTaskProvider): boolean {
-  return EXTENSION_TASK_PROVIDERS.some(
-    (extension) => extension.id === provider && extension.alwaysAvailable
-  )
+/** Built-in ids with installed extension ids in front, as a tuple so the provider union stays derived. */
+export function withExtensionTaskProviders<const B extends readonly string[]>(
+  builtin: B
+): readonly [...ExtensionTaskProvider[], ...B] {
+  return [...EXTENSION_TASK_PROVIDER_IDS, ...builtin]
+}
+
+/** null for built-in providers; extensions without a live signal are available only when alwaysAvailable. */
+export function extensionTaskProviderAvailability(provider: string): boolean | null {
+  const extension = EXTENSION_TASK_PROVIDERS.find((candidate) => candidate.id === provider)
+  return extension ? extension.alwaysAvailable : null
+}
+
+function coversEveryExtensionTaskProvider<T>(
+  record: Record<string, T>
+): record is Record<ExtensionTaskProvider, T> {
+  return EXTENSION_TASK_PROVIDER_IDS.every((provider) => provider in record)
 }
 
 /** Fills the extension keys of a `Record<TaskProvider, T>` so upstream literals stay exhaustive. */
 export function extensionTaskProviderDefaults<T>(
   build: (provider: ExtensionTaskProvider) => T
 ): Record<ExtensionTaskProvider, T> {
-  const entries = EXTENSION_TASK_PROVIDER_IDS.map((provider) => [provider, build(provider)])
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: entries cover every ExtensionTaskProvider id exactly once.
-  return Object.fromEntries(entries) as Record<ExtensionTaskProvider, T>
+  const record = Object.fromEntries(
+    EXTENSION_TASK_PROVIDER_IDS.map((provider) => [provider, build(provider)])
+  )
+  if (coversEveryExtensionTaskProvider(record)) {
+    return record
+  }
+  throw new Error('extension task provider record is missing an installed id')
 }
+
+type ExtensionSeedSettings = { seededExtensionTaskProviders?: unknown } | undefined
 
 function normalizeSeededIds(value: unknown): string[] {
   if (!Array.isArray(value)) {
@@ -50,10 +69,10 @@ function normalizeSeededIds(value: unknown): string[] {
 
 /** Records every defaultVisible extension as seeded, keeping earlier seeds (e.g. of uninstalled extensions). */
 export function stampSeededExtensionTaskProviders(
-  existing: unknown,
+  settings: ExtensionSeedSettings,
   extensions: readonly ExtensionTaskProviderMeta[] = EXTENSION_TASK_PROVIDERS
 ): string[] {
-  const seeded = normalizeSeededIds(existing)
+  const seeded = normalizeSeededIds(settings?.seededExtensionTaskProviders)
   for (const extension of extensions) {
     if (extension.defaultVisible && !seeded.includes(extension.id)) {
       seeded.push(extension.id)
@@ -66,21 +85,24 @@ export function stampSeededExtensionTaskProviders(
 export function defaultSeededExtensionTaskProviders(
   extensions: readonly ExtensionTaskProviderMeta[] = EXTENSION_TASK_PROVIDERS
 ): string[] {
-  return stampSeededExtensionTaskProviders([], extensions)
+  return stampSeededExtensionTaskProviders(undefined, extensions)
 }
 
 // Why: mirrors the one-shot Jira default so an extension appears once but a later opt-out survives reloads.
-export function seedDefaultVisibleExtensionTaskProviders<P extends string>(
+export function seedExtensionTaskProviders<P extends string>(
   visibleTaskProviders: readonly P[],
-  seededExtensionTaskProviders: unknown,
+  settings: ExtensionSeedSettings,
   extensions: readonly ExtensionTaskProviderMeta[] = EXTENSION_TASK_PROVIDERS
 ): {
   visibleTaskProviders: string[]
   seededExtensionTaskProviders: string[]
   changed: boolean
 } {
-  const previous = normalizeSeededIds(seededExtensionTaskProviders)
-  const seeded = stampSeededExtensionTaskProviders(previous, extensions)
+  const previous = normalizeSeededIds(settings?.seededExtensionTaskProviders)
+  const seeded = stampSeededExtensionTaskProviders(
+    { seededExtensionTaskProviders: previous },
+    extensions
+  )
   const newlySeeded = seeded.slice(previous.length)
   const prepended = newlySeeded.filter(
     (id) => !visibleTaskProviders.some((provider) => provider === id)

@@ -125,7 +125,7 @@ export function normalizeLoadedGlobalSettings(
     defaultTaskSource: taskProviderSettings.defaultTaskSource,
     visibleTaskProviders: taskProviderSettings.visibleTaskProviders,
     visibleTaskProvidersDefaultedForJira: true,
-    seededExtensionTaskProviders: taskProviderSettings.seededExtensionTaskProviders, // fork-seam: extension-provider-seeding
+    seededExtensionTaskProviders: profile.seededExtensionTaskProviders, // fork-seam: extension-provider-seeding
     terminalShortcutPolicy: normalizeTerminalShortcutPolicy(
       parsed.settings?.terminalShortcutPolicy
     ),

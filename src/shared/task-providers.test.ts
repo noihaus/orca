@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  TASK_PROVIDERS,
+  TASK_PROVIDERS, // fork-seam: task-provider-registry
   filterAvailableTaskProviders,
   normalizeTaskProviderSettings,
   normalizeVisibleTaskProviders,

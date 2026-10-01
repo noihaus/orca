@@ -2,9 +2,10 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   EXTENSION_TASK_PROVIDER_IDS,
   defaultSeededExtensionTaskProviders,
+  extensionTaskProviderAvailability,
   extensionTaskProviderDefaults,
   isExtensionTaskProvider,
-  seedDefaultVisibleExtensionTaskProviders,
+  seedExtensionTaskProviders,
   stampSeededExtensionTaskProviders
 } from './extension-task-sources'
 import {
@@ -39,6 +40,12 @@ describe('extension task provider registry', () => {
     expect(normalizeVisibleTaskProviders(['fake', 'unknown', 'github'])).toEqual(['fake', 'github'])
   })
 
+  it('reports extension availability and leaves built-ins to their own checks', () => {
+    expect(extensionTaskProviderAvailability('fake')).toBe(true)
+    expect(extensionTaskProviderAvailability('quiet')).toBe(false)
+    expect(extensionTaskProviderAvailability('github')).toBeNull()
+  })
+
   it('alwaysAvailable extension is available while disconnected', () => {
     const providers = ['fake', 'quiet', 'linear'].filter(isTaskProvider)
     expect(
@@ -67,9 +74,11 @@ describe('extension task provider registry', () => {
   })
 })
 
-describe('seedDefaultVisibleExtensionTaskProviders', () => {
+describe('seedExtensionTaskProviders', () => {
   it('prepends a defaultVisible extension provider once and records the seed', () => {
-    expect(seedDefaultVisibleExtensionTaskProviders(['github'], [], FIXTURE)).toEqual({
+    expect(
+      seedExtensionTaskProviders(['github'], { seededExtensionTaskProviders: [] }, FIXTURE)
+    ).toEqual({
       visibleTaskProviders: ['fake', 'github'],
       seededExtensionTaskProviders: ['fake'],
       changed: true
@@ -77,7 +86,9 @@ describe('seedDefaultVisibleExtensionTaskProviders', () => {
   })
 
   it('does not re-add an extension the user hid after seeding', () => {
-    expect(seedDefaultVisibleExtensionTaskProviders(['github'], ['fake'], FIXTURE)).toEqual({
+    expect(
+      seedExtensionTaskProviders(['github'], { seededExtensionTaskProviders: ['fake'] }, FIXTURE)
+    ).toEqual({
       visibleTaskProviders: ['github'],
       seededExtensionTaskProviders: ['fake'],
       changed: false
@@ -85,9 +96,7 @@ describe('seedDefaultVisibleExtensionTaskProviders', () => {
   })
 
   it('records the seed without duplicating an already visible extension', () => {
-    expect(
-      seedDefaultVisibleExtensionTaskProviders(['github', 'fake'], undefined, FIXTURE)
-    ).toEqual({
+    expect(seedExtensionTaskProviders(['github', 'fake'], undefined, FIXTURE)).toEqual({
       visibleTaskProviders: ['github', 'fake'],
       seededExtensionTaskProviders: ['fake'],
       changed: true
@@ -96,7 +105,11 @@ describe('seedDefaultVisibleExtensionTaskProviders', () => {
 
   it('keeps seeds of uninstalled extensions and drops malformed entries', () => {
     expect(
-      seedDefaultVisibleExtensionTaskProviders(['github'], ['gone', 7, 'gone', 'fake'], FIXTURE)
+      seedExtensionTaskProviders(
+        ['github'],
+        { seededExtensionTaskProviders: ['gone', 7, 'gone', 'fake'] },
+        FIXTURE
+      )
     ).toEqual({
       visibleTaskProviders: ['github'],
       seededExtensionTaskProviders: ['gone', 'fake'],
@@ -106,7 +119,9 @@ describe('seedDefaultVisibleExtensionTaskProviders', () => {
 
   it('defaults a fresh profile to every defaultVisible extension as already seeded', () => {
     expect(defaultSeededExtensionTaskProviders(FIXTURE)).toEqual(['fake'])
-    expect(stampSeededExtensionTaskProviders(['gone', 'fake'], FIXTURE)).toEqual(['gone', 'fake'])
+    expect(
+      stampSeededExtensionTaskProviders({ seededExtensionTaskProviders: ['gone', 'fake'] }, FIXTURE)
+    ).toEqual(['gone', 'fake'])
     expect(stampSeededExtensionTaskProviders(undefined, FIXTURE)).toEqual(['fake'])
   })
 })

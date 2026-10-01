@@ -119,11 +119,11 @@ export function isStoredTaskProviderIdentity(provider: TaskProvider, identity: u
 }
 
 const TASK_PROVIDER_IDENTITY_FIELDS: Record<TaskProvider, readonly string[]> = {
+  ...extensionTaskProviderDefaults(() => []), // fork-seam: task-provider-registry
   github: ['owner', 'repo', 'host'],
   gitlab: ['projectId', 'namespace', 'project', 'webUrl'],
   linear: ['workspaceId', 'workspaceName', 'teamId', 'teamKey'],
-  jira: ['siteId', 'siteUrl', 'projectKey'],
-  ...extensionTaskProviderDefaults(() => []) // fork-seam: task-provider-registry
+  jira: ['siteId', 'siteUrl', 'projectKey']
 }
 
 export function areTaskProviderIdentitiesEqual(

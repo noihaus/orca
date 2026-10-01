@@ -11,7 +11,7 @@ import { normalizeTerminalCursorStyleDefault } from '../../../shared/terminal-cu
 import { normalizeDesktopTerminalScrollbackRows } from '../../../shared/terminal-scrollback-policy'
 import { normalizeTerminalMinimumContrastRatio } from '../../../shared/terminal-minimum-contrast-settings'
 import { normalizeTaskProviderSettings } from '../../../shared/task-providers'
-import { stampSeededExtensionTaskProviders } from '../../../shared/extensions/extension-task-sources' // fork-seam: extension-provider-seeding
+import { stampSeededExtensionTaskProviders as stampExtensionSeeds } from '../../../shared/extensions/extension-task-sources' // fork-seam: extension-provider-seeding
 import { normalizeOpenInApplications } from '../../../shared/open-in-applications'
 import { normalizeTerminalShortcutPolicy } from '../../../shared/keybindings'
 import { normalizeSourceControlGroupOrder } from '../../../shared/source-control-group-order'
@@ -157,9 +157,7 @@ export function updateSettings(
     sanitizedUpdates.visibleTaskProviders = taskProviderSettings.visibleTaskProviders
     if ('visibleTaskProviders' in updates) {
       sanitizedUpdates.visibleTaskProvidersDefaultedForJira = true
-      sanitizedUpdates.seededExtensionTaskProviders = stampSeededExtensionTaskProviders(
-        operations.state.settings.seededExtensionTaskProviders
-      ) // fork-seam: extension-provider-seeding
+      sanitizedUpdates.seededExtensionTaskProviders = stampExtensionSeeds(operations.state.settings) // fork-seam: extension-provider-seeding
     }
   }
   if ('autoRenameBranchFromWork' in updates || 'autoRenameBranchFromWorkDefaultedOn' in updates) {

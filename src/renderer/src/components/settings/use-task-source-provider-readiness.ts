@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { TaskProvider } from '../../../../shared/task-providers'
-import { extensionTaskProviderDefaults } from '../../../../shared/extensions/extension-task-sources' // fork-seam: task-provider-registry
+import { extensionTaskProviderDefaults as extensionDefaults } from '../../../../shared/extensions/extension-task-sources' // fork-seam: task-provider-registry
 import {
   GLOBAL_AGENT_SKILL_SOURCE_KINDS,
   useInstalledAgentSkillNames
@@ -68,6 +68,7 @@ export function useTaskSourceProviderReadiness(
   return useMemo(() => {
     const visible = new Set(visibleProvidersKey.split(',') as TaskProvider[])
     return {
+      ...extensionDefaults((p) => ({ connected: true, checking: false, visible: visible.has(p) })), // fork-seam: task-provider-registry
       github: {
         connected: githubConnected,
         checking: reviewChecking,
@@ -92,13 +93,7 @@ export function useTaskSourceProviderReadiness(
         connected: jiraConnected,
         checking: jiraChecking,
         visible: visible.has('jira')
-      },
-      // Why: extensions own their setup UI, so this pane never flags them as stalled.
-      ...extensionTaskProviderDefaults((id) => ({
-        connected: true,
-        checking: false,
-        visible: visible.has(id)
-      })) // fork-seam: task-provider-registry
+      }
     }
   }, [
     githubConnected,
