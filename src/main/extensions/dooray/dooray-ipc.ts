@@ -1,4 +1,3 @@
-import { ipcMain } from 'electron'
 import { getDoorayStatus, testDoorayConnection } from './client'
 import * as api from './dooray-api'
 import {
@@ -21,52 +20,61 @@ import { registerTaskBranchIpcHandlers } from './task-branch/task-branch-ipc'
 
 // Invalid args never throw: reads get a benign default, mutations an {ok:false} result.
 function handleRead<T, R>(
+  handle: MainExtensionIpcContext['handle'],
   channel: string,
   check: (input: unknown) => Checked<T>,
   run: (args: T) => Promise<R>,
   fallback: R
 ): void {
-  ipcMain.handle(channel, async (_event, input: unknown) => {
+  handle(channel, async (_event, input: unknown) => {
     const checked = check(input)
     return checked.ok ? run(checked.value) : fallback
   })
 }
 
 function handleMutation<T, R>(
+  handle: MainExtensionIpcContext['handle'],
   channel: string,
   check: (input: unknown) => Checked<T>,
   run: (args: T) => Promise<R>
 ): void {
-  ipcMain.handle(channel, async (_event, input: unknown) => {
+  handle(channel, async (_event, input: unknown) => {
     const checked = check(input)
     return checked.ok ? run(checked.value) : { ok: false, error: checked.error }
   })
 }
 
 export function registerDoorayIpcHandlers(context: MainExtensionIpcContext): void {
-  handleMutation('dooray:connect', checkConnectArgs, connectDoorayAccount)
-  ipcMain.handle('dooray:disconnect', async () => {
+  const { handle } = context
+  handleMutation(handle, 'dooray:connect', checkConnectArgs, connectDoorayAccount)
+  handle('dooray:disconnect', async () => {
     disconnectDoorayAccount()
   })
-  ipcMain.handle('dooray:status', async () => getDoorayStatus())
-  ipcMain.handle('dooray:testConnection', async () => testDoorayConnection())
-  ipcMain.handle('dooray:listProjects', async () => api.listDoorayProjects())
-  handleRead('dooray:listIssues', checkListIssuesArgs, api.listDoorayIssues, {
+  handle('dooray:status', async () => getDoorayStatus())
+  handle('dooray:testConnection', async () => testDoorayConnection())
+  handle('dooray:listProjects', async () => api.listDoorayProjects())
+  handleRead(handle, 'dooray:listIssues', checkListIssuesArgs, api.listDoorayIssues, {
     totalCount: 0,
     issues: []
   })
-  handleRead('dooray:getIssue', checkIssueRef, api.getDoorayIssue, null)
-  handleRead('dooray:getIssueByNumber', checkIssueNumberRef, api.getDoorayIssueByNumber, null)
-  handleMutation('dooray:createIssue', checkCreateIssueArgs, api.createDoorayIssue)
-  handleMutation('dooray:uploadIssueFile', checkUploadArgs, api.uploadDoorayIssueFile)
-  handleRead('dooray:listTags', checkProjectId, api.listDoorayTags, [])
-  handleRead('dooray:listMilestones', checkProjectId, api.listDoorayMilestones, [])
-  handleRead('dooray:listTemplates', checkProjectId, api.listDoorayTemplates, [])
-  handleRead('dooray:getTemplate', checkTemplateRef, api.getDoorayTemplate, null)
-  handleRead('dooray:searchMembers', checkMemberSearch, api.searchDoorayMembers, [])
-  handleRead('dooray:issueComments', checkIssueRef, api.getDoorayIssueComments, [])
-  handleMutation('dooray:addIssueComment', checkCommentArgs, api.addDoorayIssueComment)
-  handleRead('dooray:listWorkflows', checkProjectId, api.listDoorayWorkflows, [])
-  handleMutation('dooray:setWorkflow', checkSetWorkflowArgs, api.setDoorayWorkflow)
-  registerTaskBranchIpcHandlers(context.store)
+  handleRead(handle, 'dooray:getIssue', checkIssueRef, api.getDoorayIssue, null)
+  handleRead(
+    handle,
+    'dooray:getIssueByNumber',
+    checkIssueNumberRef,
+    api.getDoorayIssueByNumber,
+    null
+  )
+  handleMutation(handle, 'dooray:createIssue', checkCreateIssueArgs, api.createDoorayIssue)
+  handleMutation(handle, 'dooray:uploadIssueFile', checkUploadArgs, api.uploadDoorayIssueFile)
+  handleRead(handle, 'dooray:listTags', checkProjectId, api.listDoorayTags, [])
+  handleRead(handle, 'dooray:listMilestones', checkProjectId, api.listDoorayMilestones, [])
+  handleRead(handle, 'dooray:listTemplates', checkProjectId, api.listDoorayTemplates, [])
+  handleRead(handle, 'dooray:getTemplate', checkTemplateRef, api.getDoorayTemplate, null)
+  handleRead(handle, 'dooray:searchMembers', checkMemberSearch, api.searchDoorayMembers, [])
+  handleRead(handle, 'dooray:issueComments', checkIssueRef, api.getDoorayIssueComments, [])
+  handleMutation(handle, 'dooray:addIssueComment', checkCommentArgs, api.addDoorayIssueComment)
+  handleRead(handle, 'dooray:listWorkflows', checkProjectId, api.listDoorayWorkflows, [])
+  handleMutation(handle, 'dooray:setWorkflow', checkSetWorkflowArgs, api.setDoorayWorkflow)
+  registerTaskBranchIpcHandlers(context)
 }

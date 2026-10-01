@@ -8,7 +8,12 @@ export function registerMainExtensionIpc(
   extensions: readonly MainExtension[] = INSTALLED_MAIN_EXTENSIONS
 ): void {
   for (const extension of extensions) {
-    extension.registerIpcHandlers(context)
+    // Why: a broken extension must not abort the core IPC registration that follows the seam.
+    try {
+      extension.registerIpcHandlers(context)
+    } catch (error) {
+      console.error(`[extensions] "${extension.id}" IPC registration failed`, error)
+    }
   }
 }
 

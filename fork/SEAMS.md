@@ -96,7 +96,8 @@
 
 - 목적: main 프로세스 시작 시 확장의 IPC 핸들러를 등록한다.
 - 확장 등록: `INSTALLED_MAIN_EXTENSIONS`(`src/main/extensions/installed-main-extensions.ts`)에 `registerIpcHandlers`를 가진 `MainExtension` 추가.
-- 계약: `registerIpcHandlers(context: MainExtensionIpcContext)`. `context`는 `{ store }`(main `Store`)이고, 연결 지점 호출은 `registerMainExtensionIpc({ store })`다. 등록된 워크트리 검증처럼 store가 필요한 핸들러(예: 두레이 `taskBranch`)가 이 값을 쓴다.
+- 계약: `registerIpcHandlers(context: MainExtensionIpcContext)`. `context`는 `{ store, handle }`이다. `store`는 main `Store`로, 등록된 워크트리 검증처럼 store가 필요한 핸들러(예: 두레이 `taskBranch`)가 쓴다. `handle(channel, listener)`는 `ipcMain.handle`을 감싼 함수로, 확장 IPC 모듈이 `electron`을 import하지 않게 한다(런타임 electron ratchet 기준선을 건드리지 않기 위해). 연결 지점 호출은 `registerMainExtensionIpc({ store, handle: (channel, fn) => ipcMain.handle(channel, fn) })`이고, `ipcMain`은 이 파일의 기존 `electron` import에 추가한다.
+- 한 확장의 등록이 예외를 던져도 로그만 남기고 다음 확장과 이후 core 등록을 계속한다. upstream `register-core-handlers.test.ts`의 `electron` mock에는 `ipcMain`이 없어서, 이렇게 하지 않으면 그 테스트가 깨진다.
 - 파일:
   - `src/main/ipc/register-core-handlers/register-core-handlers.ts`
 

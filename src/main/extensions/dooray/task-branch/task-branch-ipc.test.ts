@@ -5,16 +5,12 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Store } from '../../../persistence'
 import type { Repo } from '../../../../shared/repo-types'
+import type { MainExtensionIpcContext } from '../../main-extension-contract'
 
 const { handlers } = vi.hoisted(() => ({
   handlers: new Map<string, (event: unknown, input?: unknown) => unknown>()
 }))
 
-vi.mock('electron', () => ({
-  ipcMain: {
-    handle: (channel: string, fn: (e: unknown, i?: unknown) => unknown) => handlers.set(channel, fn)
-  }
-}))
 vi.mock('../../../ipc/registered-worktree-roots-cache', () => ({
   resolveRegisteredWorktreePath: async (path: string) => {
     if (path.includes('unregistered')) {
@@ -37,6 +33,15 @@ function repo(path: string, overrides: Partial<Repo> = {}): Repo {
 function fakeStore(repos: Repo[]): Store {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the handlers only read repos and worktree meta
   return { getRepos: () => repos, getAllWorktreeMeta: () => ({}) } as unknown as Store
+}
+
+function ipcContext(store: Store): MainExtensionIpcContext {
+  return {
+    store,
+    handle: (channel, fn) => {
+      handlers.set(channel, fn)
+    }
+  }
 }
 
 const invoke = (channel: string, input?: unknown) =>
@@ -73,7 +78,7 @@ describe('task-branch IPC', () => {
   })
 
   it('registers the five dooray:taskBranch channels', () => {
-    registerTaskBranchIpcHandlers(fakeStore([]))
+    registerTaskBranchIpcHandlers(ipcContext(fakeStore([])))
     expect([...handlers.keys()].sort()).toEqual([
       'dooray:taskBranch:discard',
       'dooray:taskBranch:inspect',
@@ -84,14 +89,14 @@ describe('task-branch IPC', () => {
   })
 
   it('switches a registered local worktree', async () => {
-    registerTaskBranchIpcHandlers(fakeStore([repo(root)]))
+    registerTaskBranchIpcHandlers(ipcContext(fakeStore([repo(root)])))
     await expect(
       invoke('dooray:taskBranch:switch', { worktreePath: root, branch: 'task/1' })
     ).resolves.toEqual([{ submodulePath: '', status: 'created' }])
   })
 
   it('rejects SSH worktrees', async () => {
-    registerTaskBranchIpcHandlers(fakeStore([repo(root, { connectionId: 'ssh-1' })]))
+    registerTaskBranchIpcHandlers(ipcContext(fakeStore([repo(root, { connectionId: 'ssh-1' })])))
     await expect(
       invoke('dooray:taskBranch:inspect', { worktreePath: root, connectionId: 'ssh-1' })
     ).rejects.toThrow(TASK_BRANCH_LOCAL_ONLY_ERROR)
@@ -101,7 +106,7 @@ describe('task-branch IPC', () => {
   })
 
   it('rejects folder workspaces and unregistered paths', async () => {
-    registerTaskBranchIpcHandlers(fakeStore([repo(root, { kind: 'folder' })]))
+    registerTaskBranchIpcHandlers(ipcContext(fakeStore([repo(root, { kind: 'folder' })])))
     await expect(invoke('dooray:taskBranch:discard', { worktreePath: root })).rejects.toThrow(
       TASK_BRANCH_FOLDER_ERROR
     )
@@ -111,7 +116,7 @@ describe('task-branch IPC', () => {
   })
 
   it('rejects malformed arguments', async () => {
-    registerTaskBranchIpcHandlers(fakeStore([repo(root)]))
+    registerTaskBranchIpcHandlers(ipcContext(fakeStore([repo(root)])))
     await expect(invoke('dooray:taskBranch:stash', { worktreePath: root })).rejects.toThrow(
       /message/
     )

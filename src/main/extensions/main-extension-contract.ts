@@ -8,7 +8,14 @@ export type MainExtensionRuntimeCommands = {
   create(runtime: RuntimeInstalledCommandSurfaces): Record<string, (...args: never[]) => unknown>
 }
 
-export type MainExtensionIpcContext = { store: Store }
+// Listener args are untrusted renderer input; extensions validate them.
+export type MainExtensionIpcListener = (event: unknown, ...args: unknown[]) => unknown
+
+export type MainExtensionIpcContext = {
+  store: Store
+  // Injected so extension IPC modules never import electron (keeps them off the runtime ratchet).
+  handle(channel: string, listener: MainExtensionIpcListener): void
+}
 
 export type MainExtension = {
   id: string

@@ -10,11 +10,6 @@ const { handlers, resetPreflightMock, connectMock, disconnectMock, apiMock, task
     taskBranchMock: vi.fn()
   }))
 
-vi.mock('electron', () => ({
-  ipcMain: {
-    handle: (channel: string, fn: (e: unknown, i?: unknown) => unknown) => handlers.set(channel, fn)
-  }
-}))
 vi.mock('../../preflight/agent-detection', () => ({ _resetPreflightCache: resetPreflightMock }))
 vi.mock('./client', () => ({
   connectDooray: connectMock,
@@ -50,6 +45,12 @@ import { registerDoorayIpcHandlers } from './dooray-ipc'
 
 // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: handlers under test never read the store
 const fakeStore = {} as Store
+const context = {
+  store: fakeStore,
+  handle: (channel: string, fn: (e: unknown, i?: unknown) => unknown) => {
+    handlers.set(channel, fn)
+  }
+}
 
 const invoke = (channel: string, input?: unknown) => handlers.get(channel)?.({}, input)
 
@@ -57,13 +58,13 @@ describe('Dooray IPC handlers', () => {
   beforeEach(() => {
     handlers.clear()
     vi.clearAllMocks()
-    registerDoorayIpcHandlers({ store: fakeStore })
+    registerDoorayIpcHandlers(context)
   })
 
   it('registers all 19 channels', () => {
     expect(handlers.size).toBe(19)
     expect([...handlers.keys()].every((name) => name.startsWith('dooray:'))).toBe(true)
-    expect(taskBranchMock).toHaveBeenCalledWith(fakeStore)
+    expect(taskBranchMock).toHaveBeenCalledWith(context)
   })
 
   it('returns benign defaults for invalid args', async () => {

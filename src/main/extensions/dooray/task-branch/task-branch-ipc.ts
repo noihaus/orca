@@ -1,5 +1,5 @@
-import { ipcMain } from 'electron'
 import type { Store } from '../../../persistence'
+import type { MainExtensionIpcContext } from '../../main-extension-contract'
 import type { GitRuntimeOptions } from '../../../git/git-runtime-options'
 import { resolveRegisteredWorktreePath } from '../../../ipc/registered-worktree-roots-cache'
 import {
@@ -91,16 +91,16 @@ async function resolveTargets(
   return { record, submodulePaths, ...resolved }
 }
 
-export function registerTaskBranchIpcHandlers(store: Store): void {
-  ipcMain.handle('dooray:taskBranch:listSubmodules', async (_event, raw: unknown) => {
+export function registerTaskBranchIpcHandlers({ store, handle }: MainExtensionIpcContext): void {
+  handle('dooray:taskBranch:listSubmodules', async (_event, raw: unknown) => {
     const { worktreePath, options } = await resolveLocalTaskBranchWorktree(store, asRecord(raw))
     return listTaskBranchSubmodules(worktreePath, options)
   })
-  ipcMain.handle('dooray:taskBranch:inspect', async (_event, raw: unknown) => {
+  handle('dooray:taskBranch:inspect', async (_event, raw: unknown) => {
     const { worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
     return inspectTaskBranchTargets({ worktreePath, submodulePaths, options })
   })
-  ipcMain.handle('dooray:taskBranch:stash', async (_event, raw: unknown) => {
+  handle('dooray:taskBranch:stash', async (_event, raw: unknown) => {
     const { record, worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
     const message = requireString(record, 'message')
     await stashTaskBranchTargets({
@@ -111,7 +111,7 @@ export function registerTaskBranchIpcHandlers(store: Store): void {
       ...onlyTargetsOf(record)
     })
   })
-  ipcMain.handle('dooray:taskBranch:discard', async (_event, raw: unknown) => {
+  handle('dooray:taskBranch:discard', async (_event, raw: unknown) => {
     const { record, worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
     await discardTaskBranchTargets({
       worktreePath,
@@ -120,7 +120,7 @@ export function registerTaskBranchIpcHandlers(store: Store): void {
       ...onlyTargetsOf(record)
     })
   })
-  ipcMain.handle('dooray:taskBranch:switch', async (_event, raw: unknown) => {
+  handle('dooray:taskBranch:switch', async (_event, raw: unknown) => {
     const { record, worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
     const baseRef = optionalString(record, 'baseRef')
     return switchTaskBranchTargets({

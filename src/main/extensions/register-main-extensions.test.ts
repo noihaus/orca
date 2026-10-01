@@ -8,7 +8,7 @@ import {
 } from './register-main-extensions'
 
 // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: registration only forwards the context
-const FAKE_CONTEXT = { store: {} } as MainExtensionIpcContext
+const FAKE_CONTEXT = { store: {}, handle: () => {} } as unknown as MainExtensionIpcContext
 
 function createFakeExtension(registerIpc = vi.fn()): MainExtension {
   return {
@@ -30,6 +30,22 @@ describe('main extension registration', () => {
     const registerIpc = vi.fn()
     registerMainExtensionIpc(FAKE_CONTEXT, [createFakeExtension(registerIpc)])
     expect(registerIpc).toHaveBeenCalledWith(FAKE_CONTEXT)
+  })
+
+  it('keeps registering later extensions when one throws', () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const later = vi.fn()
+    const broken = createFakeExtension(
+      vi.fn(() => {
+        throw new Error('no ipc')
+      })
+    )
+    expect(() =>
+      registerMainExtensionIpc(FAKE_CONTEXT, [broken, createFakeExtension(later)])
+    ).not.toThrow()
+    expect(later).toHaveBeenCalledWith(FAKE_CONTEXT)
+    expect(errorSpy).toHaveBeenCalledOnce()
+    errorSpy.mockRestore()
   })
 
   it('exposes RPC methods that stay callable', () => {

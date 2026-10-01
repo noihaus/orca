@@ -1,4 +1,4 @@
-import { app } from 'electron'
+import { app, ipcMain } from 'electron' // fork-seam: main-ipc
 import { registerAppHandlers } from '../app'
 import { registerCliHandlers } from '../cli'
 import { registerPreflightHandlers } from '../preflight'
@@ -160,7 +160,7 @@ export function registerCoreHandlers(
   registerHostedReviewHandlers(store, stats)
   registerLinearHandlers()
   registerJiraHandlers()
-  registerMainExtensionIpc({ store }) // fork-seam: main-ipc
+  registerMainExtensionIpc({ store, handle: (channel, fn) => ipcMain.handle(channel, fn) }) // fork-seam: main-ipc
   registerBitbucketHandlers()
   registerFeedbackHandlers()
   if (crashReports) {
