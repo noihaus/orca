@@ -10,6 +10,9 @@ import { SidebarTaskNavButton } from '@/components/sidebar/SidebarTaskNavButton'
 import { getTaskSourceContextSummary } from '@/components/task-source-context-summary'
 import { getAutomationTargetAvailability } from '@/components/automations/automation-target-availability'
 import { TasksPane } from '@/components/settings/TasksPane'
+import { useTaskPageSourceAvailability } from '@/components/use-task-page-source-availability'
+import type { TaskPageRuntimeHostsModel } from '@/components/use-task-page-runtime-hosts'
+import { renderHook } from '@testing-library/react'
 import { getAutomationSourceDisplay } from '@/components/automations/automation-source-display'
 import { shouldHideTaskPageListChrome } from '@/components/task-page-list-chrome-visibility'
 import type { GlobalSettings } from '../../../shared/global-settings-types'
@@ -306,5 +309,51 @@ describe('extension task source options', () => {
     ])
     expect(visibleExtensionTaskSourceShortcuts(['fixture'], [])).toEqual([])
     expect(visibleExtensionTaskSourceShortcuts(['github'], [registered])).toEqual([])
+  })
+
+  it('does not inherit repo-host health into the extension summary or notice', () => {
+    const repoHost = {
+      id: 'ssh:box',
+      kind: 'ssh',
+      label: 'box',
+      detail: '',
+      health: 'disconnected'
+    }
+    const modelFor = (taskSource: TaskProvider) => ({
+      settings: {},
+      preflightStatus: null,
+      preflightStatusChecked: true,
+      preflightStatusCurrent: true,
+      linearListInvalidationToken: { scope: 'local', version: 0 },
+      providerRuntimeContextKey: 'local',
+      selectedRepos: [],
+      selectedLinearWorkspaceId: null,
+      selectedLinearWorkspace: null,
+      selectedJiraSiteId: null,
+      selectedJiraSite: null,
+      sourceOptions: getSourceOptions(),
+      taskSource,
+      runtimePreflightStatusByHostId: new Map(),
+      // Worst case: a stale repo context on a disconnected host survives the source switch.
+      taskSourceRepoContexts: [
+        { kind: 'task-source', provider: 'github', projectId: 'p', hostId: 'ssh:box' }
+      ],
+      hostRegistryById: new Map([['ssh:box', repoHost]]),
+      hostLabelById: new Map([['ssh:box', 'box']])
+    })
+    const summaryFor = (taskSource: TaskProvider) =>
+      renderHook(() =>
+        useTaskPageSourceAvailability(
+          // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the availability and summary stages read only the fields built here.
+          modelFor(taskSource) as unknown as TaskPageRuntimeHostsModel
+        )
+      ).result.current
+
+    // Control: the same repo host does surface for GitHub.
+    expect(summaryFor('github').taskSourceAvailabilityNotice).not.toBeNull()
+    const extension = summaryFor(fixtureProvider())
+    expect(extension.taskSourceAvailabilityNotice).toBeNull()
+    expect(extension.taskSourceContextSummary.label).not.toContain('box')
+    expect(extension.taskSourceContextSummary.label).toMatch(/Current account$/)
   })
 })
