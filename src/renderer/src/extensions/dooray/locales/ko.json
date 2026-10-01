@@ -23,7 +23,10 @@
                     "folder_unsupported": "브랜치 전환은 git 워크트리에서만 할 수 있습니다. 이 워크스페이스는 폴더입니다.",
                     "submodules_failed": "{{value0}}(으)로 전환했지만 다음 서브모듈은 전환하지 못했습니다: {{value1}}",
                     "already_switching": "이 워크스페이스는 이미 업무 브랜치로 전환하는 중입니다.",
-                    "rename_failed": "워크스페이스 이름을 업무 제목으로 바꾸지 못했습니다: {{value0}}"
+                    "rename_failed": "워크스페이스 이름을 업무 제목으로 바꾸지 못했습니다: {{value0}}",
+                    "parent_target": "워크스페이스 루트",
+                    "base_fallback_head": "{{value1}}을(를) 찾지 못해 현재 HEAD에서 {{value0}}을(를) 만들었습니다: {{value2}}",
+                    "base_fetch_failed": "가져오기에 실패해 로컬 {{value1}}에서 {{value0}}을(를) 만들었습니다: {{value2}}"
                   }
                 }
               }

@@ -20,9 +20,14 @@ export type TaskBranchSwitchArgs = TaskBranchTargetArgs & {
 }
 
 export type TaskBranchSwitchResult =
+  | { submodulePath: string; status: 'already-on' | 'switched' | 'skipped-missing' }
   | {
       submodulePath: string
-      status: 'already-on' | 'switched' | 'created' | 'skipped-missing'
+      status: 'created'
+      // Local IPC only: the base fetch failed, so the branch started from the local base ref.
+      fetchFailed?: true
+      // The base ref did not resolve in this target, so the branch started from its current HEAD.
+      baseFallback?: 'head'
     }
   | { submodulePath: string; status: 'failed'; error: string }
 

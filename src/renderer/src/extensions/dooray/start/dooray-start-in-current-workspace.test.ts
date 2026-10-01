@@ -304,6 +304,24 @@ describe('startDoorayTaskInCurrentWorkspace', () => {
     expect(updateWorktreeMeta).toHaveBeenCalled()
   })
 
+  it('step 8: warns, naming the targets, when a branch did not start from the chosen base', async () => {
+    seed()
+    taskBranch.switch.mockResolvedValue([
+      { submodulePath: '', status: 'created', fetchFailed: true },
+      { submodulePath: 'libs/a', status: 'created', baseFallback: 'head' }
+    ])
+    await startDoorayTaskInCurrentWorkspace(issue, {
+      promptBaseRef: async () => ({ baseRef: 'origin/main', fetchBase: true })
+    })
+    expect(mocks.toast.warning).toHaveBeenCalledWith(
+      `Created ${BRANCH} from current HEAD because origin/main was not found: libs/a`
+    )
+    expect(mocks.toast.warning).toHaveBeenCalledWith(
+      `Fetch failed; created ${BRANCH} from local origin/main: workspace root`
+    )
+    expect(mocks.toast.success).not.toHaveBeenCalled()
+  })
+
   it('a parent switch failure surfaces the error and does not rename', async () => {
     seed()
     taskBranch.switch.mockRejectedValue(new Error('Could not switch the workspace'))

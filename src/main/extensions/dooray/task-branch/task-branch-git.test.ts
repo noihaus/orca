@@ -92,7 +92,8 @@ describe('task-branch git operations (real git)', () => {
     })
     expect(results).toEqual([
       { submodulePath: '', status: 'created' },
-      { submodulePath: 'libs/sub', status: 'created' },
+      // The submodule has no "base": it starts from its HEAD, and says so.
+      { submodulePath: 'libs/sub', status: 'created', baseFallback: 'head' },
       { submodulePath: 'libs/missing', status: 'skipped-missing' }
     ])
     expect(currentBranch(fixture.parent)).toBe('task/123')
@@ -135,9 +136,37 @@ describe('task-branch git operations (real git)', () => {
       baseRef: 'origin/release',
       fetchBase: true
     })
-    // The submodule has no "origin/release": its fetch fails silently and it starts from HEAD.
-    expect(results.map((result) => result.status)).toEqual(['created', 'created'])
+    // The submodule's origin has no "release": the fetch fails and it starts from HEAD, and says so.
+    expect(results).toEqual([
+      { submodulePath: '', status: 'created' },
+      { submodulePath: 'libs/sub', status: 'created', fetchFailed: true, baseFallback: 'head' }
+    ])
     expect(git(fixture.parent, 'rev-parse', 'HEAD')).toBe(git(scratch, 'rev-parse', 'HEAD'))
+  })
+
+  it('reports a failed fetch that fell back to the local base ref', async () => {
+    git(fixture.parent, 'remote', 'add', 'origin', join(fixture.root, 'missing-remote.git'))
+    git(fixture.parent, 'update-ref', 'refs/remotes/origin/release', 'base')
+
+    const results = await switchTaskBranchTargets({
+      worktreePath: fixture.parent,
+      branch: 'task/offline',
+      baseRef: 'origin/release',
+      fetchBase: true
+    })
+    expect(results).toEqual([{ submodulePath: '', status: 'created', fetchFailed: true }])
+    expect(git(fixture.parent, 'rev-parse', 'HEAD')).toBe(git(fixture.parent, 'rev-parse', 'base'))
+
+    git(fixture.parent, 'checkout', '--quiet', 'main')
+    const missing = await switchTaskBranchTargets({
+      worktreePath: fixture.parent,
+      branch: 'task/offline-missing',
+      baseRef: 'origin/nowhere',
+      fetchBase: true
+    })
+    expect(missing).toEqual([
+      { submodulePath: '', status: 'created', fetchFailed: true, baseFallback: 'head' }
+    ])
   })
 
   it('never fetches a refspec-like base branch or an unconfigured remote', async () => {
@@ -156,7 +185,7 @@ describe('task-branch git operations (real git)', () => {
         baseRef,
         fetchBase: true
       })
-      expect(results).toEqual([{ submodulePath: '', status: 'created' }])
+      expect(results).toEqual([{ submodulePath: '', status: 'created', baseFallback: 'head' }])
       git(fixture.parent, 'checkout', '--quiet', 'main')
     }
     expect(git(fixture.parent, 'rev-parse', 'refs/heads/main')).toBe(mainBefore)

@@ -65,8 +65,59 @@ function finishOnWorktree(worktreeId: string, subject: string): void {
   activateAndRevealWorktree(worktreeId)
 }
 
+function targetLabel(submodulePath: string): string {
+  return submodulePath === ''
+    ? translate(
+        'auto.ext.dooray.lib.dooray.start.in.current.workspace.parent_target',
+        'workspace root'
+      )
+    : submodulePath
+}
+
+// Created branches that did not start from the chosen base must not read as a plain success.
+function reportBaseFallbacks(
+  branch: string,
+  baseRef: string | null,
+  results: readonly TaskBranchSwitchResult[]
+): boolean {
+  if (!baseRef) {
+    return false
+  }
+  const created = results.flatMap((result) => (result.status === 'created' ? [result] : []))
+  const fromHead = created.filter((result) => result.baseFallback === 'head')
+  const fromLocal = created.filter((result) => result.fetchFailed && !result.baseFallback)
+  if (fromHead.length > 0) {
+    toast.warning(
+      translate(
+        'auto.ext.dooray.lib.dooray.start.in.current.workspace.base_fallback_head',
+        'Created {{value0}} from current HEAD because {{value1}} was not found: {{value2}}',
+        {
+          value0: branch,
+          value1: baseRef,
+          value2: fromHead.map((result) => targetLabel(result.submodulePath)).join(', ')
+        }
+      )
+    )
+  }
+  if (fromLocal.length > 0) {
+    toast.warning(
+      translate(
+        'auto.ext.dooray.lib.dooray.start.in.current.workspace.base_fetch_failed',
+        'Fetch failed; created {{value0}} from local {{value1}}: {{value2}}',
+        {
+          value0: branch,
+          value1: baseRef,
+          value2: fromLocal.map((result) => targetLabel(result.submodulePath)).join(', ')
+        }
+      )
+    )
+  }
+  return fromHead.length > 0 || fromLocal.length > 0
+}
+
 function reportSwitchResults(
   branch: string,
+  baseRef: string | null,
   results: readonly TaskBranchSwitchResult[],
   withSubmodules: boolean
 ): void {
@@ -76,6 +127,7 @@ function reportSwitchResults(
   const skipped = results.flatMap((result) =>
     result.status === 'skipped-missing' ? [result.submodulePath] : []
   )
+  const fellBack = reportBaseFallbacks(branch, baseRef, results)
   if (failed.length > 0) {
     toast.warning(
       translate(
@@ -94,7 +146,7 @@ function reportSwitchResults(
       )
     )
   }
-  if (failed.length > 0 || skipped.length > 0) {
+  if (failed.length > 0 || skipped.length > 0 || fellBack) {
     return
   }
   toast.success(
@@ -242,7 +294,7 @@ async function switchToTaskBranch(
       ...(baseRef && fetchBase ? { fetchBase: true } : {})
     })
     finishOnWorktree(worktree.id, issue.subject)
-    reportSwitchResults(branch, results, submodulePaths.length > 0)
+    reportSwitchResults(branch, baseRef, results, submodulePaths.length > 0)
   } catch (error) {
     toast.error(
       error instanceof Error

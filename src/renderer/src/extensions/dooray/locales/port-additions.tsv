@@ -18,3 +18,6 @@ auto.components.useDoorayStartActions.discardConfirmDescriptionKeepsUntracked	Th
 auto.components.settings.RepositoryDoorayStartSection.saveUnsupported	This host's Orca version can't save this setting. Update Orca on the host and try again.	이 호스트의 Orca 버전은 이 설정을 저장할 수 없습니다. 호스트의 Orca를 업데이트한 뒤 다시 시도하세요.
 auto.lib.dooray.start.in.current.workspace.already_switching	This workspace is already switching to a task branch.	이 워크스페이스는 이미 업무 브랜치로 전환하는 중입니다.
 auto.lib.dooray.start.in.current.workspace.rename_failed	Couldn't rename the workspace to the task title: {{value0}}	워크스페이스 이름을 업무 제목으로 바꾸지 못했습니다: {{value0}}
+auto.lib.dooray.start.in.current.workspace.parent_target	workspace root	워크스페이스 루트
+auto.lib.dooray.start.in.current.workspace.base_fallback_head	Created {{value0}} from current HEAD because {{value1}} was not found: {{value2}}	{{value1}}을(를) 찾지 못해 현재 HEAD에서 {{value0}}을(를) 만들었습니다: {{value2}}
+auto.lib.dooray.start.in.current.workspace.base_fetch_failed	Fetch failed; created {{value0}} from local {{value1}}: {{value2}}	가져오기에 실패해 로컬 {{value1}}에서 {{value0}}을(를) 만들었습니다: {{value2}}

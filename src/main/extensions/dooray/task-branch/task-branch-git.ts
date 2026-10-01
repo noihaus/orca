@@ -6,15 +6,13 @@ import type {
 } from '../../../../shared/extensions/dooray/task-branch-types'
 import { assertValidBranchName, listLocalBranches } from '../../../git/checkout'
 import type { GitRuntimeOptions } from '../../../git/git-runtime-options'
-import { gitOptionsForWorktree } from '../../../git/git-runtime-options'
-import { gitExecFileAsync } from '../../../git/runner'
 import { runWithGitReadCacheInvalidation } from '../../../git/source-control/git-read-cache-invalidation'
 import {
   listSubmodulePaths,
   resolveSubmoduleWorktreePath
 } from '../../../git/source-control/submodule-paths'
-
-type TaskBranchTarget = { submodulePath: string; absolutePath: string }
+import { fetchBaseRef, resolvesToCommit } from './task-branch-base-ref'
+import { runTargetGit, type TaskBranchTarget } from './task-branch-target-git'
 
 type TargetsInput = {
   worktreePath: string
@@ -29,20 +27,6 @@ const PARENT_TARGET = ''
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
-}
-
-// Why: a user's submodule.recurse=true would make reset/checkout/fetch reach into unselected submodules.
-const NO_SUBMODULE_RECURSION = ['-c', 'submodule.recurse=false']
-
-function runTargetGit(
-  target: TaskBranchTarget,
-  args: string[],
-  options: GitRuntimeOptions = {}
-): Promise<{ stdout: string; stderr: string }> {
-  return gitExecFileAsync(
-    [...NO_SUBMODULE_RECURSION, ...args],
-    gitOptionsForWorktree(target.absolutePath, options)
-  )
 }
 
 function isSafeRelativeSubmodulePath(value: string): boolean {
@@ -193,105 +177,37 @@ export async function discardTaskBranchTargets(input: ScopedTargetsInput): Promi
   })
 }
 
-// Rejects refspec syntax (`:` `+`), globs, revision suffixes and `@{` so the name stays a plain branch.
-const UNSAFE_FETCH_BRANCH = /[\s:+*?^~[\\]|\.\.|@\{|^[-/]|\/$|\.lock$/
-
-async function isFetchableBaseBranch(
-  target: TaskBranchTarget,
-  branch: string,
-  options: GitRuntimeOptions
-): Promise<boolean> {
-  if (branch.length === 0 || UNSAFE_FETCH_BRANCH.test(branch)) {
-    return false
-  }
-  try {
-    await runTargetGit(target, ['check-ref-format', '--branch', branch], options)
-    return true
-  } catch {
-    return false
-  }
-}
-
-async function listRemotes(
-  target: TaskBranchTarget,
-  options: GitRuntimeOptions
-): Promise<string[]> {
-  try {
-    const { stdout } = await runTargetGit(target, ['remote'], options)
-    return stdout
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-  } catch {
-    return []
-  }
-}
-
-async function fetchBaseRef(
-  target: TaskBranchTarget,
-  baseRef: string,
-  options: GitRuntimeOptions
-): Promise<void> {
-  const slash = baseRef.indexOf('/')
-  if (slash <= 0) {
-    return
-  }
-  const remote = baseRef.slice(0, slash)
-  const branch = baseRef.slice(slash + 1)
-  // Why: only configured remotes, so a "host:repo" baseRef can never contact an arbitrary host.
-  if (remote.startsWith('-') || !(await listRemotes(target, options)).includes(remote)) {
-    return
-  }
-  if (!(await isFetchableBaseBranch(target, branch, options))) {
-    return
-  }
-  try {
-    // Explicit refspec: the destination is always this remote's tracking namespace, never a local branch.
-    await runTargetGit(
-      target,
-      ['fetch', remote, `+refs/heads/${branch}:refs/remotes/${remote}/${branch}`],
-      options
-    )
-  } catch {
-    // Best effort: offline or a target without this branch falls back to local refs.
-  }
-}
-
-async function resolvesToCommit(
-  target: TaskBranchTarget,
-  ref: string,
-  options: GitRuntimeOptions
-): Promise<boolean> {
-  try {
-    await runTargetGit(target, ['rev-parse', '--verify', '--quiet', `${ref}^{commit}`], options)
-    return true
-  } catch {
-    return false
-  }
-}
-
 type SwitchInput = TargetsInput & { branch: string; baseRef?: string; fetchBase?: boolean }
 
 async function switchTarget(
   target: TaskBranchTarget,
   input: SwitchInput
-): Promise<'already-on' | 'switched' | 'created'> {
+): Promise<TaskBranchSwitchResult> {
+  const submodulePath = target.submodulePath
   const options = input.options ?? {}
   const { current, branches } = await listLocalBranches(target.absolutePath, options)
   if (current === input.branch) {
-    return 'already-on'
+    return { submodulePath, status: 'already-on' }
   }
   if (branches.includes(input.branch)) {
     await runTargetGit(target, ['checkout', input.branch, '--'], options)
-    return 'switched'
+    return { submodulePath, status: 'switched' }
   }
-  if (input.baseRef && input.fetchBase) {
-    await fetchBaseRef(target, input.baseRef, options)
-  }
-  const startPoint =
-    input.baseRef && (await resolvesToCommit(target, input.baseRef, options)) ? [input.baseRef] : []
+  const { fetchFailed } =
+    input.baseRef && input.fetchBase
+      ? await fetchBaseRef(target, input.baseRef, options)
+      : { fetchFailed: false }
+  const baseResolves = input.baseRef
+    ? await resolvesToCommit(target, input.baseRef, options)
+    : false
+  const startPoint = input.baseRef && baseResolves ? [input.baseRef] : []
   await runTargetGit(target, ['checkout', '-b', input.branch, ...startPoint, '--'], options)
-  return 'created'
+  return {
+    submodulePath,
+    status: 'created',
+    ...(fetchFailed ? { fetchFailed: true as const } : {}),
+    ...(input.baseRef && !baseResolves ? { baseFallback: 'head' as const } : {})
+  }
 }
 
 /**
@@ -318,8 +234,7 @@ export async function switchTaskBranchTargets(
         continue
       }
       try {
-        const status = await switchTarget(target, input)
-        results.push({ submodulePath: target.submodulePath, status })
+        results.push(await switchTarget(target, input))
       } catch (error) {
         if (target.submodulePath === PARENT_TARGET) {
           throw new Error(
