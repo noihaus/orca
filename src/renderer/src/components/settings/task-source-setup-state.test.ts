@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { TaskProvider } from '../../../../shared/task-providers'
+import { extensionTaskProviderDefaults } from '../../../../shared/extensions/extension-task-sources' // fork-seam: task-page-source
 import {
   TASK_PROVIDER_SETUP_STATUS_TONE,
   getAutoExpandedTaskProvider,
@@ -18,6 +19,7 @@ function buildReadiness(
   overrides: Partial<Record<TaskProvider, Partial<TaskProviderReadiness>>> = {}
 ): Record<TaskProvider, TaskProviderReadiness> {
   const base: Record<TaskProvider, TaskProviderReadiness> = {
+    ...extensionTaskProviderDefaults(() => ({ connected: true, checking: false, visible: true })), // fork-seam: task-page-source
     github: { connected: true, checking: false, visible: true },
     gitlab: { connected: true, checking: false, visible: true },
     linear: {

@@ -3,7 +3,7 @@ import { getExecutionHostLabel } from '../../../shared/execution-host'
 import type { ExecutionHostScope } from '../../../shared/execution-host'
 import type { ExecutionHostHealth } from '../../../shared/execution-host-registry'
 import type { SshConnectionStatus } from '../../../shared/ssh-types'
-import type { TaskProvider } from '../../../shared/task-providers'
+import { isExtensionTaskProvider, type TaskProvider } from '../../../shared/task-providers' // fork-seam: task-page-source
 import type { TaskProviderIdentity, TaskSourceContext } from '../../../shared/task-source-context'
 
 export type TaskSourceContextSummary = {
@@ -46,7 +46,11 @@ export function getTaskSourceContextSummary(args: {
   linearWorkspaceName?: string | null
   jiraSiteName?: string | null
 }): TaskSourceContextSummary {
-  switch (args.provider) {
+  switch (isExtensionTaskProvider(args.provider) ? 'extension' : args.provider) {
+    // fork-seam: task-page-source
+    // Why: extension sources are account-backed with no account label, which the Linear path renders.
+    case 'extension':
+      return getTaskSourceContextSummary({ ...args, provider: 'linear', linearWorkspaceName: null })
     case 'github':
     case 'gitlab':
       return getRepoBackedTaskSourceSummary(args)

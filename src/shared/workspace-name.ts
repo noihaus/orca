@@ -3,6 +3,7 @@ import {
   foldWorkspaceNameWhitespaceToHyphen
 } from './workspace-name-text-scanner'
 import { escapeRegex } from './string-utils'
+import type { TaskProvider } from './task-providers' // fork-seam: task-page-source
 
 function normalizeApostrophes(input: string): string {
   return input.replace(/[‘’]/g, "'")
@@ -47,7 +48,7 @@ export type WorkspaceIntentWorkItem = {
   type: 'issue' | 'pr' | 'mr'
   number: number
   title: string
-  provider?: 'github' | 'gitlab' | 'linear' | 'jira'
+  provider?: TaskProvider // fork-seam: task-page-source
   linearIdentifier?: string
   jiraIdentifier?: string
 }

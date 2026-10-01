@@ -1,5 +1,6 @@
 import { getExecutionHostLabel } from '../../../../shared/execution-host'
 import type { TaskSourceContext } from '../../../../shared/task-source-context'
+import * as extensionSources from '@/extensions/extension-automation-sources' // fork-seam: task-page-source
 
 export type AutomationSourceDisplay = {
   label: string
@@ -32,6 +33,10 @@ export function getAutomationSourceDisplay(
 }
 
 function getProviderLabel(provider: TaskSourceContext['provider']): string {
+  if (extensionSources.isExtensionTaskProvider(provider)) {
+    // fork-seam: task-page-source
+    return extensionSources.extensionTaskSourceLabel(provider)
+  }
   switch (provider) {
     case 'github':
       return 'GitHub'

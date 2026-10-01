@@ -23,3 +23,11 @@ export function findExtensionTaskSource(
     ) ?? null
   )
 }
+
+// Falls back to the id so a manifest entry without a renderer task source still reads sensibly.
+export function extensionTaskSourceLabel(
+  providerId: string,
+  extensions: readonly RendererExtension[] = INSTALLED_RENDERER_EXTENSIONS
+): string {
+  return findExtensionTaskSource(providerId, extensions)?.label() ?? providerId
+}

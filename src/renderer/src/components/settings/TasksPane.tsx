@@ -28,6 +28,12 @@ import { getTasksPaneSearchKeywords } from './tasks-search'
 import { useIntegrationProviderStatusRefresh } from './use-integration-provider-status-refresh'
 import { useTaskSourceProviderReadiness } from './use-task-source-provider-readiness'
 import { translate } from '@/i18n/i18n'
+import {
+  extensionTaskProviderDefaults,
+  isExtensionTaskProvider
+} from '../../../../shared/extensions/extension-task-sources' // fork-seam: task-page-source
+import { extensionTaskProviderSettingsMeta } from '@/extensions/extension-task-source-options'
+import { ExtensionTaskSourceSetupSteps } from '@/extensions/ExtensionTaskSourcePanel'
 
 type TasksPaneProps = {
   settings: GlobalSettings
@@ -42,6 +48,7 @@ const PROVIDER_META: Record<
     Icon: (props: { className?: string }) => React.JSX.Element
   }
 > = {
+  ...extensionTaskProviderDefaults(extensionTaskProviderSettingsMeta), // fork-seam: task-page-source
   github: {
     get label() {
       return translate('auto.components.settings.TasksPane.e14063e727', 'GitHub')
@@ -208,7 +215,14 @@ export function TasksPane({ settings, updateSettings }: TasksPaneProps): React.J
                 defaultExpanded={autoExpandedProvider === provider}
                 onToggleVisible={() => toggleProvider(provider)}
               >
-                {provider === 'linear' ? (
+                {isExtensionTaskProvider(provider) ? ( // fork-seam: task-page-source
+                  <ExtensionTaskSourceSetupSteps
+                    providerLabel={meta.label}
+                    visible={visible}
+                    canHide={canHide}
+                    onToggleVisible={() => toggleProvider(provider)}
+                  />
+                ) : provider === 'linear' ? (
                   <TaskSourceLinearSetup
                     connected={readiness.connected}
                     checking={readiness.checking}

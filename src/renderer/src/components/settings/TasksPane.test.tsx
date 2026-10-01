@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
 import type { TaskProvider } from '../../../../shared/task-providers'
+import { extensionTaskProviderDefaults } from '../../../../shared/extensions/extension-task-sources' // fork-seam: task-page-source
 import type { TaskProviderReadiness } from './task-source-setup-state'
 import { TasksPane } from './TasksPane'
 
@@ -127,6 +128,7 @@ describe('TasksPane', () => {
     mocks.openSettingsPage.mockClear()
     mocks.openSettingsTarget.mockClear()
     mocks.readiness = {
+      ...extensionTaskProviderDefaults(() => ({ connected: true, checking: false, visible: true })), // fork-seam: task-page-source
       github: { connected: true, checking: false, visible: true },
       gitlab: { connected: true, checking: false, visible: true },
       // Started-then-stalled: a Linear key is stored but agents have no skill.

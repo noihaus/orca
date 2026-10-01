@@ -6,6 +6,8 @@ import { TaskPageGitHubList } from './github/List'
 import { TaskPageGitLabTodoList } from './gitlab/TodoList'
 import { TaskPageGitLabItemList } from './gitlab/ItemList'
 import { TaskPageJiraContent } from './jira/Content'
+import { ExtensionTaskSourcePanel } from '@/extensions/ExtensionTaskSourcePanel' // fork-seam: task-page-source
+import { isExtensionTaskProvider } from '../../../../shared/extensions/extension-task-sources'
 export function TaskPageContent({
   model
 }: {
@@ -69,6 +71,18 @@ export function TaskPageContent({
     <TaskPageGitLabTodoList model={model} />
   ) : taskSource === 'gitlab' ? (
     <TaskPageGitLabItemList model={model} />
+  ) : isExtensionTaskProvider(taskSource) ? ( // fork-seam: task-page-source
+    <ExtensionTaskSourcePanel
+      providerId={taskSource}
+      startRepo={model.primaryRepo}
+      onStartNewWorkspace={(linkedWorkItem, prefilledName) =>
+        model.openModal('new-workspace-composer', {
+          linkedWorkItem,
+          prefilledName,
+          telemetrySource: 'sidebar'
+        })
+      }
+    />
   ) : (
     <TaskPageJiraContent model={model} />
   )

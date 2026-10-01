@@ -1,4 +1,5 @@
 import * as extensionTaskSources from './extensions/extension-task-sources' // fork-seam: task-provider-registry
+export { isExtensionTaskProvider } from './extensions/extension-task-sources' // fork-seam: task-page-source
 const BUILTIN_TASK_PROVIDERS = ['github', 'gitlab', 'linear', 'jira'] as const
 const TASK_PROVIDER_IDS = extensionTaskSources.withExtensionTaskProviders(BUILTIN_TASK_PROVIDERS)
 export type TaskProvider = (typeof TASK_PROVIDER_IDS)[number]

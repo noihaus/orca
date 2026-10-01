@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 import { useAppStore } from '@/store'
 import { useRepoMap } from '@/store/selectors'
 import { translate } from '@/i18n/i18n'
+import { visibleExtensionTaskSourceShortcuts } from '@/extensions/extension-task-source-options' // fork-seam: task-page-source
 import { isGitRepoKind } from '../../../../shared/repo-kind'
 import { getTaskPresetQuery } from '../../../../shared/task-preset-query'
 import {
@@ -184,6 +185,16 @@ export function SidebarTaskNavButton(): React.JSX.Element | null {
             </span>
           </button>
           <span className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 can-hover:pointer-events-none can-hover:opacity-0 can-hover:group-hover:pointer-events-auto can-hover:group-hover:opacity-100 can-hover:group-focus-within:pointer-events-auto can-hover:group-focus-within:opacity-100">
+            {visibleExtensionTaskSourceShortcuts(visibleTaskProviders).map((source) => (
+              // fork-seam: task-page-source
+              <TaskProviderShortcut
+                key={source.id}
+                label={source.label}
+                onOpen={() => openTaskPage({ taskSource: source.id })}
+              >
+                <source.Icon className="size-3.5" />
+              </TaskProviderShortcut>
+            ))}
             {visibleTaskProviders.includes('github') ? (
               <TaskProviderShortcut
                 label={translate(

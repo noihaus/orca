@@ -11,6 +11,7 @@ import {
 import type { AutomationHostTarget } from './automation-host-client'
 import type { SshConnectionState } from '../../../../shared/ssh-types'
 import type { TaskSourceContext } from '../../../../shared/task-source-context'
+import * as extensionSources from '@/extensions/extension-automation-sources' // fork-seam: task-page-source
 import type { ProjectHostSetup } from '../../../../shared/project-types'
 import type { Repo } from '../../../../shared/repo-types'
 import type { RuntimeEnvironmentStatus } from '../../../../shared/runtime-host-status'
@@ -189,9 +190,9 @@ function getAutomationSourceAvailability(
   if (!sourceContext) {
     return null
   }
-  const availability = sourceHostAvailability?.find(
-    (entry) => entry.hostId === sourceContext.hostId
-  )
+  const availability =
+    extensionSources.extensionSourceHostAvailability(sourceContext) ?? // fork-seam: task-page-source
+    sourceHostAvailability?.find((entry) => entry.hostId === sourceContext.hostId)
   if (!availability) {
     return null
   }
@@ -250,6 +251,10 @@ function getAutomationSourceAvailability(
 }
 
 function getAutomationSourceProviderLabel(provider: TaskSourceContext['provider']): string {
+  if (extensionSources.isExtensionTaskProvider(provider)) {
+    // fork-seam: task-page-source
+    return extensionSources.extensionTaskSourceLabel(provider)
+  }
   switch (provider) {
     case 'github':
       return 'GitHub'

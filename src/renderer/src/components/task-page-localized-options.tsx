@@ -3,6 +3,7 @@ import { Github, Gitlab, LayoutGrid, List } from 'lucide-react'
 
 import { JiraIcon } from '@/components/icons/JiraIcon'
 import { createLocalizedCatalog } from '@/i18n/localized-catalog'
+import { extensionTaskSourceOptions } from '@/extensions/extension-task-source-options' // fork-seam: task-page-source
 import { translate } from '@/i18n/i18n'
 import {
   LINEAR_DISPLAY_PROPERTIES,
@@ -112,6 +113,7 @@ export function getGitHubTaskKindPresets(kind: GitHubTaskKind): TaskQueryPreset[
 }
 
 export const getSourceOptions = createLocalizedCatalog((): SourceOption[] => [
+  ...extensionTaskSourceOptions(), // fork-seam: task-page-source
   {
     id: 'github',
     label: translate('auto.components.TaskPage.acef77f7ca', 'GitHub'),

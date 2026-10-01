@@ -1,4 +1,4 @@
-import type { TaskProvider } from '../../../shared/task-providers'
+import { isExtensionTaskProvider, type TaskProvider } from '../../../shared/task-providers' // fork-seam: task-page-source
 
 export type TaskPageListChromeVisibilityState = {
   taskSource: TaskProvider
@@ -21,6 +21,10 @@ export function shouldHideTaskPageListChrome({
 }: TaskPageListChromeVisibilityState): boolean {
   // Why: provider-specific selection can intentionally survive source switches;
   // stale detail state from another provider must not hide the active list chrome.
+  if (isExtensionTaskProvider(taskSource)) {
+    // fork-seam: task-page-source
+    return false
+  }
   switch (taskSource) {
     case 'github':
       return hasGitHubDetail
