@@ -41,7 +41,11 @@ const api = vi.hoisted(() => ({
   getIssue: vi.fn(),
   issueComments: vi.fn(),
   addIssueComment: vi.fn(),
-  setWorkflow: vi.fn()
+  setWorkflow: vi.fn(),
+  listTags: vi.fn(),
+  listTemplates: vi.fn(),
+  createIssue: vi.fn(),
+  uploadIssueFile: vi.fn()
 }))
 vi.mock('../use-dooray-api', () => ({ useDoorayApi: () => api }))
 
@@ -103,6 +107,8 @@ beforeEach(async () => {
   api.listWorkflows.mockResolvedValue([])
   api.getIssue.mockResolvedValue(null)
   api.issueComments.mockResolvedValue([])
+  api.listTags.mockResolvedValue([])
+  api.listTemplates.mockResolvedValue([])
 })
 afterEach(cleanup)
 
@@ -179,6 +185,29 @@ describe('DoorayTaskSourcePanel', () => {
     await waitFor(() =>
       expect(screen.getAllByTestId('dooray-issue-row')[0].textContent).toContain('Finished')
     )
+  })
+
+  it('creates a task from the toolbar, refreshes, and opens it even outside the filter', async () => {
+    seed(connected)
+    const created = { ...issue(99), subject: 'Brand new', body: 'Created body' }
+    api.createIssue.mockResolvedValue({ ok: true, id: 'p99' })
+    api.getIssue.mockResolvedValue(created)
+    renderPanel()
+    await screen.findByText('Task 1')
+    const listCalls = api.listIssues.mock.calls.length
+
+    fireEvent.click(screen.getByRole('button', { name: 'New task' }))
+    fireEvent.change(await screen.findByPlaceholderText('Task subject'), {
+      target: { value: 'Brand new' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Create task' }))
+
+    expect(await screen.findByText('Created body')).toBeTruthy()
+    expect(api.createIssue).toHaveBeenCalledWith(
+      expect.objectContaining({ projectId: 'proj-a', subject: 'Brand new', toMemberIds: ['u1'] })
+    )
+    expect(api.listIssues.mock.calls.length).toBeGreaterThan(listCalls)
+    expect(screen.queryByPlaceholderText('Task subject')).toBeNull()
   })
 
   it('loads the next page from the load-more button', async () => {

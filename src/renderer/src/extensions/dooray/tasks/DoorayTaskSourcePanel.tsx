@@ -11,6 +11,7 @@ import {
   buildDoorayLinkedWorkItem
 } from '../lib/dooray-linked-work-item'
 import { DoorayIssueWorkspace } from '../issue/DoorayIssueWorkspace'
+import { DoorayNewTaskDialog } from '../new-task/DoorayNewTaskDialog'
 import { useDoorayConnectionStatus } from '../use-dooray-connection-status'
 import { DoorayIssueListPanel } from './DoorayIssueListPanel'
 import { useDoorayIssueList } from './use-dooray-issue-list'
@@ -58,8 +59,20 @@ function ConnectedDoorayTaskPanel({
   const startWorkspace = (issue: DoorayIssue): void =>
     onStartNewWorkspace(buildDoorayLinkedWorkItem(issue), getDoorayIssueWorkspaceSeed(issue))
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null)
+  const [newTaskOpen, setNewTaskOpen] = useState(false)
+  // A just-created issue may fall outside the current filter, so the sheet keeps its own copy.
+  const [createdIssue, setCreatedIssue] = useState<DoorayIssue | null>(null)
   // Derived from the list so workflow patches flow back into the open sheet.
-  const selectedIssue = list.rawIssues.find((issue) => issue.id === selectedIssueId) ?? null
+  const selectedIssue =
+    list.rawIssues.find((issue) => issue.id === selectedIssueId) ??
+    (createdIssue?.id === selectedIssueId ? createdIssue : null)
+  const handleTaskCreated = (issue: DoorayIssue | null): void => {
+    list.refresh()
+    if (issue) {
+      setCreatedIssue(issue)
+      setSelectedIssueId(issue.id)
+    }
+  }
   return (
     <>
       <DoorayIssueListPanel
@@ -70,6 +83,14 @@ function ConnectedDoorayTaskPanel({
         onStartIssue={startWorkspace}
         attachedIssueIds={attachedIssueIds}
         onOpenWorkspace={openWorkspace}
+        onNewTask={() => setNewTaskOpen(true)}
+      />
+      <DoorayNewTaskDialog
+        open={newTaskOpen}
+        onOpenChange={setNewTaskOpen}
+        projects={list.projects}
+        defaultProjectId={list.selectedProjectId}
+        onCreated={handleTaskCreated}
       />
       <DoorayIssueWorkspace
         issue={selectedIssue}

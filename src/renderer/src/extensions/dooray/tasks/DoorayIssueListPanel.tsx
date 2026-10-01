@@ -1,4 +1,4 @@
-import { RefreshCw } from 'lucide-react'
+import { Plus, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -27,6 +27,7 @@ export type DoorayIssueListPanelProps = {
   // Issues with an existing workspace show "open" instead of "start".
   attachedIssueIds?: ReadonlySet<string>
   onOpenWorkspace?: (issue: DoorayIssue) => void
+  onNewTask?: () => void
 }
 
 function filterOptions(): { id: DoorayIssueFilter; label: string }[] {
@@ -77,12 +78,14 @@ export function DoorayIssueListPanel({
   onSelectIssue,
   onStartIssue,
   attachedIssueIds,
-  onOpenWorkspace
+  onOpenWorkspace,
+  onNewTask
 }: DoorayIssueListPanelProps): React.JSX.Element {
   const refreshLabel = translate(
     'auto.ext.dooray.components.TaskPageDooray.refresh',
     'Refresh tasks'
   )
+  const newTaskLabel = translate('auto.ext.dooray.components.TaskPageDooray.new_task', 'New task')
   const anyError = credentialError ?? list.projectsError ?? list.error
   const showEmpty = !list.loading && !list.projectsLoading && list.issues.length === 0 && !anyError
 
@@ -140,6 +143,24 @@ export function DoorayIssueListPanel({
             </button>
           ))}
         </div>
+        {onNewTask ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={onNewTask}
+                disabled={list.projectsLoading || list.projects.length === 0}
+                aria-label={newTaskLabel}
+              >
+                <Plus className="size-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6}>
+              {newTaskLabel}
+            </TooltipContent>
+          </Tooltip>
+        ) : null}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
