@@ -36,15 +36,24 @@ function optionalString(record: Record<string, unknown>, key: string): string | 
   return record[key] === undefined ? undefined : requireString(record, key)
 }
 
-function submodulePathsOf(record: Record<string, unknown>): string[] {
-  const value = record.submodulePaths
+function stringArrayOf(record: Record<string, unknown>, key: string): string[] | undefined {
+  const value = record[key]
   if (value === undefined) {
-    return []
+    return undefined
   }
   if (!Array.isArray(value) || !value.every((entry) => typeof entry === 'string')) {
-    throw new Error('Invalid task branch argument: submodulePaths')
+    throw new Error(`Invalid task branch argument: ${key}`)
   }
   return value
+}
+
+function submodulePathsOf(record: Record<string, unknown>): string[] {
+  return stringArrayOf(record, 'submodulePaths') ?? []
+}
+
+function onlyTargetsOf(record: Record<string, unknown>): { onlyTargets?: string[] } {
+  const onlyTargets = stringArrayOf(record, 'onlyTargets')
+  return onlyTargets ? { onlyTargets } : {}
 }
 
 /** Only registered, local, git-kind worktrees qualify; SSH and folder workspaces are refused. */
@@ -94,11 +103,22 @@ export function registerTaskBranchIpcHandlers(store: Store): void {
   ipcMain.handle('dooray:taskBranch:stash', async (_event, raw: unknown) => {
     const { record, worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
     const message = requireString(record, 'message')
-    await stashTaskBranchTargets({ worktreePath, submodulePaths, options, message })
+    await stashTaskBranchTargets({
+      worktreePath,
+      submodulePaths,
+      options,
+      message,
+      ...onlyTargetsOf(record)
+    })
   })
   ipcMain.handle('dooray:taskBranch:discard', async (_event, raw: unknown) => {
-    const { worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
-    await discardTaskBranchTargets({ worktreePath, submodulePaths, options })
+    const { record, worktreePath, submodulePaths, options } = await resolveTargets(store, raw)
+    await discardTaskBranchTargets({
+      worktreePath,
+      submodulePaths,
+      options,
+      ...onlyTargetsOf(record)
+    })
   })
   ipcMain.handle('dooray:taskBranch:switch', async (_event, raw: unknown) => {
     const { record, worktreePath, submodulePaths, options } = await resolveTargets(store, raw)

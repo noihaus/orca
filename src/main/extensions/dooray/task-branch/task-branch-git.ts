@@ -22,6 +22,9 @@ type TargetsInput = {
   options?: GitRuntimeOptions
 }
 
+// Restricts a destructive op to the targets the user saw ('' = parent); submodulePaths still drive dirty detection.
+type ScopedTargetsInput = TargetsInput & { onlyTargets?: readonly string[] }
+
 const PARENT_TARGET = ''
 
 function errorMessage(error: unknown): string {
@@ -145,10 +148,33 @@ export async function inspectTaskBranchTargets(
   }))
 }
 
+function scopeTargets<T extends { submodulePath: string }>(
+  input: ScopedTargetsInput,
+  targets: T[]
+): T[] {
+  if (input.onlyTargets === undefined) {
+    return targets
+  }
+  const allowed = new Set([PARENT_TARGET, ...(input.submodulePaths ?? [])])
+  for (const target of input.onlyTargets) {
+    if (!allowed.has(target)) {
+      throw new Error(`Invalid target outside the selected submodules: ${target}`)
+    }
+  }
+  const only = new Set(input.onlyTargets)
+  return targets.filter((target) => only.has(target.submodulePath))
+}
+
 export async function stashTaskBranchTargets(
-  input: TargetsInput & { message: string }
+  input: ScopedTargetsInput & { message: string }
 ): Promise<void> {
-  const dirty = await listDirtyTargets(input)
+  const dirty = scopeTargets(
+    input,
+    (await listDirtyTargets(input)).map((entry) => ({
+      ...entry,
+      submodulePath: entry.target.submodulePath
+    }))
+  )
   await runWithGitReadCacheInvalidation(async () => {
     for (const { target } of dirty.toReversed()) {
       // Tracked changes only: untracked files stay put across the switch.
@@ -157,8 +183,8 @@ export async function stashTaskBranchTargets(
   })
 }
 
-export async function discardTaskBranchTargets(input: TargetsInput): Promise<void> {
-  const targets = await checkedOutTargets(input)
+export async function discardTaskBranchTargets(input: ScopedTargetsInput): Promise<void> {
+  const targets = scopeTargets(input, await checkedOutTargets(input))
   await runWithGitReadCacheInvalidation(async () => {
     for (const target of targets.toReversed()) {
       // No `git clean`: untracked files are deliberately kept.

@@ -8,7 +8,10 @@ export type TaskBranchTargetArgs = {
 
 export type TaskBranchDirtyTarget = { submodulePath: string; changeCount: number }
 
-export type TaskBranchStashArgs = TaskBranchTargetArgs & { message: string }
+// Stash/discard only these targets ('' = parent), so nothing the user was not shown is touched.
+export type TaskBranchScopedArgs = TaskBranchTargetArgs & { onlyTargets?: string[] }
+
+export type TaskBranchStashArgs = TaskBranchScopedArgs & { message: string }
 
 export type TaskBranchSwitchArgs = TaskBranchTargetArgs & {
   branch: string
@@ -30,6 +33,6 @@ export type TaskBranchPreloadApi = {
   }) => Promise<string[]>
   inspect: (args: TaskBranchTargetArgs) => Promise<TaskBranchDirtyTarget[]>
   stash: (args: TaskBranchStashArgs) => Promise<void>
-  discard: (args: TaskBranchTargetArgs) => Promise<void>
+  discard: (args: TaskBranchScopedArgs) => Promise<void>
   switch: (args: TaskBranchSwitchArgs) => Promise<TaskBranchSwitchResult[]>
 }

@@ -263,6 +263,22 @@ describe('task-branch git operations (real git)', () => {
     expect(readFileSync(join(fixture.sub, 'untracked.txt'), 'utf8')).toBe('keep\n')
   })
 
+  it('limits stash and discard to onlyTargets', async () => {
+    writeFileSync(join(fixture.parent, 'tracked.txt'), 'parent change\n')
+    writeFileSync(join(fixture.sub, 'tracked.txt'), 'sub change\n')
+    const scope = { worktreePath: fixture.parent, submodulePaths: ['libs/sub'] }
+    await discardTaskBranchTargets({ ...scope, onlyTargets: ['libs/sub'] })
+    expect(readFileSync(join(fixture.sub, 'tracked.txt'), 'utf8')).toBe('base\n')
+    expect(readFileSync(join(fixture.parent, 'tracked.txt'), 'utf8')).toBe('parent change\n')
+    writeFileSync(join(fixture.sub, 'tracked.txt'), 'sub change\n')
+    await stashTaskBranchTargets({ ...scope, onlyTargets: [''], message: 'parent only' })
+    expect(git(fixture.parent, 'stash', 'list')).toContain('parent only')
+    expect(git(fixture.sub, 'stash', 'list')).toBe('')
+    await expect(
+      discardTaskBranchTargets({ worktreePath: fixture.parent, onlyTargets: ['libs/sub'] })
+    ).rejects.toThrow('outside the selected submodules')
+  })
+
   it.each([
     ['../escape'],
     ['libs/../libs/sub'],

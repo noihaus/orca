@@ -9,7 +9,7 @@ import { makeDoorayIssue } from '../issue/dooray-issue-fixture'
 import { startDoorayTaskInCurrentWorkspace } from './dooray-start-in-current-workspace'
 
 const mocks = vi.hoisted(() => ({
-  toast: { success: vi.fn(), warning: vi.fn(), error: vi.fn() },
+  toast: { success: vi.fn(), warning: vi.fn(), error: vi.fn(), info: vi.fn() },
   activate: vi.fn(),
   isWebClient: vi.fn(() => false)
 }))
@@ -168,12 +168,13 @@ describe('startDoorayTaskInCurrentWorkspace', () => {
     await startDoorayTaskInCurrentWorkspace(issue, { promptDirtyWorkspace })
     expect(promptDirtyWorkspace).toHaveBeenCalledWith({
       branch: BRANCH,
-      workspaceLabel: 'App',
+      workspaceLabel: 'main · App',
       dirtyTargets: [{ submodulePath: '', changeCount: 2 }]
     })
     expect(taskBranch.stash).toHaveBeenCalledWith({
       worktreePath: '/repo',
       submodulePaths: [],
+      onlyTargets: [''],
       message: `orca: ${BRANCH}`
     })
     expect(taskBranch.switch).toHaveBeenCalled()
@@ -185,11 +186,72 @@ describe('startDoorayTaskInCurrentWorkspace', () => {
     await startDoorayTaskInCurrentWorkspace(issue, {
       promptDirtyWorkspace: async () => 'discard'
     })
-    expect(taskBranch.discard).toHaveBeenCalledWith({ worktreePath: '/repo', submodulePaths: [] })
+    expect(taskBranch.discard).toHaveBeenCalledWith({
+      worktreePath: '/repo',
+      submodulePaths: [],
+      onlyTargets: ['']
+    })
     expect(taskBranch.stash).not.toHaveBeenCalled()
     taskBranch.switch.mockClear()
     await startDoorayTaskInCurrentWorkspace(issue, { promptDirtyWorkspace: async () => 'cancel' })
     expect(taskBranch.switch).not.toHaveBeenCalled()
+  })
+
+  it('step 6: stash/discard touch only the dirty targets the prompt listed', async () => {
+    seed({
+      repo: makeRepo({
+        extensionSettings: {
+          dooray: { mode: 'new-worktree', submodulePaths: ['libs/a', 'libs/b'] }
+        }
+      })
+    })
+    taskBranch.inspect.mockResolvedValue([{ submodulePath: 'libs/b', changeCount: 3 }])
+    await startDoorayTaskInCurrentWorkspace(issue, { promptDirtyWorkspace: async () => 'discard' })
+    expect(taskBranch.discard).toHaveBeenCalledWith({
+      worktreePath: '/repo',
+      submodulePaths: ['libs/a', 'libs/b'],
+      onlyTargets: ['libs/b']
+    })
+    await startDoorayTaskInCurrentWorkspace(issue, { promptDirtyWorkspace: async () => 'stash' })
+    expect(taskBranch.stash).toHaveBeenCalledWith(
+      expect.objectContaining({ onlyTargets: ['libs/b'] })
+    )
+  })
+
+  it('ignores a second start on the same worktree while one is running', async () => {
+    seed()
+    let release: (choice: { baseRef: null }) => void = () => {}
+    const promptBaseRef = vi.fn(
+      () => new Promise<{ baseRef: null }>((resolve) => (release = resolve))
+    )
+    const first = startDoorayTaskInCurrentWorkspace(issue, { promptBaseRef })
+    await startDoorayTaskInCurrentWorkspace(issue, { promptBaseRef })
+    expect(promptBaseRef).toHaveBeenCalledTimes(1)
+    expect(mocks.toast.info).toHaveBeenCalledWith(
+      'This workspace is already switching to a task branch.'
+    )
+    release({ baseRef: null })
+    await first
+    expect(taskBranch.switch).toHaveBeenCalledTimes(1)
+    // The guard is released once the first run settles.
+    await startDoorayTaskInCurrentWorkspace(issue, {
+      promptBaseRef: async () => ({ baseRef: null })
+    })
+    expect(taskBranch.switch).toHaveBeenCalledTimes(2)
+  })
+
+  it('warns instead of rejecting when the rename fails', async () => {
+    seed()
+    updateWorktreeMeta.mockRejectedValue(new Error('disk full'))
+    await startDoorayTaskInCurrentWorkspace(issue)
+    await vi.waitFor(() =>
+      expect(mocks.toast.warning).toHaveBeenCalledWith(expect.stringContaining('disk full'))
+    )
+    updateWorktreeMeta.mockResolvedValue({ ok: false, error: 'locked' })
+    await startDoorayTaskInCurrentWorkspace(issue)
+    await vi.waitFor(() =>
+      expect(mocks.toast.warning).toHaveBeenCalledWith(expect.stringContaining('locked'))
+    )
   })
 
   it('step 7: fetchBase is sent only together with baseRef', async () => {

@@ -16,3 +16,5 @@ auto.lib.dooray.start.in.current.workspace.submodules_failed	Switched to {{value
 auto.components.useDoorayStartActions.dirtyDescriptionKeepsUntracked	Changed: {{value0}}. Stash keeps the work; discard throws away tracked changes. Untracked files are kept either way.	변경됨: {{value0}}. Stash는 작업을 보관하고, 버리기는 추적 중인 변경 사항을 삭제합니다. 추적되지 않는 파일은 어느 쪽이든 유지됩니다.
 auto.components.useDoorayStartActions.discardConfirmDescriptionKeepsUntracked	This permanently discards the tracked changes in {{value0}}. New (untracked) files are kept. It cannot be undone.	{{value0}}의 추적 중인 변경 사항을 영구히 버립니다. 새(추적되지 않는) 파일은 유지됩니다. 되돌릴 수 없습니다.
 auto.components.settings.RepositoryDoorayStartSection.saveUnsupported	This host's Orca version can't save this setting. Update Orca on the host and try again.	이 호스트의 Orca 버전은 이 설정을 저장할 수 없습니다. 호스트의 Orca를 업데이트한 뒤 다시 시도하세요.
+auto.lib.dooray.start.in.current.workspace.already_switching	This workspace is already switching to a task branch.	이 워크스페이스는 이미 업무 브랜치로 전환하는 중입니다.
+auto.lib.dooray.start.in.current.workspace.rename_failed	Couldn't rename the workspace to the task title: {{value0}}	워크스페이스 이름을 업무 제목으로 바꾸지 못했습니다: {{value0}}

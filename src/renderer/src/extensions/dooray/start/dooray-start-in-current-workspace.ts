@@ -1,8 +1,11 @@
 import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import { activateAndRevealWorktree } from '@/lib/worktree-activation'
+import { getWorktreeAttachmentLabel } from '@/lib/worktree-attachment-label'
 import { useAppStore } from '@/store'
 import type { DoorayIssue } from '../../../../../shared/extensions/dooray/dooray-types'
+import type { Repo } from '../../../../../shared/repo-types'
+import type { Worktree } from '../../../../../shared/worktree/types'
 import type {
   TaskBranchPreloadApi,
   TaskBranchSwitchResult
@@ -26,12 +29,39 @@ function doorayStashMessage(branch: string): string {
   return `orca: ${branch}`
 }
 
+// Names the worktree the user is about to stash/discard in, not just its repo.
+function describeWorkspace(worktree: Worktree, repo: Repo | null): string {
+  const label = getWorktreeAttachmentLabel(worktree)
+  return repo ? `${label} · ${repo.displayName}` : label
+}
+
 function readTaskBranchApi(): TaskBranchPreloadApi | undefined {
   return window.api?.dooray?.taskBranch
 }
 
+// One switch per worktree at a time: a second click would race inspect/stash against the first switch.
+const switchingWorktreeIds = new Set<string>()
+
+function renameFailed(detail: string): void {
+  toast.warning(
+    translate(
+      'auto.ext.dooray.lib.dooray.start.in.current.workspace.rename_failed',
+      "Couldn't rename the workspace to the task title: {{value0}}",
+      { value0: detail }
+    )
+  )
+}
+
 function finishOnWorktree(worktreeId: string, subject: string): void {
-  void useAppStore.getState().updateWorktreeMeta(worktreeId, { displayName: subject })
+  useAppStore
+    .getState()
+    .updateWorktreeMeta(worktreeId, { displayName: subject })
+    .then((result) => {
+      if (!result.ok) {
+        renameFailed(result.error)
+      }
+    })
+    .catch((error: unknown) => renameFailed(error instanceof Error ? error.message : String(error)))
   activateAndRevealWorktree(worktreeId)
 }
 
@@ -105,7 +135,7 @@ export async function startDoorayTaskInCurrentWorkspace(
   }
   const branch = getDoorayTaskBranchName(issue)
   const repo = findDoorayWorktreeRepo(state, worktree)
-  let submodulePaths = [...(readRepoDoorayStart(repo)?.submodulePaths ?? [])]
+  const submodulePaths = [...(readRepoDoorayStart(repo)?.submodulePaths ?? [])]
   if (normalizeDoorayBranch(worktree.branch) === branch && submodulePaths.length === 0) {
     finishOnWorktree(worktree.id, issue.subject)
     toast.success(
@@ -117,7 +147,36 @@ export async function startDoorayTaskInCurrentWorkspace(
     )
     return
   }
-  const availability = readDoorayStartAvailability(state, worktree)
+  if (switchingWorktreeIds.has(worktree.id)) {
+    toast.info(
+      translate(
+        'auto.ext.dooray.lib.dooray.start.in.current.workspace.already_switching',
+        'This workspace is already switching to a task branch.'
+      )
+    )
+    return
+  }
+  switchingWorktreeIds.add(worktree.id)
+  try {
+    await switchToTaskBranch(issue, options, { worktree, repo, branch, submodulePaths })
+  } finally {
+    switchingWorktreeIds.delete(worktree.id)
+  }
+}
+
+async function switchToTaskBranch(
+  issue: DoorayIssue,
+  options: DoorayStartInCurrentOptions,
+  target: {
+    worktree: Worktree
+    repo: Repo | null
+    branch: string
+    submodulePaths: string[]
+  }
+): Promise<void> {
+  const { worktree, repo, branch } = target
+  let { submodulePaths } = target
+  const availability = readDoorayStartAvailability(useAppStore.getState(), worktree)
   const taskBranch = readTaskBranchApi()
   if (!availability.available || !taskBranch) {
     toast.error(
@@ -155,15 +214,17 @@ export async function startDoorayTaskInCurrentWorkspace(
       const resolution = options.promptDirtyWorkspace
         ? await options.promptDirtyWorkspace({
             branch,
-            workspaceLabel: repo?.displayName ?? worktree.displayName,
+            workspaceLabel: describeWorkspace(worktree, repo),
             dirtyTargets
           })
         : 'cancel'
       if (resolution === 'cancel') {
         return
       }
+      // Only what the prompt listed; a target that got dirty since is never reset unseen.
+      const scoped = { ...request, onlyTargets: dirtyTargets.map((dirty) => dirty.submodulePath) }
       if (resolution === 'stash') {
-        await taskBranch.stash({ ...request, message: doorayStashMessage(branch) })
+        await taskBranch.stash({ ...scoped, message: doorayStashMessage(branch) })
         toast.success(
           translate(
             'auto.ext.dooray.lib.dooray.start.in.current.workspace.stashed',
@@ -171,7 +232,7 @@ export async function startDoorayTaskInCurrentWorkspace(
           )
         )
       } else {
-        await taskBranch.discard(request)
+        await taskBranch.discard(scoped)
       }
     }
     const results = await taskBranch.switch({

@@ -39,6 +39,8 @@ type PrimaryStartProps = {
   primaryStartKind: DoorayStartKind
   // Only applies to a start action; "Open workspace" is always available.
   primaryDisabledReason?: string
+  // With several candidates, an existing-workspace primary opens this picker instead of running.
+  workspaceStart?: DoorayWorkspaceStart
   onUse?: (issue: DoorayIssue) => void
   onOpenWorkspace?: (issue: DoorayIssue) => void
 }
@@ -50,6 +52,7 @@ export function DoorayStartPrimaryButton({
   size,
   primaryStartKind,
   primaryDisabledReason,
+  workspaceStart,
   onUse,
   onOpenWorkspace
 }: PrimaryStartProps): React.JSX.Element | null {
@@ -57,10 +60,15 @@ export function DoorayStartPrimaryButton({
   if (!run) {
     return null
   }
-  const blocked = !onOpenWorkspace && Boolean(primaryDisabledReason)
+  const usesMenu =
+    !onOpenWorkspace &&
+    primaryStartKind === 'existing-workspace' &&
+    workspaceStart !== undefined &&
+    workspaceStart.options.length > 1
+  const blocked = !onOpenWorkspace && !usesMenu && Boolean(primaryDisabledReason)
   const button = (
     <Button
-      onClick={() => run(issue)}
+      onClick={usesMenu ? undefined : () => run(issue)}
       className={blocked ? 'w-full' : className}
       size={size}
       disabled={blocked}
@@ -71,6 +79,13 @@ export function DoorayStartPrimaryButton({
       <ArrowRight className="size-4" />
     </Button>
   )
+  if (usesMenu && workspaceStart) {
+    return (
+      <DoorayWorkspaceStartMenu issue={issue} workspaceStart={workspaceStart}>
+        {button}
+      </DoorayWorkspaceStartMenu>
+    )
+  }
   if (!blocked) {
     return button
   }
@@ -217,6 +232,7 @@ export function DoorayIssueAside({
         className="mb-3 flex w-full justify-center sm:hidden"
         primaryStartKind={primaryStartKind}
         primaryDisabledReason={primaryDisabledReason}
+        workspaceStart={workspaceStart}
         onUse={onUse}
         onOpenWorkspace={onOpenWorkspace}
       />

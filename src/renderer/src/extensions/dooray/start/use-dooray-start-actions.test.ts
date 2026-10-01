@@ -144,7 +144,7 @@ describe('useDoorayStartActions', () => {
 describe('createDoorayDirtyWorkspacePrompt', () => {
   const args = {
     branch: 'feature/A/1',
-    workspaceLabel: 'App',
+    workspaceLabel: 'workA · iOS_Dooray',
     dirtyTargets: [
       { submodulePath: '', changeCount: 2 },
       { submodulePath: 'libs/a', changeCount: 1 }
@@ -162,7 +162,7 @@ describe('createDoorayDirtyWorkspacePrompt', () => {
       alternateVariant: 'destructive',
       cancelLabel: "Don't switch"
     })
-    expect(confirm.mock.calls[0][0].description).toContain('App (2), libs/a (1)')
+    expect(confirm.mock.calls[0][0].description).toContain('workA · iOS_Dooray (2), libs/a (1)')
     expect(confirm.mock.calls[0][0].description).toContain('Untracked files are kept')
   })
 
@@ -174,6 +174,7 @@ describe('createDoorayDirtyWorkspacePrompt', () => {
       confirmVariant: 'destructive'
     })
     expect(confirm.mock.calls[1][0].description).toContain('untracked) files are kept')
+    expect(confirm.mock.calls[1][0].description).toContain('workA · iOS_Dooray (2)')
     const declined = vi.fn().mockResolvedValueOnce('alternate').mockResolvedValueOnce(false)
     await expect(createDoorayDirtyWorkspacePrompt(declined)(args)).resolves.toBe('cancel')
   })

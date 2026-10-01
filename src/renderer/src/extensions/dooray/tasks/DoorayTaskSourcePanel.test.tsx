@@ -32,6 +32,10 @@ const toastError = vi.hoisted(() => vi.fn())
 vi.mock('sonner', () => ({ toast: { error: toastError, success: vi.fn() } }))
 const activateAndRevealWorktree = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/worktree-activation', () => ({ activateAndRevealWorktree }))
+const startInWorkspace = vi.hoisted(() => vi.fn())
+vi.mock('../start/dooray-start-in-current-workspace', () => ({
+  startDoorayTaskInCurrentWorkspace: startInWorkspace
+}))
 
 const api = vi.hoisted(() => ({
   listProjects: vi.fn(),
@@ -345,6 +349,45 @@ describe('repository start mode', () => {
     expect(onStartNewWorkspace).toHaveBeenCalledWith(
       buildDoorayLinkedWorkItem(issue(2)),
       getDoorayIssueWorkspaceSeed(issue(2))
+    )
+  })
+})
+
+describe('workspace picker in existing-workspace mode', () => {
+  it('turns the sheet primary into a picker and starts in the chosen worktree', async () => {
+    seed(connected)
+    const repo = {
+      id: 'repo-1',
+      path: '/repo',
+      displayName: 'App',
+      badgeColor: '',
+      addedAt: 0,
+      extensionSettings: { dooray: { mode: 'existing-workspace' } }
+    }
+    const worktree = (id: string) => ({
+      id,
+      repoId: 'repo-1',
+      path: `/${id}`,
+      branch: `refs/heads/${id}`,
+      displayName: id,
+      isArchived: false
+    })
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: partial worktree rows; only the fields the picker reads
+    const worktreesByRepo = { 'repo-1': [worktree('wt-a'), worktree('wt-b')] } as never
+    useAppStore.setState({ repos: [repo], worktreesByRepo, activeWorktreeId: 'wt-a' })
+    render(
+      <TooltipProvider>
+        <DoorayTaskSourcePanel onStartNewWorkspace={onStartNewWorkspace} startRepo={repo} />
+      </TooltipProvider>
+    )
+    fireEvent.click((await screen.findAllByTestId('dooray-issue-row'))[1])
+    const [primary] = await screen.findAllByRole('button', { name: /Start in current workspace/ })
+    expect(primary.hasAttribute('disabled')).toBe(false)
+    fireEvent.pointerDown(primary, { button: 0, pointerType: 'mouse' })
+    fireEvent.click(await screen.findByRole('menuitem', { name: /wt-b/ }))
+    expect(startInWorkspace).toHaveBeenCalledWith(
+      issue(2),
+      expect.objectContaining({ worktreeId: 'wt-b' })
     )
   })
 })

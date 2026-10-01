@@ -199,6 +199,7 @@ export function DoorayIssueWorkspace({
       size="sm"
       primaryStartKind={primaryStartKind}
       primaryDisabledReason={primaryDisabledReason}
+      workspaceStart={workspaceStart}
       onUse={onUse}
       onOpenWorkspace={onOpenWorkspace}
     />
