@@ -8,6 +8,7 @@ import { normalizeWorktreeVisibilitySourcePreferences } from '../../../shared/wo
 import type { GhAccountBinding } from '../../../shared/github/account-binding'
 import { invalidateGhAccountTokenCache } from '../../github/gh-account-token'
 import { sanitizeRepoUpdatesForPersistence } from './repo-sanitization'
+import { applyRepoExtensionSettingsUpdate } from './repo-extension-settings-update' // fork-seam: repo-extension-settings
 
 export type RepoUpdateMutationOperations = {
   state: Pick<PersistedState, 'repos' | 'projectGroups'>
@@ -107,6 +108,7 @@ export class RepoUpdatePersistenceOperations {
       sourceControlAi?: Repo['sourceControlAi'] | null
       externalWorktreeDiscoverySuppressedAt?: Repo['externalWorktreeDiscoverySuppressedAt'] | null
       ghAccount?: GhAccountBinding | null
+      extensionSettings?: Repo['extensionSettings'] | null // fork-seam: repo-extension-settings
     },
     hostId?: ExecutionHostId
   ): Repo | null {
@@ -116,6 +118,7 @@ export class RepoUpdatePersistenceOperations {
     }
     const previousGhAccount = repo.ghAccount
     const sanitizedUpdates = sanitizeRepoUpdatesForPersistence(updates)
+    applyRepoExtensionSettingsUpdate(repo, sanitizedUpdates) // fork-seam: repo-extension-settings
     if (
       'executionHostId' in updates &&
       getRepoExecutionHostId({ ...repo, ...updates }) !== getRepoExecutionHostId(repo)

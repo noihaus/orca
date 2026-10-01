@@ -72,6 +72,7 @@ export type RepositoryApi = {
       sourceControlAi?: Repo['sourceControlAi'] | null
       externalWorktreeDiscoverySuppressedAt?: Repo['externalWorktreeDiscoverySuppressedAt'] | null
       ghAccount?: GhAccountBinding | null
+      extensionSettings?: Repo['extensionSettings'] | null // fork-seam: repo-extension-settings
     }
   }) => Promise<Repo>
   pickFolder: () => Promise<string | null>

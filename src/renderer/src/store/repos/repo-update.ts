@@ -155,6 +155,7 @@ export function createRepoUpdateActions(
                 sourceControlAi,
                 externalWorktreeDiscoverySuppressedAt,
                 ghAccount,
+                extensionSettings, // fork-seam: repo-extension-settings
                 externalWorktreeVisibility,
                 agentWorktreeVisibility,
                 ...updatesWithoutClearSentinels
@@ -195,6 +196,14 @@ export function createRepoUpdateActions(
                 mergedRepo = repoWithoutGhAccount
               } else if (ghAccount !== undefined) {
                 mergedRepo = { ...mergedRepo, ghAccount }
+              }
+              if (extensionSettings === null) {
+                // fork-seam: repo-extension-settings
+                const { extensionSettings: _extensionSettings, ...repoWithoutExtensionSettings } =
+                  mergedRepo
+                mergedRepo = repoWithoutExtensionSettings
+              } else if (extensionSettings !== undefined) {
+                mergedRepo = { ...mergedRepo, extensionSettings }
               }
               return mergedRepo
             })

@@ -6,6 +6,7 @@ import type { ForkSyncMode } from './git-fork-sync'
 import type { GitRemoteIdentity } from './git-remote-identity'
 import type { RepoSourceControlAiOverrides } from './source-control-ai-types'
 import type { RepoProjectHostSetupMethod } from './project-types'
+import type { RepoExtensionSettings } from './repo-extension-settings' // fork-seam: repo-extension-settings
 
 // ─── Repo ────────────────────────────────────────────────────────────
 export type RepoKind = 'git' | 'folder'
@@ -107,6 +108,8 @@ export type Repo = {
   projectGroupId?: string | null
   /** User-authored ordering inside the project group or ungrouped bucket. */
   projectGroupOrder?: number
+  /** Opaque per-extension JSON keyed by extension id. */ // fork-seam: repo-extension-settings
+  extensionSettings?: RepoExtensionSettings
   /** Repo-specific source-control AI overrides. Missing fields inherit global settings. */
   sourceControlAi?: RepoSourceControlAiOverrides
   /** Transitional source for ProjectHostSetup.setupMethod while Repo remains compatibility storage. */

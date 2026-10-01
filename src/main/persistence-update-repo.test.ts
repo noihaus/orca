@@ -601,6 +601,45 @@ describe('Store', () => {
     expect(store.getRepos()[0]!.forkSyncMode).toBeUndefined()
   })
 
+  it('updateRepo persists extension settings across reloads and clears them with null', async () => {
+    const store = await createStore()
+    store.addRepo(makeRepo())
+
+    const updated = store.updateRepo('r1', { extensionSettings: { fake: { a: 1 } } })
+    expect(updated!.extensionSettings).toEqual({ fake: { a: 1 } })
+
+    store.flush()
+    const reloaded = await createStore()
+    expect(reloaded.getRepo('r1')!.extensionSettings).toEqual({ fake: { a: 1 } })
+
+    const cleared = reloaded.updateRepo('r1', { extensionSettings: null })
+    expect(cleared!.extensionSettings).toBeUndefined()
+  })
+
+  it('updateRepo rejects extension settings over 16KB and keeps the stored value', async () => {
+    const store = await createStore()
+    store.addRepo(makeRepo({ extensionSettings: { fake: { a: 1 } } }))
+
+    expect(() =>
+      store.updateRepo('r1', { extensionSettings: { fake: 'x'.repeat(16 * 1024) } })
+    ).toThrow(/extensionSettings/)
+    expect(() => store.updateRepo('r1', { extensionSettings: JSON.parse('[]') })).toThrow(
+      /plain object/
+    )
+    expect(store.getRepo('r1')!.extensionSettings).toEqual({ fake: { a: 1 } })
+  })
+
+  it('getRepo does not expose invalid persisted extension settings', async () => {
+    writeDataFile({
+      ...getDefaultPersistedState(testState.dir),
+      repos: [makeRepo({ extensionSettings: JSON.parse('[1]') })]
+    })
+
+    const store = await createStore()
+
+    expect(store.getRepo('r1')!.extensionSettings).toBeUndefined()
+  })
+
   it('updateRepo with issueSourcePreference=undefined clears the preference', async () => {
     const store = await createStore()
     store.addRepo(makeRepo({ issueSourcePreference: 'origin' }))

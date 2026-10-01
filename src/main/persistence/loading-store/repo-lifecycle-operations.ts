@@ -192,6 +192,7 @@ export class RepoLifecycleOperations {
       sourceControlAi?: Repo['sourceControlAi'] | null
       externalWorktreeDiscoverySuppressedAt?: Repo['externalWorktreeDiscoverySuppressedAt'] | null
       ghAccount?: GhAccountBinding | null
+      extensionSettings?: Repo['extensionSettings'] | null // fork-seam: repo-extension-settings
     },
     hostId?: ExecutionHostId
   ): Repo | null {

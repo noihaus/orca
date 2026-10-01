@@ -41,6 +41,7 @@ type RepositoryUpdates = Partial<
   externalWorktreeDiscoverySuppressedAt?: Repo['externalWorktreeDiscoverySuppressedAt'] | null
   /** Only `null` clears; `omitUndefined` drops a stripped (undefined) field so it never unbinds. */
   ghAccount?: GhAccountBinding | null
+  extensionSettings?: Repo['extensionSettings'] | null // fork-seam: repo-extension-settings
 }
 
 function omitUndefined<T extends Record<string, unknown>>(value: T): Partial<T> {

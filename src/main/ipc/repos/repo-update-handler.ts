@@ -15,6 +15,7 @@ import {
 } from '../../../shared/worktree/visibility-sources'
 import { prepareLocalWorktreeRootForRepo } from '../../worktree-root-preparation'
 import { invalidateAuthorizedRootsCache } from '../registered-worktree-roots-cache'
+import { assertRepoExtensionSettingsUpdate } from '../../../shared/repo-extension-settings' // fork-seam: repo-extension-settings
 import { notifyReposChanged } from './repos-changed-notification'
 
 export function registerRepoUpdateHandler(mainWindow: BrowserWindow, store: Store): void {
@@ -55,6 +56,7 @@ export function registerRepoUpdateHandler(mainWindow: BrowserWindow, store: Stor
             | Repo['externalWorktreeDiscoverySuppressedAt']
             | null
           ghAccount?: GhAccountBinding | null
+          extensionSettings?: Repo['extensionSettings'] | null // fork-seam: repo-extension-settings
         }
       }
     ) => {
@@ -214,6 +216,7 @@ export function registerRepoUpdateHandler(mainWindow: BrowserWindow, store: Stor
           updates.sourceControlAi = normalizedSourceControlAi
         }
       }
+      assertRepoExtensionSettingsUpdate(updates) // fork-seam: repo-extension-settings
       const hostId = args.hostId ? normalizeExecutionHostId(args.hostId) : null
       if (args.hostId && !hostId) {
         return null
