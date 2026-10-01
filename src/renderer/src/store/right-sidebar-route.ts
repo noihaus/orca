@@ -3,6 +3,10 @@ import type {
   RightSidebarExplorerView
 } from '../../../shared/ui-chrome-types'
 import { isPluginPanelTabKey } from '../../../shared/plugins/plugin-tab-key'
+import {
+  isExtensionTabKey,
+  isInstalledExtensionTabKey
+} from '../../../shared/extensions/extension-tab-key' // fork-seam: right-sidebar-extension-tab
 
 export type RightSidebarRoute = {
   rightSidebarTab: ActiveRightSidebarTab
@@ -38,6 +42,12 @@ export function normalizeRightSidebarRoute(
       return { rightSidebarTab: 'explorer', rightSidebarExplorerView: 'files' }
     }
     return { rightSidebarTab: tab, rightSidebarExplorerView: 'files' }
+  }
+  if (typeof tab === 'string' && isExtensionTabKey(tab)) {
+    // fork-seam: right-sidebar-extension-tab
+    return isInstalledExtensionTabKey(tab)
+      ? { rightSidebarTab: tab, rightSidebarExplorerView: 'files' }
+      : { rightSidebarTab: 'explorer', rightSidebarExplorerView: 'files' }
   }
   if (
     tab === 'explorer' ||

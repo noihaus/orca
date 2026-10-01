@@ -15,6 +15,7 @@ import {
 import { useShortcutLabel } from '@/hooks/useShortcutLabel'
 import { translate } from '@/i18n/i18n'
 import { AgentSessionHistoryIcon } from './agent-session-history-icon'
+import { extensionRightSidebarActivityItems } from '@/extensions/extension-right-sidebar-tabs' // fork-seam: right-sidebar-extension-tab
 import type { ActivityBarItem } from './activity-bar-buttons'
 
 export type RightSidebarActivityItems = {
@@ -61,6 +62,7 @@ export function useRightSidebarActivityItems({
 
   const activityItems = useMemo<ActivityBarItem[]>(
     () => [
+      ...extensionRightSidebarActivityItems(), // fork-seam: right-sidebar-extension-tab
       {
         id: 'explorer',
         icon: Files,

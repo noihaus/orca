@@ -3,6 +3,9 @@ import { lazyWithRetry as lazy } from '@/lib/lazy-with-retry'
 import type { ActiveRightSidebarTab } from '@/store/slices/editor'
 import { isPluginPanelTabKey } from '../../../../shared/plugins/plugin-manifest'
 
+import { isExtensionTabKey } from '../../../../shared/extensions/extension-tab-key' // fork-seam: right-sidebar-extension-tab
+import { ExtensionRightSidebarPanel } from '@/extensions/extension-right-sidebar-tabs' // fork-seam: right-sidebar-extension-tab
+
 const FileExplorer = lazy(() => import('./FileExplorer'))
 const SourceControl = lazy(() => import('./SourceControl'))
 const ChecksPanel = lazy(() => import('./ChecksPanel'))
@@ -47,6 +50,9 @@ export function RightSidebarPanelContent({
             rebound under the next plugin's identity. */}
         {isPluginPanelTabKey(effectiveTab) && (
           <PluginPanel key={effectiveTab} tabKey={effectiveTab} />
+        )}
+        {isExtensionTabKey(effectiveTab) && ( // fork-seam: right-sidebar-extension-tab
+          <ExtensionRightSidebarPanel tabKey={effectiveTab} />
         )}
       </Suspense>
     </div>

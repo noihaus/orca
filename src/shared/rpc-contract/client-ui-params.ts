@@ -5,6 +5,7 @@ import {
   normalizeWorktreeCardProperties
 } from '../worktree/card-properties'
 import { isPluginPanelTabKey } from '../plugins/plugin-manifest'
+import { isExtensionTabKey } from '../extensions/extension-tab-key' // fork-seam: right-sidebar-extension-tab
 import { isFeatureInteractionId } from '../feature-interactions'
 import type { FeatureInteractionId } from '../feature-interactions'
 import { ACTIVITY_GROUP_BY_VALUES, THREAD_READ_FILTER_VALUES } from '../agents-view-thread-filters'
@@ -50,11 +51,14 @@ export const STATIC_RIGHT_SIDEBAR_TABS = [
 
 // Plugin panels are open-ended `plugin:<publisher>.<id>/<panel>` keys, so the
 // schema validates their shape rather than enumerating them.
-export const RightSidebarTabParam = z.custom<StaticRightSidebarTab | `plugin:${string}`>(
+export const RightSidebarTabParam = z.custom<
+  StaticRightSidebarTab | `plugin:${string}` | `ext:${string}`
+>( // fork-seam: right-sidebar-extension-tab
   (value) =>
     typeof value === 'string' &&
     (STATIC_RIGHT_SIDEBAR_TABS.includes(value as StaticRightSidebarTab) ||
-      isPluginPanelTabKey(value)),
+      isPluginPanelTabKey(value) || // fork-seam: right-sidebar-extension-tab
+      isExtensionTabKey(value)),
   { message: 'Unknown right sidebar tab' }
 )
 

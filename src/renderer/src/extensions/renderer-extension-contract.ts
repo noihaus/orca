@@ -29,7 +29,7 @@ export type ExtensionTaskSource = {
 }
 
 export type ExtensionRightSidebarTab = {
-  id: string
+  id: `ext:${string}`
   title: () => string
   Icon: ExtensionIcon
   Panel: LazyExoticComponent<ComponentType>
