@@ -7,3 +7,6 @@ export const INSTALLED_TASK_PROVIDER_EXTENSIONS =
 export const INSTALLED_CREDENTIAL_SERVICES = [] as const satisfies readonly string[]
 
 export type ExtensionCredentialService = (typeof INSTALLED_CREDENTIAL_SERVICES)[number]
+
+// Preload extension keys the web client serves over runtime RPC (the preload list itself can't load in a browser).
+export const INSTALLED_RUNTIME_NAMESPACE_API_KEYS = [] as const satisfies readonly string[]

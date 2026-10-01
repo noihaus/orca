@@ -52,6 +52,7 @@ import { createUpdaterApi } from './preload-api/web-updater-api'
 import { createWebWorkspacePortsApi } from './preload-api/web-workspace-ports-api'
 import { createWebWorkspaceSessionApi } from './preload-api/web-workspace-session-api'
 import { createWorktreesApi } from './preload-api/web-worktrees-api'
+import { createWebExtensionApis } from './preload-api/web-extension-api' // fork-seam: web-preload-api
 import { readStoredWebRuntimeEnvironment } from './web-runtime-environment'
 
 export function installWebPreloadApi(): void {
@@ -63,6 +64,7 @@ export function installWebPreloadApi(): void {
 
 function createWebPreloadApi(): Partial<PreloadApi> {
   return {
+    ...createWebExtensionApis(), // fork-seam: web-preload-api
     ...createWebAppApi(),
     ...createWebStarNagApi(),
     ...createWebPlatformApi(),

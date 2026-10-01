@@ -35,6 +35,7 @@ import type { GithubWorkItemApi } from './api/github-work-item-api'
 import type { GitLabApi } from './api/gitlab-api'
 import type { BitbucketApi, HostedReviewApi } from './api/hosted-review-api'
 import type { JiraApi } from './api/jira-api'
+import type { InstalledPreloadExtensionApis } from './extensions/expose-preload-extensions' // fork-seam: preload-api
 import type { LinearApi } from './api/linear-api'
 import type { MobileApi } from './api/mobile-api'
 import type { NativeChatApi } from './api/native-chat-api'
@@ -68,7 +69,8 @@ import type { FolderWorkspacesApi, SparsePresetsApi, WorktreeApi } from './api/w
 // Flattens contracts that share one PreloadApi key: an intersection is not type-identical to the flat shape.
 type Merged<T> = { [K in keyof T]: T[K] }
 
-export type PreloadApi = {
+export type PreloadApi = InstalledPreloadExtensionApis & {
+  // fork-seam: preload-api
   app: AppApi
   orcaProfiles: OrcaProfileApi
   platform: PlatformApi
