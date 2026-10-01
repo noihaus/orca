@@ -1,2 +1,9 @@
 key	en	ko
 auto.store.connection.superseded	Dooray connection was superseded by a newer request.	더 새로운 요청으로 두레이 연결이 대체되었습니다.
+auto.components.dooray.connect.dialog.credential_remote	Your token is sent to the selected remote runtime and stored there with runtime-supported encryption.	토큰은 선택한 원격 런타임으로 전송되어 런타임이 지원하는 암호화로 저장됩니다.
+auto.components.dooray.connect.dialog.credential_local	Your token is stored locally and encrypted when local runtime storage supports it.	토큰은 로컬에 저장되며 로컬 런타임 저장소가 지원하면 암호화됩니다.
+auto.components.dooray.errors.token_required	API token is required.	API 토큰을 입력하세요.
+auto.components.dooray.errors.invalid_url	Enter a valid Dooray URL.	올바른 두레이 주소를 입력하세요.
+auto.components.dooray.errors.no_member_profile	Dooray did not return a member profile for this token.	이 토큰으로 두레이 멤버 정보를 가져오지 못했습니다.
+auto.components.dooray.errors.not_connected	Not connected to Dooray.	두레이에 연결되어 있지 않습니다.
+auto.components.settings.dooray.integration.card.disconnect_failed	Failed to disconnect Dooray.	두레이 연결 해제에 실패했습니다.

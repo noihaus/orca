@@ -1,9 +1,12 @@
 import type { RendererExtension } from '../renderer-extension-contract'
 import { createDooraySlice } from './dooray-slice'
+import { DoorayIntegrationCardSlot, DoorayOnboardingRowSlot } from './dooray-lazy-slots'
 
 export const doorayRendererExtension = {
   id: 'dooray',
   createSlice: createDooraySlice,
+  integrationCards: [DoorayIntegrationCardSlot],
+  onboardingIntegrationRows: [DoorayOnboardingRowSlot],
   locales: {
     en: () => import('./locales/en.json').then((module) => module.default),
     ko: () => import('./locales/ko.json').then((module) => module.default),

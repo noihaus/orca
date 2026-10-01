@@ -52,7 +52,8 @@
                   "description": "두레이를 연결해 업무를 보고 바로 작업을 시작하세요.",
                   "reconnect": "다시 연결",
                   "connect": "두레이 연결",
-                  "disconnect": "두레이 연결 해제"
+                  "disconnect": "두레이 연결 해제",
+                  "disconnect_failed": "두레이 연결 해제에 실패했습니다."
                 }
               }
             },
@@ -190,7 +191,9 @@
                 "cancel": "취소",
                 "verifying": "확인 중…",
                 "connect": "연결",
-                "api_url_placeholder": "https://api.dooray.com"
+                "api_url_placeholder": "https://api.dooray.com",
+                "credential_remote": "토큰은 선택한 원격 런타임으로 전송되어 런타임이 지원하는 암호화로 저장됩니다.",
+                "credential_local": "토큰은 로컬에 저장되며 로컬 런타임 저장소가 지원하면 암호화됩니다."
               }
             },
             "workspace": {
@@ -259,6 +262,12 @@
               "low": "낮음",
               "lowest": "매우 낮음",
               "none": "없음"
+            },
+            "errors": {
+              "token_required": "API 토큰을 입력하세요.",
+              "invalid_url": "올바른 두레이 주소를 입력하세요.",
+              "no_member_profile": "이 토큰으로 두레이 멤버 정보를 가져오지 못했습니다.",
+              "not_connected": "두레이에 연결되어 있지 않습니다."
             }
           },
           "TaskPageDooray": {

@@ -52,7 +52,8 @@
                   "description": "Connect Dooray to browse and start work from your tasks.",
                   "reconnect": "Reconnect",
                   "connect": "Connect Dooray",
-                  "disconnect": "Disconnect Dooray"
+                  "disconnect": "Disconnect Dooray",
+                  "disconnect_failed": "Failed to disconnect Dooray."
                 }
               }
             },
@@ -190,7 +191,9 @@
                 "cancel": "Cancel",
                 "verifying": "Verifying…",
                 "connect": "Connect",
-                "api_url_placeholder": "https://api.dooray.com"
+                "api_url_placeholder": "https://api.dooray.com",
+                "credential_remote": "Your token is sent to the selected remote runtime and stored there with runtime-supported encryption.",
+                "credential_local": "Your token is stored locally and encrypted when local runtime storage supports it."
               }
             },
             "workspace": {
@@ -259,6 +262,12 @@
               "low": "Low",
               "lowest": "Lowest",
               "none": "None"
+            },
+            "errors": {
+              "token_required": "API token is required.",
+              "invalid_url": "Enter a valid Dooray URL.",
+              "no_member_profile": "Dooray did not return a member profile for this token.",
+              "not_connected": "Not connected to Dooray."
             }
           },
           "TaskPageDooray": {
