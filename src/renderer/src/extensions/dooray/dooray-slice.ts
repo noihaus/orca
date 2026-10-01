@@ -6,6 +6,8 @@ import type {
 } from '../../../../shared/extensions/dooray/dooray-types'
 import { getProviderRuntimeContextKey } from '@/lib/provider-runtime-context'
 import type { ExtensionStoreState } from '../renderer-extension-contract'
+import { preloadDoorayTranslator } from './dooray-deferred-translate'
+import { bindDoorayStore } from './dooray-store-handle'
 import {
   doorayConnect,
   doorayDisconnect,
@@ -41,8 +43,11 @@ function hasStatusChanged(previous: DoorayStatus, next: DoorayStatus): boolean {
 
 export const createDooraySlice: StateCreator<ExtensionStoreState, [], [], DooraySlice> = (
   set,
-  get
+  get,
+  store
 ) => {
+  bindDoorayStore(store)
+  preloadDoorayTranslator()
   const applyStatus = (contextKey: string, status: DoorayStatus): void =>
     set({ doorayStatus: status, doorayStatusChecked: true, doorayStatusContextKey: contextKey })
   const isCurrentContext = (contextKey: string): boolean =>

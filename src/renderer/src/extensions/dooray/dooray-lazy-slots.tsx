@@ -23,3 +23,15 @@ export function DoorayOnboardingRowSlot(): React.JSX.Element {
     </Suspense>
   )
 }
+
+const LazyTaskSourcePanel = lazy(() =>
+  import('./tasks/DoorayTaskSourcePanel').then((m) => ({ default: m.DoorayTaskSourcePanel }))
+)
+
+export function DoorayTaskSourcePanelSlot(): React.JSX.Element {
+  return (
+    <Suspense fallback={null}>
+      <LazyTaskSourcePanel />
+    </Suspense>
+  )
+}
