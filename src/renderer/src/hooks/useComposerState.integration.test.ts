@@ -4,7 +4,7 @@ import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAppStore } from '@/store'
 import { useComposerState } from './useComposerState'
-import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
+import type { LinkedWorkItemSummary } from '@/lib/new-workspace' // fork-seam: linked-work-item-branch
 
 const { branchFixtureExtension } = vi.hoisted(() => ({
   branchFixtureExtension: {

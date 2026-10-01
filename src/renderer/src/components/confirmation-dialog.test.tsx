@@ -13,7 +13,7 @@ vi.mock('@/store', () => ({
 import { ConfirmationDialogProvider } from './confirmation-dialog'
 import {
   useConfirmationDialog,
-  type ConfirmationDialogAlternateOptions,
+  type ConfirmationDialogAlternateOptions, // fork-seam: confirmation-alternate-action
   type ConfirmationDialogOptions
 } from './confirmation-dialog-context'
 

@@ -111,6 +111,7 @@ export class UpdaterSetup extends UpdaterDownloadInstall {
     super.dismissAvailableUpdate()
   }
 
+  // fork-seam: auto-update-gate
   /** Fork builds keep only the window ref so menu checks can still answer. */
   attachWindowWithoutUpdater(mainWindow: BrowserWindow): void {
     this.mainWindowRef = mainWindow

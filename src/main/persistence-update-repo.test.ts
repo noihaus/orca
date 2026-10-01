@@ -601,6 +601,7 @@ describe('Store', () => {
     expect(store.getRepos()[0]!.forkSyncMode).toBeUndefined()
   })
 
+  // fork-seam: repo-extension-settings
   it('updateRepo persists extension settings across reloads and clears them with null', async () => {
     const store = await createStore()
     store.addRepo(makeRepo())
