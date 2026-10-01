@@ -245,7 +245,8 @@
                   "attach_paste_hint": "또는 Cmd+V 로 이미지 붙여넣기",
                   "remove_attachment": "{{value0}} 제거",
                   "milestone_include_closed": "완료된 단계 포함",
-                  "attach_paste_shortcut_hint": "또는 {{value0}}로 이미지 붙여넣기"
+                  "attach_paste_shortcut_hint": "또는 {{value0}}로 이미지 붙여넣기",
+                  "attach_read_failed": "{{value0}} 파일을 읽지 못했습니다"
                 }
               }
             },

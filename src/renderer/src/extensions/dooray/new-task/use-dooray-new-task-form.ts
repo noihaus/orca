@@ -62,7 +62,13 @@ export function useDoorayNewTaskForm({
     projectId && projects.some((project) => project.id === projectId)
       ? projectId
       : (projects[0]?.id ?? null)
-  const { tags, templates, workflows, milestones } = useDoorayProjectTaskOptions(effectiveProjectId)
+  const {
+    tags,
+    templates,
+    workflows,
+    milestones,
+    loaded: optionsLoaded
+  } = useDoorayProjectTaskOptions(effectiveProjectId)
 
   const addAttachments = useCallback((added: DoorayPendingAttachment[]) => {
     setAttachments((prev) => [...prev, ...added])
@@ -129,9 +135,13 @@ export function useDoorayNewTaskForm({
   }
 
   const missingTagGroups = missingMandatoryTagGroups(tags, tagIds)
-  // Dooray rejects a create missing a mandatory tag group (USER_INVALID_TAG_MANDATORY_PREFIX).
+  // Dooray rejects a create missing a mandatory tag group (USER_INVALID_TAG_MANDATORY_PREFIX);
+  // until tags load the mandatory groups are unknown, so the gate stays closed.
   const canSubmit =
-    Boolean(effectiveProjectId && subject.trim()) && missingTagGroups.length === 0 && !submitting
+    Boolean(effectiveProjectId && subject.trim()) &&
+    optionsLoaded &&
+    missingTagGroups.length === 0 &&
+    !submitting
 
   const submit = async (): Promise<void> => {
     if (!canSubmit || !effectiveProjectId) {

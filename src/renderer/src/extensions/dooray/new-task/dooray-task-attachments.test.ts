@@ -35,4 +35,9 @@ describe('dooray task attachments', () => {
     })
     expect(attachment.id).toBeTruthy()
   })
+
+  it('falls back to a generic binary type when the blob has none', async () => {
+    const attachment = await readDoorayAttachment(new Blob([new Uint8Array([1])]), 'data.bin')
+    expect(attachment.mimeType).toBe('application/octet-stream')
+  })
 })

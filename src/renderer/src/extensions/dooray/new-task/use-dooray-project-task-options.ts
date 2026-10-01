@@ -22,7 +22,10 @@ const EMPTY_OPTIONS: DoorayProjectTaskOptions = {
 }
 
 // Each list degrades to [] on failure so one broken endpoint never blocks task creation.
-export function useDoorayProjectTaskOptions(projectId: string | null): DoorayProjectTaskOptions {
+// `loaded` turns true once the current project's lists settle (failed lists count as settled).
+export function useDoorayProjectTaskOptions(
+  projectId: string | null
+): DoorayProjectTaskOptions & { loaded: boolean } {
   const api = useDoorayApi()
   const [loaded, setLoaded] = useState<{ projectId: string; options: DoorayProjectTaskOptions }>()
 
@@ -48,5 +51,7 @@ export function useDoorayProjectTaskOptions(projectId: string | null): DoorayPro
   }, [api, projectId])
 
   // Keyed on the project so a switch never shows the previous project's options.
-  return loaded && loaded.projectId === projectId ? loaded.options : EMPTY_OPTIONS
+  return loaded && loaded.projectId === projectId
+    ? { ...loaded.options, loaded: true }
+    : { ...EMPTY_OPTIONS, loaded: false }
 }

@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { Paperclip } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
 import {
   formatAttachmentSize,
   pastedImageName,
-  readDoorayAttachment,
+  readDoorayAttachments,
   type DoorayPendingAttachment
 } from './dooray-task-attachments'
 import { DoorayRemovableChip } from './DoorayRemovableChip'
@@ -15,6 +16,25 @@ type DoorayAttachmentFieldProps = {
   onAdd: (attachments: DoorayPendingAttachment[]) => void
   onRemove: (id: string) => void
   disabled?: boolean
+}
+
+async function addReadableFiles(
+  files: readonly { blob: Blob; name: string }[],
+  onAdd: (attachments: DoorayPendingAttachment[]) => void
+): Promise<void> {
+  const { attachments, failedNames } = await readDoorayAttachments(files)
+  if (attachments.length > 0) {
+    onAdd(attachments)
+  }
+  if (failedNames.length > 0) {
+    toast.error(
+      translate(
+        'auto.ext.dooray.components.dooray.new.task.fields.attach_read_failed',
+        'Could not read {{value0}}',
+        { value0: failedNames.join(', ') }
+      )
+    )
+  }
 }
 
 function pasteShortcutLabel(): string {
@@ -43,9 +63,10 @@ export function DoorayAttachmentField({
         return
       }
       event.preventDefault()
-      void Promise.all(
-        files.map((file) => readDoorayAttachment(file, file.name || pastedImageName(Date.now())))
-      ).then(onAdd)
+      void addReadableFiles(
+        files.map((file) => ({ blob: file, name: file.name || pastedImageName(Date.now()) })),
+        onAdd
+      )
     }
     document.addEventListener('paste', handlePaste)
     return () => document.removeEventListener('paste', handlePaste)
@@ -55,7 +76,10 @@ export function DoorayAttachmentField({
     const picked = Array.from(event.target.files ?? [])
     event.target.value = ''
     if (picked.length > 0) {
-      void Promise.all(picked.map((file) => readDoorayAttachment(file, file.name))).then(onAdd)
+      void addReadableFiles(
+        picked.map((file) => ({ blob: file, name: file.name })),
+        onAdd
+      )
     }
   }
 

@@ -8,3 +8,4 @@ auto.components.dooray.errors.no_member_profile	Dooray did not return a member p
 auto.components.dooray.errors.not_connected	Not connected to Dooray.	두레이에 연결되어 있지 않습니다.
 auto.components.settings.dooray.integration.card.disconnect_failed	Failed to disconnect Dooray.	두레이 연결 해제에 실패했습니다.
 auto.components.dooray.new.task.fields.attach_paste_shortcut_hint	or paste an image with {{value0}}	또는 {{value0}}로 이미지 붙여넣기
+auto.components.dooray.new.task.fields.attach_read_failed	Could not read {{value0}}	{{value0}} 파일을 읽지 못했습니다

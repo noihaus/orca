@@ -245,7 +245,8 @@
                   "attach_paste_hint": "or paste an image with Cmd+V",
                   "remove_attachment": "Remove {{value0}}",
                   "milestone_include_closed": "Include closed",
-                  "attach_paste_shortcut_hint": "or paste an image with {{value0}}"
+                  "attach_paste_shortcut_hint": "or paste an image with {{value0}}",
+                  "attach_read_failed": "Could not read {{value0}}"
                 }
               }
             },

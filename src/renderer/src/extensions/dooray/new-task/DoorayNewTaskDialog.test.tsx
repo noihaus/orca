@@ -58,10 +58,12 @@ function createButton(): HTMLButtonElement {
   return button
 }
 
-function pasteImage(file: File): Event {
+function pasteImage(...files: File[]): Event {
   const event = new Event('paste', { bubbles: true, cancelable: true })
   Object.defineProperty(event, 'clipboardData', {
-    value: { items: [{ kind: 'file', type: file.type, getAsFile: () => file }] }
+    value: {
+      items: files.map((file) => ({ kind: 'file', type: file.type, getAsFile: () => file }))
+    }
   })
   document.dispatchEvent(event)
   return event
@@ -100,6 +102,45 @@ describe('DoorayNewTaskDialog', () => {
 
     await waitFor(() => expect(createButton().disabled).toBe(false))
     expect(screen.queryByText('Select a required tag from: Type')).toBeNull()
+  })
+
+  it('keeps Create disabled while tags are still loading', async () => {
+    let resolveTags: (value: DoorayTag[]) => void = () => {}
+    api.listTags.mockReturnValue(
+      new Promise<DoorayTag[]>((resolve) => {
+        resolveTags = resolve
+      })
+    )
+    renderDialog()
+    fireEvent.change(screen.getByPlaceholderText('Task subject'), { target: { value: 'x' } })
+    await waitFor(() => expect(api.listMilestones).toHaveBeenCalled())
+    expect(createButton().disabled).toBe(true)
+
+    await act(async () => resolveTags(tags))
+    expect(await screen.findByText('Select a required tag from: Type')).toBeTruthy()
+    expect(createButton().disabled).toBe(true)
+    fireEvent.click(screen.getByRole('combobox', { name: 'Tags' }))
+    fireEvent.click(await screen.findByRole('option', { name: /Bug/ }))
+    await waitFor(() => expect(createButton().disabled).toBe(false))
+  })
+
+  it('allows Create when the tag list fails to load (server enforces)', async () => {
+    api.listTags.mockRejectedValue(new Error('boom'))
+    renderDialog()
+    fireEvent.change(screen.getByPlaceholderText('Task subject'), { target: { value: 'x' } })
+    await waitFor(() => expect(createButton().disabled).toBe(false))
+  })
+
+  it('adds readable files and toasts the unreadable one', async () => {
+    renderDialog()
+    const broken = new File([new Uint8Array([1])], 'broken.png', { type: 'image/png' })
+    Object.defineProperty(broken, 'arrayBuffer', {
+      value: () => Promise.reject(new Error('read failed'))
+    })
+    pasteImage(new File([new Uint8Array([1])], 'good.png', { type: 'image/png' }), broken)
+    expect(await screen.findByText('good.png')).toBeTruthy()
+    expect(screen.queryByText('broken.png')).toBeNull()
+    expect(toastError).toHaveBeenCalledWith('Could not read broken.png')
   })
 
   it('requires a subject', async () => {
@@ -154,6 +195,7 @@ describe('DoorayNewTaskDialog', () => {
     fireEvent.change(screen.getByPlaceholderText('Task subject'), {
       target: { value: ' Crash ' }
     })
+    await waitFor(() => expect(createButton().disabled).toBe(false))
     await act(async () => fireEvent.click(createButton()))
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(created))
@@ -174,6 +216,7 @@ describe('DoorayNewTaskDialog', () => {
     api.createIssue.mockResolvedValue({ ok: false, error: 'Not connected to Dooray.' })
     const { onOpenChange, onCreated } = renderDialog()
     fireEvent.change(screen.getByPlaceholderText('Task subject'), { target: { value: 'x' } })
+    await waitFor(() => expect(createButton().disabled).toBe(false))
     await act(async () => fireEvent.click(createButton()))
     await waitFor(() => expect(toastError).toHaveBeenCalledWith('Not connected to Dooray.'))
     expect(onOpenChange).not.toHaveBeenCalled()

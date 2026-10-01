@@ -42,8 +42,28 @@ export async function readDoorayAttachment(
   return {
     id: `attachment-${attachmentSeq}`,
     name,
-    mimeType: blob.type,
+    // Dooray needs a content type; unknown files go up as a generic binary.
+    mimeType: blob.type || 'application/octet-stream',
     size: bytes.byteLength,
     dataBase64: bytesToBase64(bytes)
   }
+}
+
+// Reads each file independently so one unreadable file never drops the rest of the batch.
+export async function readDoorayAttachments(
+  files: readonly { blob: Blob; name: string }[]
+): Promise<{ attachments: DoorayPendingAttachment[]; failedNames: string[] }> {
+  const settled = await Promise.allSettled(
+    files.map(({ blob, name }) => readDoorayAttachment(blob, name))
+  )
+  const attachments: DoorayPendingAttachment[] = []
+  const failedNames: string[] = []
+  settled.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      attachments.push(result.value)
+    } else {
+      failedNames.push(files[index].name)
+    }
+  })
+  return { attachments, failedNames }
 }
