@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentType } from 'react'
 import type { StateCreator } from 'zustand'
 import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
 import type { AppState } from '@/store/types'
@@ -55,7 +55,8 @@ export type RendererExtension = {
   integrationCards?: readonly ComponentType[]
   repositorySettingsSections?: readonly ComponentType<RepositorySettingsSectionProps>[]
   onboardingIntegrationRows?: readonly ComponentType[]
-  appProviders?: readonly ComponentType<{ children: ReactNode }>[]
+  // Rendered once as siblings at the app root (dialogs and other app-wide hosts).
+  appSurfaces?: readonly ComponentType[]
   resolveLinkedWorkItemBranch?: (item: LinkedWorkItemSummary) => string | null
   locales?: ExtensionLocaleLoaders
 }

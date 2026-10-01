@@ -10,7 +10,7 @@ import {
 } from './dooray-lazy-slots'
 import { ensureBoundDoorayStatus, useBoundDoorayTaskSourceStatus } from './dooray-store-handle'
 import { DoorayIcon } from './DoorayIcon'
-import { DoorayTaskBaseRefDialogProvider } from './start/DoorayTaskBaseRefDialogProvider'
+import { DoorayTaskBaseRefDialogHost } from './start/DoorayTaskBaseRefDialogHost'
 
 // Must equal the manifest provider id (installed-extension-manifest.ts).
 const doorayTaskSource = {
@@ -46,7 +46,7 @@ export const doorayRendererExtension = {
   integrationCards: [DoorayIntegrationCardSlot],
   onboardingIntegrationRows: [DoorayOnboardingRowSlot],
   repositorySettingsSections: [DoorayRepositoryStartSectionSlot],
-  appProviders: [DoorayTaskBaseRefDialogProvider],
+  appSurfaces: [DoorayTaskBaseRefDialogHost],
   locales: {
     en: () => import('./locales/en.json').then((module) => module.default),
     ko: () => import('./locales/ko.json').then((module) => module.default),

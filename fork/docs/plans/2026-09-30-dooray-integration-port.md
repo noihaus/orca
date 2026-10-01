@@ -129,7 +129,7 @@ export type RendererExtension = {
   integrationCards?: ComponentType[]
   repositorySettingsSections?: ComponentType<RepositorySettingsSectionProps>[]
   onboardingIntegrationRows?: ComponentType[]
-  appProviders?: ComponentType<{ children: ReactNode }>[]
+  appSurfaces?: ComponentType[]   // (was appProviders; collapsed to sibling surfaces in the final review)
   resolveLinkedWorkItemBranch?: (item: LinkedWorkItemSummary) => string | null
   locales?: Partial<Record<'en' | 'ko' | 'ja' | 'zh' | 'es', () => Promise<Record<string, unknown>>>>
 }
@@ -329,7 +329,7 @@ expect(normalizeRightSidebarTab('ext:gone/tasks')).toBe(DEFAULT_RIGHT_SIDEBAR_TA
 - (seam `integration-cards`) `settings/IntegrationsPane.tsx:39-55`: Task providers 그룹 맨 앞에 `installed.integrationCards`를 렌더한다. `settings/use-integration-provider-status-refresh.ts`에서는 확장 `taskSource.ensureStatus()`를 호출한다. `feature-wall/use-integration-connection-status.ts`는 확장 상태를 optional fact로 합친다.
 - (seam `repository-settings-sections`) `settings/RepositoryPane.tsx`: `RepositoryWorktreeDefaultsSection` 다음에 `installed.repositorySettingsSections`를 렌더한다(`{repo, updateRepo, forceVisible}`).
 - (seam `onboarding-integration-rows`) `onboarding/IntegrationsStep.tsx:227-265`: `GitHubRow` 위에 확장 행을 렌더한다.
-- (seam `app-providers`) `App.tsx`: `ConfirmationDialogProvider` 안쪽을 확장 `appProviders`로 순서대로 감싼다.
+- (seam `app-surfaces`, 원래 `app-providers`) `App.tsx`: `LinkRoutingPreferenceDialogProvider` 안쪽 끝에 `<ExtensionAppSurfaces />` 한 줄을 둔다.
 - Test: 각 슬롯 렌더 테스트(fixture)
 
 - [ ] **Step 1~4:** 실패 테스트 → 구현 → PASS
@@ -785,7 +785,7 @@ switch({ worktreePath, submodulePaths?, branch, baseRef?, fetchBase? }): Promise
 ## Task D14: 현재 워크스페이스에서 시작 — UI + 저장소 설정
 
 **Files:**
-- `extensions/dooray/start/DoorayTaskBaseRefDialog.tsx`(`index.ts`의 `appProviders`에 Provider 등록; `BaseRefPicker`, `getRuntimeRepoBaseRefDefault` 재사용)
+- `extensions/dooray/start/DoorayTaskBaseRefDialog.tsx`(`index.ts`의 `appSurfaces`에 Host 등록; `BaseRefPicker`, `getRuntimeRepoBaseRefDefault` 재사용)
 - `start/dooray-start-in-current-workspace.ts`, `use-dooray-start-actions.ts`, `DoorayWorkspaceStartMenu.tsx`
 - `settings/DoorayRepositoryStartSection.tsx`(`repositorySettingsSections` 등록). 저장 위치는 `repo.extensionSettings.dooray: RepoDoorayStart`이고 S9 경로를 쓴다.
 - 미커밋 변경 프롬프트는 S10의 alternate action을 쓴다.

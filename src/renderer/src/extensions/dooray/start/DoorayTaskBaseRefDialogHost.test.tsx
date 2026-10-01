@@ -6,7 +6,7 @@ import {
   useDoorayTaskBaseRefPrompt,
   type DoorayBaseRefPrompt
 } from './dooray-task-base-ref-context'
-import { DoorayTaskBaseRefDialogProvider } from './DoorayTaskBaseRefDialogProvider'
+import { DoorayTaskBaseRefDialogHost } from './DoorayTaskBaseRefDialogHost'
 
 vi.mock('./DoorayTaskBaseRefDialog', () => ({
   DoorayTaskBaseRefDialog: ({
@@ -44,17 +44,18 @@ function ask(branch: string): Promise<unknown> {
 
 afterEach(cleanup)
 
-describe('DoorayTaskBaseRefDialogProvider', () => {
-  it('is null outside the provider', () => {
+describe('DoorayTaskBaseRefDialogHost', () => {
+  it('is null while no host is mounted', () => {
     render(<Capture />)
     expect(prompt).toBeNull()
   })
 
-  it('queues prompts and resolves each with its own choice', async () => {
+  it('queues prompts from a sibling and resolves each with its own choice', async () => {
     render(
-      <DoorayTaskBaseRefDialogProvider>
+      <>
         <Capture />
-      </DoorayTaskBaseRefDialogProvider>
+        <DoorayTaskBaseRefDialogHost />
+      </>
     )
     const first = ask('one')
     const second = ask('two')
@@ -62,5 +63,17 @@ describe('DoorayTaskBaseRefDialogProvider', () => {
     await expect(first).resolves.toEqual({ baseRef: 'one' })
     fireEvent.click(await screen.findByText('settle two'))
     await expect(second).resolves.toEqual({ baseRef: 'two' })
+  })
+
+  it('cancels pending prompts when the last host unmounts', async () => {
+    const view = render(
+      <>
+        <Capture />
+        <DoorayTaskBaseRefDialogHost />
+      </>
+    )
+    const pending = ask('orphan')
+    view.unmount()
+    await expect(pending).resolves.toBe('cancel')
   })
 })

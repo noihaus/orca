@@ -1,6 +1,6 @@
 // Why: upstream merges can silently drop a seam line; fork-seams.test.ts enforces this list against the source tree.
 export const FORK_SEAMS = [
-  { name: 'app-providers', file: 'src/renderer/src/App.tsx' },
+  { name: 'app-surfaces', file: 'src/renderer/src/App.tsx' },
   {
     name: 'audited-extension-fetch-calls',
     file: 'src/main/proxy-guarded-fetch-call-site-audit.test.ts'

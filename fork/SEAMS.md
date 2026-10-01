@@ -10,10 +10,10 @@
 
 ## 연결 지점 목록
 
-### `app-providers`
+### `app-surfaces`
 
-- 목적: 앱 루트에 확장 provider 컴포넌트를 감싼다.
-- 확장 등록: `RendererExtension.appProviders`.
+- 목적: 앱 루트에 확장 surface 컴포넌트(앱 전역 대화상자 host 등)를 형제로 렌더한다. 앱 트리를 감싸지 않으므로 App.tsx 변경은 import 한 줄과 요소 한 줄이다.
+- 확장 등록: `RendererExtension.appSurfaces`. 두레이 base-ref 대화상자는 모듈 수준 큐(`dooray-task-base-ref-context.ts`)로 요청을 받고 `DoorayTaskBaseRefDialogHost`가 표시한다.
 - 파일:
   - `src/renderer/src/App.tsx`
 

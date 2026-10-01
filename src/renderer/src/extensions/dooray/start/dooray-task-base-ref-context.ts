@@ -1,4 +1,4 @@
-import { createContext, useContext, type Context } from 'react'
+import { useSyncExternalStore } from 'react'
 
 export type DoorayBaseRefRequest = {
   branch: string
@@ -20,16 +20,71 @@ export type DoorayBaseRefPrompt = (
   request: DoorayBaseRefRequest
 ) => Promise<DoorayBaseRefChoice | 'cancel'>
 
-let baseRefContext: Context<DoorayBaseRefPrompt | null> | null = null
-
-// React-only and created on first use: the provider is registered eagerly, so importing it must
-// neither pull in the store nor call React.
-export function getDoorayTaskBaseRefContext(): Context<DoorayBaseRefPrompt | null> {
-  baseRefContext ??= createContext<DoorayBaseRefPrompt | null>(null)
-  return baseRefContext
+export type QueuedDoorayBaseRefRequest = DoorayBaseRefRequest & {
+  id: number
+  resolve: (choice: DoorayBaseRefChoice | 'cancel') => void
 }
 
-// Null outside the provider; callers then switch without asking for a base.
+// Module-level so the dialog host can be a sibling app surface instead of a provider wrapping the app.
+let queue: readonly QueuedDoorayBaseRefRequest[] = []
+let nextId = 0
+let hostCount = 0
+const listeners = new Set<() => void>()
+
+function emit(): void {
+  for (const listener of listeners) {
+    listener()
+  }
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+// Requests queue so a second start never steals the open dialog's promise.
+const promptBaseRef: DoorayBaseRefPrompt = (request) =>
+  new Promise((resolve) => {
+    queue = [...queue, { ...request, id: nextId, resolve }]
+    nextId += 1
+    emit()
+  })
+
+export function settleDoorayBaseRefRequest(
+  id: number,
+  choice: DoorayBaseRefChoice | 'cancel'
+): void {
+  const entry = queue.find((candidate) => candidate.id === id)
+  if (!entry) {
+    return
+  }
+  queue = queue.filter((candidate) => candidate !== entry)
+  entry.resolve(choice)
+  emit()
+}
+
+// Returns the unregister function; the last host leaving cancels what nobody can answer.
+export function registerDoorayBaseRefHost(): () => void {
+  hostCount += 1
+  emit()
+  return () => {
+    hostCount -= 1
+    if (hostCount === 0) {
+      const orphaned = queue
+      queue = []
+      for (const entry of orphaned) {
+        entry.resolve('cancel')
+      }
+    }
+    emit()
+  }
+}
+
+export function useActiveDoorayBaseRefRequest(): QueuedDoorayBaseRefRequest | null {
+  return useSyncExternalStore(subscribe, () => queue[0] ?? null)
+}
+
+// Null while no dialog host is mounted; callers then switch without asking for a base.
 export function useDoorayTaskBaseRefPrompt(): DoorayBaseRefPrompt | null {
-  return useContext(getDoorayTaskBaseRefContext())
+  return useSyncExternalStore(subscribe, () => (hostCount > 0 ? promptBaseRef : null))
 }

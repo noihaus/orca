@@ -1,6 +1,4 @@
-import type { ReactNode } from 'react'
 import { INSTALLED_RENDERER_EXTENSIONS } from './installed-renderer-extensions'
-import { rendererExtensionSlot } from './extension-slot-hooks'
 import type {
   RendererExtension,
   RepositorySettingsSectionProps
@@ -10,7 +8,11 @@ type SlotHost = { extensions?: readonly RendererExtension[] }
 
 // Keyed by extension id + position within that extension's own list.
 function slotEntries<
-  K extends 'integrationCards' | 'onboardingIntegrationRows' | 'repositorySettingsSections'
+  K extends
+    | 'integrationCards'
+    | 'onboardingIntegrationRows'
+    | 'repositorySettingsSections'
+    | 'appSurfaces'
 >(
   slot: K,
   extensions: readonly RendererExtension[]
@@ -60,20 +62,14 @@ export function ExtensionRepositorySettingsSections({
   )
 }
 
-// First installed provider is outermost.
-export function ExtensionAppProviders({
-  children,
+export function ExtensionAppSurfaces({
   extensions = INSTALLED_RENDERER_EXTENSIONS
-}: SlotHost & { children: ReactNode }): React.JSX.Element {
-  const providers = rendererExtensionSlot('appProviders', extensions).flat()
+}: SlotHost): React.JSX.Element {
   return (
     <>
-      {providers.reduceRight(
-        (inner, Provider) => (
-          <Provider>{inner}</Provider>
-        ),
-        children
-      )}
+      {slotEntries('appSurfaces', extensions).map(({ key, Component }) => (
+        <Component key={key} />
+      ))}
     </>
   )
 }

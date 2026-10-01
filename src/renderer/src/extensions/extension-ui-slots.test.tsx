@@ -1,12 +1,12 @@
 // @vitest-environment happy-dom
 
-import { act, type ReactNode } from 'react'
+import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { Repo } from '../../../shared/repo-types'
 import {
-  ExtensionAppProviders,
+  ExtensionAppSurfaces,
   ExtensionIntegrationCards,
   ExtensionOnboardingIntegrationRows,
   ExtensionRepositorySettingsSections
@@ -35,11 +35,6 @@ const taskSource = (
   Panel: () => null,
   navShortcutLabel: () => ''
 })
-const Wrap =
-  (name: string) =>
-  ({ children }: { children: ReactNode }): React.JSX.Element => (
-    <div data-provider={name}>{children}</div>
-  )
 const extA = {
   id: 'a',
   taskSource: taskSource('a', true, true, ensureA),
@@ -52,13 +47,13 @@ const extA = {
       </p>
     )
   ],
-  appProviders: [Wrap('a')]
+  appSurfaces: [() => <p>surface-a</p>]
 } as const satisfies RendererExtension
 const extB = {
   id: 'b',
   taskSource: taskSource('b', false, true, ensureB),
   integrationCards: [() => <p>card-b</p>],
-  appProviders: [Wrap('b')]
+  appSurfaces: [() => <p>surface-b</p>]
 } as const satisfies RendererExtension
 const installed = [extA, extB]
 const repo: Repo = { id: 'r1', path: '/r', displayName: 'r', badgeColor: '#000', addedAt: 0 }
@@ -95,11 +90,11 @@ describe('extension ui slots', () => {
     expect(out).toContain('true')
   })
 
-  it('nests app providers with the first installed outermost', () => {
-    expect(html(<ExtensionAppProviders extensions={installed}>kid</ExtensionAppProviders>)).toBe(
-      '<div data-provider="a"><div data-provider="b">kid</div></div>'
+  it('renders app surfaces as siblings in installed order', () => {
+    expect(html(<ExtensionAppSurfaces extensions={installed} />)).toBe(
+      '<p>surface-a</p><p>surface-b</p>'
     )
-    expect(html(<ExtensionAppProviders extensions={[]}>kid</ExtensionAppProviders>)).toBe('kid')
+    expect(html(<ExtensionAppSurfaces extensions={[]} />)).toBe('')
   })
 })
 

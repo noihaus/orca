@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ConfirmationDialogProvider } from './components/confirmation-dialog'
-import { ExtensionAppProviders } from './extensions/extension-ui-slots' // fork-seam: app-providers
+import { ExtensionAppSurfaces } from './extensions/extension-ui-slots' // fork-seam: app-surfaces
 import { BrowserWebAuthnAccountDialog } from './components/browser-webauthn-account-dialog'
 import { DocPreviewExternalLinkConfirmation } from './components/browser-pane/workspace-doc/doc-preview-external-link-confirmation'
 import { LinkRoutingPreferenceDialogProvider } from './components/link-routing-preference-dialog'
@@ -92,19 +92,18 @@ function App(): React.JSX.Element {
     >
       <TooltipProvider delayDuration={400}>
         <ConfirmationDialogProvider>
-          <ExtensionAppProviders>
-            {/* fork-seam: app-providers */}
-            <DocPreviewExternalLinkConfirmation />
-            <LinkRoutingPreferenceDialogProvider>
-              <AppBackgroundServices />
-              <AppWorkspaceShell layout={layout} floatingWorkspace={floatingWorkspace} />
-              <AppRootSurfaces
-                floatingWorkspace={floatingWorkspace}
-                onboardingGate={onboardingGate}
-              />
-              <BrowserWebAuthnAccountDialog />
-            </LinkRoutingPreferenceDialogProvider>
-          </ExtensionAppProviders>
+          <DocPreviewExternalLinkConfirmation />
+          <LinkRoutingPreferenceDialogProvider>
+            <AppBackgroundServices />
+            <AppWorkspaceShell layout={layout} floatingWorkspace={floatingWorkspace} />
+            <AppRootSurfaces
+              floatingWorkspace={floatingWorkspace}
+              onboardingGate={onboardingGate}
+            />
+            <BrowserWebAuthnAccountDialog />
+            {/* fork-seam: app-surfaces */}
+            <ExtensionAppSurfaces />
+          </LinkRoutingPreferenceDialogProvider>
         </ConfirmationDialogProvider>
       </TooltipProvider>
       <Toaster closeButton toastOptions={{ className: 'font-sans text-sm' }} />
