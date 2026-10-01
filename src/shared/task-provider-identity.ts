@@ -1,6 +1,7 @@
 import { githubRepoIdentityKey } from './github/repository-identity-key'
 import type { TaskProvider } from './task-providers'
 import type { ProjectProviderIdentity } from './project-types'
+import { extensionTaskProviderDefaults } from './extensions/extension-task-sources' // fork-seam: task-provider-registry
 
 export type GitHubTaskProviderIdentity = ProjectProviderIdentity & {
   provider: 'github'
@@ -80,6 +81,7 @@ export function normalizeTaskProviderIdentity(
         projectKey: normalizeNonEmptyString(raw.projectKey)
       }
   }
+  return null // fork-seam: task-provider-registry
 }
 
 export function isStoredTaskProviderIdentity(provider: TaskProvider, identity: unknown): boolean {
@@ -113,13 +115,15 @@ export function isStoredTaskProviderIdentity(provider: TaskProvider, identity: u
     case 'jira':
       return ['siteId', 'siteUrl', 'projectKey'].every((key) => isNullableOptionalString(raw[key]))
   }
+  return false // fork-seam: task-provider-registry
 }
 
 const TASK_PROVIDER_IDENTITY_FIELDS: Record<TaskProvider, readonly string[]> = {
   github: ['owner', 'repo', 'host'],
   gitlab: ['projectId', 'namespace', 'project', 'webUrl'],
   linear: ['workspaceId', 'workspaceName', 'teamId', 'teamKey'],
-  jira: ['siteId', 'siteUrl', 'projectKey']
+  jira: ['siteId', 'siteUrl', 'projectKey'],
+  ...extensionTaskProviderDefaults(() => []) // fork-seam: task-provider-registry
 }
 
 export function areTaskProviderIdentitiesEqual(

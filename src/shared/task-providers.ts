@@ -1,6 +1,20 @@
-export type TaskProvider = 'github' | 'gitlab' | 'linear' | 'jira'
+import {
+  EXTENSION_TASK_PROVIDER_IDS,
+  isExtensionTaskProvider,
+  isExtensionTaskProviderAlwaysAvailable
+} from './extensions/extension-task-sources' // fork-seam: task-provider-registry
 
-export const TASK_PROVIDERS: readonly TaskProvider[] = ['github', 'gitlab', 'linear', 'jira']
+const TASK_PROVIDER_IDS = [
+  ...EXTENSION_TASK_PROVIDER_IDS, // fork-seam: task-provider-registry
+  'github',
+  'gitlab',
+  'linear',
+  'jira'
+] as const
+
+export type TaskProvider = (typeof TASK_PROVIDER_IDS)[number]
+
+export const TASK_PROVIDERS: readonly TaskProvider[] = TASK_PROVIDER_IDS
 
 const TASK_PROVIDER_SET = new Set<TaskProvider>(TASK_PROVIDERS)
 
@@ -94,6 +108,10 @@ function isTaskProviderAvailable(
   provider: TaskProvider,
   availability: TaskProviderAvailability
 ): boolean {
+  if (isExtensionTaskProvider(provider)) {
+    // fork-seam: task-provider-registry
+    return isExtensionTaskProviderAlwaysAvailable(provider)
+  }
   if (provider === 'github') {
     return true
   }

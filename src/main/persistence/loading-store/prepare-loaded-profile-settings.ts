@@ -3,6 +3,7 @@ import type { PersistedState } from '../../../shared/persisted-state-types'
 import type { ProjectGroup } from '../../../shared/project-group-types'
 import { deriveGlobalWindowsRuntimeDefaultFromLegacySettings } from '../../../shared/project-execution-runtime'
 import { normalizeTaskProviderSettings } from '../../../shared/task-providers'
+import { seedDefaultVisibleExtensionTaskProviders } from '../../../shared/extensions/extension-task-sources' // fork-seam: extension-provider-seeding
 import { normalizeAutoRenameBranchFromWorkDefaultOn } from '../../../shared/auto-rename-branch-from-work-settings'
 import {
   addMobilePairingCustomAddress,
@@ -34,7 +35,10 @@ export type PreparedLoadedProfileSettings = {
   >
   migratedTerminalLineHeight: GlobalSettings['terminalLineHeight']
   terminalRightClickToPasteDefaultedForPlatform: boolean
-  taskProviderSettings: Pick<GlobalSettings, 'defaultTaskSource' | 'visibleTaskProviders'>
+  taskProviderSettings: Pick<
+    GlobalSettings,
+    'defaultTaskSource' | 'visibleTaskProviders' | 'seededExtensionTaskProviders' // fork-seam: extension-provider-seeding
+  >
   primarySelectionDefaultedForLinux: boolean
   primarySelectionDefaultedForTerminalDefaults: boolean
   migratePrimarySelectionPlatformDefault: boolean
@@ -104,10 +108,21 @@ export function prepareLoadedProfileSettings(
     : rawTaskProviderSettings.visibleTaskProviders.includes('jira')
       ? rawTaskProviderSettings.visibleTaskProviders
       : [...rawTaskProviderSettings.visibleTaskProviders, 'jira' as const]
-  const taskProviderSettings = normalizeTaskProviderSettings({
-    visibleTaskProviders: migratedVisibleTaskProviders,
-    defaultTaskSource: rawTaskProviderSettings.defaultTaskSource
-  })
+  const extensionSeed = seedDefaultVisibleExtensionTaskProviders(
+    migratedVisibleTaskProviders,
+    parsed.settings?.seededExtensionTaskProviders
+  ) // fork-seam: extension-provider-seeding
+  const taskProviderSettings = {
+    ...normalizeTaskProviderSettings({
+      visibleTaskProviders: extensionSeed.visibleTaskProviders, // fork-seam: extension-provider-seeding
+      defaultTaskSource: rawTaskProviderSettings.defaultTaskSource
+    }),
+    seededExtensionTaskProviders: extensionSeed.seededExtensionTaskProviders // fork-seam: extension-provider-seeding
+  }
+  if (extensionSeed.changed) {
+    // fork-seam: extension-provider-seeding
+    markNeedsSave()
+  }
   const primarySelectionDefaultedForLinux =
     parsed.settings?.primarySelectionMiddleClickPasteDefaultedForLinux === true
   const primarySelectionDefaultedForTerminalDefaults =
