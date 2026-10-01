@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { mapDoorayIssue, mapDoorayTemplate, toWorkflowClass } from './dooray-issue-mapping'
+import {
+  mapDoorayComment,
+  mapDoorayIssue,
+  mapDoorayTemplate,
+  toWorkflowClass
+} from './dooray-issue-mapping'
 import { makeTestDoorayClient } from './dooray-test-client'
 
 const client = makeTestDoorayClient()
@@ -84,5 +89,12 @@ describe('Dooray issue mapping', () => {
       toMembers: [{ id: 'm', name: 'N', userCode: '' }],
       ccMembers: []
     })
+  })
+
+  it('falls back on empty names for comment author and milestone', () => {
+    expect(mapDoorayComment({ creator: { member: { name: '' }, name: 'Bot' } }).authorName).toBe(
+      'Bot'
+    )
+    expect(mapDoorayIssue(client, { id: 'a', milestone: { name: '' } }).milestoneName).toBeNull()
   })
 })

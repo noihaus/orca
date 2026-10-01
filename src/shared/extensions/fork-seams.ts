@@ -166,5 +166,6 @@ export const FORK_SEAMS = [
   { name: 'task-provider-registry', file: 'src/shared/task-provider-identity.ts' },
   { name: 'task-provider-registry', file: 'src/shared/task-providers.test.ts' },
   { name: 'task-provider-registry', file: 'src/shared/task-providers.ts' },
+  { name: 'web-preload-api', file: 'src/renderer/src/web/web-preload-api-composition.test.ts' },
   { name: 'web-preload-api', file: 'src/renderer/src/web/web-preload-api.ts' }
 ] as const

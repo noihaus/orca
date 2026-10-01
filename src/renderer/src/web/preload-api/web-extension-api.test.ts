@@ -9,9 +9,11 @@ describe('web extension APIs', () => {
     callRuntimeResult.mockResolvedValue('pong')
   })
 
-  it('exposes nothing by default', async () => {
+  it('exposes exactly the opted-in runtime namespaces by default', async () => {
     const { createWebExtensionApis } = await import('./web-extension-api')
-    expect(createWebExtensionApis()).toEqual({})
+    const { INSTALLED_RUNTIME_NAMESPACE_API_KEYS } =
+      await import('../../../../shared/extensions/installed-extension-manifest')
+    expect(Object.keys(createWebExtensionApis())).toEqual([...INSTALLED_RUNTIME_NAMESPACE_API_KEYS])
   })
 
   it('routes an opted-in namespace over runtime RPC', async () => {

@@ -71,7 +71,7 @@ export function mapDoorayComment(raw: JsonRecord): DoorayComment {
     id: asString(raw.id),
     body: asString(asRecord(raw.body).content),
     createdAt: asString(raw.createdAt),
-    authorName: asString(asRecord(creator.member).name, asString(creator.name))
+    authorName: asString(asRecord(creator.member).name) || asString(creator.name)
   }
 }
 

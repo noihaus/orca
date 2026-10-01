@@ -217,6 +217,7 @@
 - 목적: 웹 클라이언트에서 확장 API를 런타임 RPC로 제공한다.
 - 확장 등록: preload 목록과 `INSTALLED_RUNTIME_NAMESPACE_API_KEYS` 양쪽에 같은 키를 넣어야 한다.
 - 파일:
+  - `src/renderer/src/web/web-preload-api-composition.test.ts`
   - `src/renderer/src/web/web-preload-api.ts`
 
 ## 버전업 절차

@@ -17,10 +17,10 @@ function createFakeExtension(registerIpc = vi.fn()): MainExtension {
 }
 
 describe('main extension registration', () => {
-  it('is a no-op with no installed extensions', () => {
-    registerMainExtensionIpc()
-    expect(getMainExtensionRpcMethods()).toEqual([])
-    expect(bindMainExtensionRuntimeCommands(Object.create(null), {})).toEqual({})
+  it('is a no-op with no extensions', () => {
+    registerMainExtensionIpc([])
+    expect(getMainExtensionRpcMethods([])).toEqual([])
+    expect(bindMainExtensionRuntimeCommands(Object.create(null), {}, [])).toEqual({})
   })
 
   it('registers IPC handlers of each extension', () => {

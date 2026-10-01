@@ -1,4 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
+import { INSTALLED_PRELOAD_EXTENSIONS } from './installed-preload-extensions'
 import type { PreloadApi } from '../api-types'
 import { preloadExtensionApis, installedPreloadExtensionApis } from './expose-preload-extensions'
 import type { PreloadExtension, PreloadExtensionApis } from './preload-extension-contract'
@@ -9,8 +10,10 @@ const fakeExtension = {
 } as const satisfies PreloadExtension
 
 describe('preload extension APIs', () => {
-  it('exposes nothing with no installed extensions', () => {
-    expect(installedPreloadExtensionApis()).toEqual({})
+  it('exposes exactly the installed extension keys', () => {
+    expect(Object.keys(installedPreloadExtensionApis())).toEqual(
+      INSTALLED_PRELOAD_EXTENSIONS.map((extension) => extension.key)
+    )
   })
 
   it('exposes each extension api under its key', async () => {

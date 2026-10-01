@@ -10,7 +10,7 @@ export const INSTALLED_CREDENTIAL_SERVICES = ['Dooray'] as const satisfies reado
 export type ExtensionCredentialService = (typeof INSTALLED_CREDENTIAL_SERVICES)[number]
 
 // Subset of INSTALLED_PRELOAD_EXTENSIONS keys the web client serves over runtime RPC (that list can't load in a browser).
-export const INSTALLED_RUNTIME_NAMESPACE_API_KEYS = [] as const satisfies readonly string[]
+export const INSTALLED_RUNTIME_NAMESPACE_API_KEYS = ['dooray'] as const satisfies readonly string[]
 
 // Right-sidebar tab keys (`ext:<id>/<panel>`) main-side persistence keeps; a drift test pins these to the renderer registry.
 export const INSTALLED_RIGHT_SIDEBAR_TAB_KEYS = [] as const satisfies readonly `ext:${string}`[]

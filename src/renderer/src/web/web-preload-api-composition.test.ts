@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { installBrowserGlobals } from './web-preload-api-test-harness'
+import { INSTALLED_RUNTIME_NAMESPACE_API_KEYS } from '../../../shared/extensions/installed-extension-manifest' // fork-seam: web-preload-api
 
 describe('web preload API composition', () => {
   beforeEach(() => {
@@ -18,6 +19,7 @@ describe('web preload API composition', () => {
     installWebPreloadApi()
 
     expect(Object.keys(globals.window.api)).toEqual([
+      ...INSTALLED_RUNTIME_NAMESPACE_API_KEYS, // fork-seam: web-preload-api
       'app',
       'starNag',
       'platform',
