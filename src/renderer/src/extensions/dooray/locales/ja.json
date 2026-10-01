@@ -17,7 +17,11 @@
                     "unavailable": "Branch switching is unavailable in this client.",
                     "stashed": "Changes stashed.",
                     "skipped": "Switched to {{value0}}. Not checked out here: {{value1}}",
-                    "switched_with_submodules": "Switched to {{value0}} ({{count}} checkouts)."
+                    "switched_with_submodules": "Switched to {{value0}} ({{count}} checkouts).",
+                    "ssh_unsupported": "Branch switching is only available for local workspaces, not SSH.",
+                    "remote_runtime_unsupported": "Branch switching is unavailable for workspaces on a remote Orca server.",
+                    "folder_unsupported": "Branch switching needs a git worktree; this workspace is a folder.",
+                    "submodules_failed": "Switched to {{value0}}, but these submodules did not switch: {{value1}}"
                   }
                 }
               }
@@ -67,7 +71,8 @@
               "activeWorkspace": "Active workspace",
               "scopeLabel": "Branch scope",
               "workspaceOnly": "Workspace only",
-              "withSubmodules": "With submodules"
+              "withSubmodules": "With submodules",
+              "saveUnsupported": "This host's Orca version can't save this setting. Update Orca on the host and try again."
             }
           },
           "right": {
@@ -312,7 +317,9 @@
             "keepBranch": "Don't switch",
             "discardConfirmTitle": "Discard all uncommitted changes?",
             "discardConfirmDescription": "This deletes the changes in {{value0}} permanently, including untracked files. It cannot be undone.",
-            "discardConfirm": "Discard permanently"
+            "discardConfirm": "Discard permanently",
+            "dirtyDescriptionKeepsUntracked": "Changed: {{value0}}. Stash keeps the work; discard throws away tracked changes. Untracked files are kept either way.",
+            "discardConfirmDescriptionKeepsUntracked": "This permanently discards the tracked changes in {{value0}}. New (untracked) files are kept. It cannot be undone."
           },
           "doorayTaskBaseRefDialog": {
             "title": "Where should {{value0}} start?",

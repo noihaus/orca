@@ -27,6 +27,7 @@ export type DoorayIssueWorkspaceProps = {
   issue: DoorayIssue | null
   onUse?: (issue: DoorayIssue) => void
   primaryStartKind?: DoorayStartKind
+  primaryDisabledReason?: string
   secondaryStart?: DoorayStartAction
   workspaceStart?: DoorayWorkspaceStart
   onOpenWorkspace?: (issue: DoorayIssue) => void
@@ -169,6 +170,7 @@ export function DoorayIssueWorkspace({
   issue,
   onUse,
   primaryStartKind = 'new-worktree',
+  primaryDisabledReason,
   secondaryStart,
   workspaceStart,
   onOpenWorkspace,
@@ -196,6 +198,7 @@ export function DoorayIssueWorkspace({
       className="hidden shrink-0 sm:inline-flex"
       size="sm"
       primaryStartKind={primaryStartKind}
+      primaryDisabledReason={primaryDisabledReason}
       onUse={onUse}
       onOpenWorkspace={onOpenWorkspace}
     />
@@ -269,6 +272,7 @@ export function DoorayIssueWorkspace({
               <DoorayIssueAside
                 issue={displayed}
                 primaryStartKind={primaryStartKind}
+                primaryDisabledReason={primaryDisabledReason}
                 onUse={onUse}
                 onOpenWorkspace={onOpenWorkspace}
                 secondaryStart={secondaryStart}

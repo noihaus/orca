@@ -1,5 +1,8 @@
 import { lazy, Suspense } from 'react'
-import type { TaskSourcePanelProps } from '../renderer-extension-contract'
+import type {
+  RepositorySettingsSectionProps,
+  TaskSourcePanelProps
+} from '../renderer-extension-contract'
 
 // Lazy so the installed-extension list stays free of eager store-importing components.
 const LazyCard = lazy(() =>
@@ -41,3 +44,19 @@ export function DoorayTaskSourcePanelSlot(props: TaskSourcePanelProps): React.JS
 export const DoorayRightSidebarTasksPanel = lazy(() =>
   import('./sidebar/DoorayTasksPanel').then((m) => ({ default: m.DoorayTasksPanel }))
 )
+
+const LazyRepositoryStartSection = lazy(() =>
+  import('./settings/DoorayRepositoryStartSection').then((m) => ({
+    default: m.DoorayRepositoryStartSection
+  }))
+)
+
+export function DoorayRepositoryStartSectionSlot(
+  props: RepositorySettingsSectionProps
+): React.JSX.Element {
+  return (
+    <Suspense fallback={null}>
+      <LazyRepositoryStartSection {...props} />
+    </Suspense>
+  )
+}

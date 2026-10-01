@@ -9,3 +9,10 @@ auto.components.dooray.errors.not_connected	Not connected to Dooray.	두레이�
 auto.components.settings.dooray.integration.card.disconnect_failed	Failed to disconnect Dooray.	두레이 연결 해제에 실패했습니다.
 auto.components.dooray.new.task.fields.attach_paste_shortcut_hint	or paste an image with {{value0}}	또는 {{value0}}로 이미지 붙여넣기
 auto.components.dooray.new.task.fields.attach_read_failed	Could not read {{value0}}	{{value0}} 파일을 읽지 못했습니다
+auto.lib.dooray.start.in.current.workspace.ssh_unsupported	Branch switching is only available for local workspaces, not SSH.	브랜치 전환은 로컬 워크스페이스에서만 할 수 있습니다(SSH 불가).
+auto.lib.dooray.start.in.current.workspace.remote_runtime_unsupported	Branch switching is unavailable for workspaces on a remote Orca server.	원격 Orca 서버의 워크스페이스에서는 브랜치를 전환할 수 없습니다.
+auto.lib.dooray.start.in.current.workspace.folder_unsupported	Branch switching needs a git worktree; this workspace is a folder.	브랜치 전환은 git 워크트리에서만 할 수 있습니다. 이 워크스페이스는 폴더입니다.
+auto.lib.dooray.start.in.current.workspace.submodules_failed	Switched to {{value0}}, but these submodules did not switch: {{value1}}	{{value0}}(으)로 전환했지만 다음 서브모듈은 전환하지 못했습니다: {{value1}}
+auto.components.useDoorayStartActions.dirtyDescriptionKeepsUntracked	Changed: {{value0}}. Stash keeps the work; discard throws away tracked changes. Untracked files are kept either way.	변경됨: {{value0}}. Stash는 작업을 보관하고, 버리기는 추적 중인 변경 사항을 삭제합니다. 추적되지 않는 파일은 어느 쪽이든 유지됩니다.
+auto.components.useDoorayStartActions.discardConfirmDescriptionKeepsUntracked	This permanently discards the tracked changes in {{value0}}. New (untracked) files are kept. It cannot be undone.	{{value0}}의 추적 중인 변경 사항을 영구히 버립니다. 새(추적되지 않는) 파일은 유지됩니다. 되돌릴 수 없습니다.
+auto.components.settings.RepositoryDoorayStartSection.saveUnsupported	This host's Orca version can't save this setting. Update Orca on the host and try again.	이 호스트의 Orca 버전은 이 설정을 저장할 수 없습니다. 호스트의 Orca를 업데이트한 뒤 다시 시도하세요.

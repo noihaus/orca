@@ -320,6 +320,35 @@ describe('starting a workspace from a task', () => {
   })
 })
 
+describe('repository start mode', () => {
+  it('existing-workspace mode makes "Start in current workspace" primary and new worktree secondary', async () => {
+    seed(connected)
+    const repo = {
+      id: 'repo-1',
+      path: '/repo',
+      displayName: 'App',
+      badgeColor: '',
+      addedAt: 0,
+      extensionSettings: { dooray: { mode: 'existing-workspace' } }
+    }
+    useAppStore.setState({ repos: [repo], worktreesByRepo: {}, activeWorktreeId: null })
+    render(
+      <TooltipProvider>
+        <DoorayTaskSourcePanel onStartNewWorkspace={onStartNewWorkspace} startRepo={repo} />
+      </TooltipProvider>
+    )
+    fireEvent.click((await screen.findAllByTestId('dooray-issue-row'))[1])
+    const [primary] = await screen.findAllByRole('button', { name: /Start in current workspace/ })
+    // No workspace to switch, so the primary explains itself instead of running.
+    expect(primary.hasAttribute('disabled')).toBe(true)
+    fireEvent.click(screen.getByRole('button', { name: /^Start workspace$/ }))
+    expect(onStartNewWorkspace).toHaveBeenCalledWith(
+      buildDoorayLinkedWorkItem(issue(2)),
+      getDoorayIssueWorkspaceSeed(issue(2))
+    )
+  })
+})
+
 describe('Dooray task source registration', () => {
   it('registers under the manifest provider id with a lazy panel', async () => {
     const source = findExtensionTaskSource('dooray', INSTALLED_RENDERER_EXTENSIONS)

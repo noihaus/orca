@@ -33,6 +33,7 @@ export function DoorayAllTasksSection({
   onSelectProject,
   onOpenIssue,
   onStartIssue,
+  startLabel,
   onOpenWorkspace
 }: {
   list: DoorayIssueListModel
@@ -42,6 +43,7 @@ export function DoorayAllTasksSection({
   onSelectProject: (projectId: string) => void
   onOpenIssue: (issue: DoorayIssue) => void
   onStartIssue: (issue: DoorayIssue) => void
+  startLabel: string
   onOpenWorkspace: (issue: DoorayIssue) => void
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -174,7 +176,7 @@ export function DoorayAllTasksSection({
                         'auto.ext.dooray.components.TaskPageDooray.open_workspace',
                         'Open workspace'
                       )
-                    : translate('auto.components.TaskPage.9497f2787c', 'Start workspace')
+                    : startLabel
                 }
                 onOpenIssue={onOpenIssue}
                 onPrimaryAction={attached ? onOpenWorkspace : onStartIssue}

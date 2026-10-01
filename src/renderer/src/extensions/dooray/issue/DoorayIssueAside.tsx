@@ -1,11 +1,16 @@
 import { ArrowRight, Clipboard, ExternalLink, GitBranch } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
 import type { DoorayIssue } from '../../../../../shared/extensions/dooray/dooray-types'
 import { buildDoorayPrompt, copyDoorayText } from '../lib/dooray-issue-clipboard'
 import { openDoorayUrl } from '../lib/dooray-open-link'
+import {
+  DoorayWorkspaceStartMenu,
+  type DoorayWorkspaceStart
+} from '../start/DoorayWorkspaceStartMenu'
+
+export type { DoorayWorkspaceStart }
 
 export type DoorayStartKind = 'new-worktree' | 'existing-workspace'
 
@@ -13,11 +18,6 @@ export type DoorayStartAction = {
   kind: DoorayStartKind
   disabledReason?: string
   run: (issue: DoorayIssue) => void
-}
-
-export type DoorayWorkspaceStart = {
-  options: { id: string; label: string }[]
-  onSelect: (issue: DoorayIssue, optionId: string) => void
 }
 
 export function doorayStartLabel(kind: DoorayStartKind): string {
@@ -37,6 +37,8 @@ type PrimaryStartProps = {
   className?: string
   size?: 'sm'
   primaryStartKind: DoorayStartKind
+  // Only applies to a start action; "Open workspace" is always available.
+  primaryDisabledReason?: string
   onUse?: (issue: DoorayIssue) => void
   onOpenWorkspace?: (issue: DoorayIssue) => void
 }
@@ -47,6 +49,7 @@ export function DoorayStartPrimaryButton({
   className,
   size,
   primaryStartKind,
+  primaryDisabledReason,
   onUse,
   onOpenWorkspace
 }: PrimaryStartProps): React.JSX.Element | null {
@@ -54,13 +57,33 @@ export function DoorayStartPrimaryButton({
   if (!run) {
     return null
   }
-  return (
-    <Button onClick={() => run(issue)} className={className} size={size}>
+  const blocked = !onOpenWorkspace && Boolean(primaryDisabledReason)
+  const button = (
+    <Button
+      onClick={() => run(issue)}
+      className={blocked ? 'w-full' : className}
+      size={size}
+      disabled={blocked}
+    >
       {onOpenWorkspace
         ? translate('auto.ext.dooray.components.TaskPageDooray.open_workspace', 'Open workspace')
         : doorayStartLabel(primaryStartKind)}
       <ArrowRight className="size-4" />
     </Button>
+  )
+  if (!blocked) {
+    return button
+  }
+  // A disabled button swallows pointer events, so the tooltip hangs off a wrapper.
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={className}>{button}</span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={6}>
+        {primaryDisabledReason}
+      </TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -72,26 +95,12 @@ function WorkspaceStartMenu({
   workspaceStart: DoorayWorkspaceStart
 }): React.JSX.Element {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="mb-2 w-full justify-center">
-          <GitBranch className="size-3.5" />
-          {doorayStartLabel('existing-workspace')}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-56" align="start">
-        {workspaceStart.options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => workspaceStart.onSelect(issue, option.id)}
-            className="flex w-full items-center rounded-sm px-2 py-1.5 text-left text-[12px] hover:bg-accent"
-          >
-            <span className="truncate">{option.label}</span>
-          </button>
-        ))}
-      </PopoverContent>
-    </Popover>
+    <DoorayWorkspaceStartMenu issue={issue} workspaceStart={workspaceStart}>
+      <Button variant="outline" size="sm" className="mb-2 w-full justify-center">
+        <GitBranch className="size-3.5" />
+        {doorayStartLabel('existing-workspace')}
+      </Button>
+    </DoorayWorkspaceStartMenu>
   )
 }
 
@@ -192,6 +201,7 @@ function buildAsideActions(issue: DoorayIssue): AsideAction[] {
 export function DoorayIssueAside({
   issue,
   primaryStartKind,
+  primaryDisabledReason,
   onUse,
   onOpenWorkspace,
   secondaryStart,
@@ -204,8 +214,9 @@ export function DoorayIssueAside({
     <aside className="border-t border-border/50 bg-muted/20 px-3 py-3 xl:border-l xl:border-t-0">
       <DoorayStartPrimaryButton
         issue={issue}
-        className="mb-3 w-full justify-center sm:hidden"
+        className="mb-3 flex w-full justify-center sm:hidden"
         primaryStartKind={primaryStartKind}
+        primaryDisabledReason={primaryDisabledReason}
         onUse={onUse}
         onOpenWorkspace={onOpenWorkspace}
       />

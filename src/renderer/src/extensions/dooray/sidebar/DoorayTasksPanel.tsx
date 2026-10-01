@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { LoaderCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
@@ -6,11 +6,13 @@ import { useAppStore } from '@/store'
 import type { DoorayIssue } from '../../../../../shared/extensions/dooray/dooray-types'
 import { DoorayConnectDialog } from '../DoorayConnectDialog'
 import { DoorayIcon } from '../DoorayIcon'
+import { doorayStartLabel } from '../issue/DoorayIssueAside'
 import { DoorayIssueWorkspace } from '../issue/DoorayIssueWorkspace'
 import {
   buildDoorayLinkedWorkItem,
   getDoorayIssueWorkspaceSeed
 } from '../lib/dooray-linked-work-item'
+import { useDoorayStartActions } from '../start/use-dooray-start-actions'
 import { useDoorayIssueList } from '../tasks/use-dooray-issue-list'
 import { useDoorayWorkspaceActions } from '../tasks/use-dooray-workspace-actions'
 import { useDoorayConnectionStatus } from '../use-dooray-connection-status'
@@ -72,13 +74,25 @@ export function ConnectedDoorayTasksPanel({
       state.activeRepoId ??
       undefined
   )
-  const startWorkspace = (issue: DoorayIssue): void =>
-    openModal('new-workspace-composer', {
-      initialRepoId: startRepoId,
-      linkedWorkItem: buildDoorayLinkedWorkItem(issue),
-      prefilledName: getDoorayIssueWorkspaceSeed(issue),
-      telemetrySource: 'sidebar'
-    })
+  const startRepo = useAppStore(
+    (state) => state.repos.find((repo) => repo.id === startRepoId) ?? null
+  )
+  const startNewWorkspace = useCallback(
+    (issue: DoorayIssue): void =>
+      openModal('new-workspace-composer', {
+        initialRepoId: startRepoId,
+        linkedWorkItem: buildDoorayLinkedWorkItem(issue),
+        prefilledName: getDoorayIssueWorkspaceSeed(issue),
+        telemetrySource: 'sidebar'
+      }),
+    [openModal, startRepoId]
+  )
+  const start = useDoorayStartActions(startRepo, startNewWorkspace)
+  // A row cannot host the workspace picker, so it opens the sheet where the menu lives.
+  const startFromRow =
+    start.primaryStartKind === 'existing-workspace' && start.needsWorkspacePicker
+      ? (issue: DoorayIssue) => setSelectedIssueId(issue.id)
+      : start.onPrimaryStart
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
@@ -94,13 +108,18 @@ export function ConnectedDoorayTasksPanel({
           attachedIssueIds={attachedIssueIds}
           onSelectProject={selectProject}
           onOpenIssue={(issue) => setSelectedIssueId(issue.id)}
-          onStartIssue={startWorkspace}
+          onStartIssue={startFromRow}
+          startLabel={doorayStartLabel(start.primaryStartKind)}
           onOpenWorkspace={openWorkspace}
         />
       </div>
       <DoorayIssueWorkspace
         issue={selectedIssue}
-        onUse={startWorkspace}
+        onUse={start.onPrimaryStart}
+        primaryStartKind={start.primaryStartKind}
+        primaryDisabledReason={start.primaryDisabledReason}
+        secondaryStart={start.secondaryStart}
+        workspaceStart={start.workspaceStart}
         onOpenWorkspace={
           selectedIssue && attachedIssueIds.has(selectedIssue.id) ? openWorkspace : undefined
         }

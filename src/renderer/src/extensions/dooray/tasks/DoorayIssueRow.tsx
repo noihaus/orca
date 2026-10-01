@@ -13,6 +13,8 @@ export type DoorayIssueRowProps = {
   selected?: boolean
   onSelectIssue?: (issue: DoorayIssue) => void
   onStartIssue?: (issue: DoorayIssue) => void
+  // Tooltip for the start action; defaults to "Start workspace".
+  startLabel?: string
   // A matching workspace swaps "start" for "open".
   onOpenWorkspace?: (issue: DoorayIssue) => void
 }
@@ -26,8 +28,12 @@ function assigneeLabel(issue: DoorayIssue): string {
 function RowActions({
   issue,
   onStartIssue,
+  startLabel,
   onOpenWorkspace
-}: Pick<DoorayIssueRowProps, 'issue' | 'onStartIssue' | 'onOpenWorkspace'>): React.JSX.Element {
+}: Pick<
+  DoorayIssueRowProps,
+  'issue' | 'onStartIssue' | 'startLabel' | 'onOpenWorkspace'
+>): React.JSX.Element {
   return (
     <div className="flex shrink-0 items-center justify-end gap-1 md:opacity-0 md:transition-opacity md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100">
       {onOpenWorkspace ? (
@@ -78,7 +84,7 @@ function RowActions({
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={6}>
-            {translate('auto.components.TaskPage.9497f2787c', 'Start workspace')}
+            {startLabel ?? translate('auto.components.TaskPage.9497f2787c', 'Start workspace')}
           </TooltipContent>
         </Tooltip>
       ) : null}
@@ -120,6 +126,7 @@ export function DoorayIssueRow({
   selected = false,
   onSelectIssue,
   onStartIssue,
+  startLabel,
   onOpenWorkspace
 }: DoorayIssueRowProps): React.JSX.Element {
   const interactive = onSelectIssue !== undefined
@@ -190,7 +197,12 @@ export function DoorayIssueRow({
         </TooltipContent>
       </Tooltip>
 
-      <RowActions issue={issue} onStartIssue={onStartIssue} onOpenWorkspace={onOpenWorkspace} />
+      <RowActions
+        issue={issue}
+        onStartIssue={onStartIssue}
+        startLabel={startLabel}
+        onOpenWorkspace={onOpenWorkspace}
+      />
     </div>
   )
 }

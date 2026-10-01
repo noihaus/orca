@@ -17,7 +17,11 @@
                     "unavailable": "이 클라이언트에서는 브랜치 전환을 사용할 수 없습니다.",
                     "stashed": "변경사항을 stash 했습니다.",
                     "skipped": "{{value0}} 로 전환했습니다. 체크아웃되지 않은 대상: {{value1}}",
-                    "switched_with_submodules": "{{value0}} 로 전환했습니다 ({{count}}개 체크아웃)."
+                    "switched_with_submodules": "{{value0}} 로 전환했습니다 ({{count}}개 체크아웃).",
+                    "ssh_unsupported": "브랜치 전환은 로컬 워크스페이스에서만 할 수 있습니다(SSH 불가).",
+                    "remote_runtime_unsupported": "원격 Orca 서버의 워크스페이스에서는 브랜치를 전환할 수 없습니다.",
+                    "folder_unsupported": "브랜치 전환은 git 워크트리에서만 할 수 있습니다. 이 워크스페이스는 폴더입니다.",
+                    "submodules_failed": "{{value0}}(으)로 전환했지만 다음 서브모듈은 전환하지 못했습니다: {{value1}}"
                   }
                 }
               }
@@ -67,7 +71,8 @@
               "activeWorkspace": "활성 워크스페이스",
               "scopeLabel": "브랜치 범위",
               "workspaceOnly": "워크스페이스만",
-              "withSubmodules": "서브모듈 포함"
+              "withSubmodules": "서브모듈 포함",
+              "saveUnsupported": "이 호스트의 Orca 버전은 이 설정을 저장할 수 없습니다. 호스트의 Orca를 업데이트한 뒤 다시 시도하세요."
             }
           },
           "right": {
@@ -312,7 +317,9 @@
             "keepBranch": "전환 안 함",
             "discardConfirmTitle": "모든 미커밋 변경을 버릴까요?",
             "discardConfirmDescription": "{{value0}} 의 추적 중인 변경사항이 영구 삭제됩니다. 새로 만든(untracked) 파일은 유지됩니다. 되돌릴 수 없습니다.",
-            "discardConfirm": "영구 삭제"
+            "discardConfirm": "영구 삭제",
+            "dirtyDescriptionKeepsUntracked": "변경됨: {{value0}}. Stash는 작업을 보관하고, 버리기는 추적 중인 변경 사항을 삭제합니다. 추적되지 않는 파일은 어느 쪽이든 유지됩니다.",
+            "discardConfirmDescriptionKeepsUntracked": "{{value0}}의 추적 중인 변경 사항을 영구히 버립니다. 새(추적되지 않는) 파일은 유지됩니다. 되돌릴 수 없습니다."
           },
           "doorayTaskBaseRefDialog": {
             "title": "{{value0}} 브랜치를 어디서 시작할까요?",

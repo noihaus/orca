@@ -24,6 +24,7 @@ export type DoorayIssueListPanelProps = {
   selectedIssueId?: string | null
   onSelectIssue?: (issue: DoorayIssue) => void
   onStartIssue?: (issue: DoorayIssue) => void
+  startLabel?: string
   // Issues with an existing workspace show "open" instead of "start".
   attachedIssueIds?: ReadonlySet<string>
   onOpenWorkspace?: (issue: DoorayIssue) => void
@@ -77,6 +78,7 @@ export function DoorayIssueListPanel({
   selectedIssueId = null,
   onSelectIssue,
   onStartIssue,
+  startLabel,
   attachedIssueIds,
   onOpenWorkspace,
   onNewTask
@@ -230,6 +232,7 @@ export function DoorayIssueListPanel({
               selected={issue.id === selectedIssueId}
               onSelectIssue={onSelectIssue}
               onStartIssue={onStartIssue}
+              startLabel={startLabel}
               onOpenWorkspace={attachedIssueIds?.has(issue.id) ? onOpenWorkspace : undefined}
             />
           ))}
