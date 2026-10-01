@@ -45,8 +45,10 @@ import type { FeedbackDraftSlice } from './slices/feedback-draft'
 import type { TaskCreationDraftsSlice } from './slices/task-creation-drafts'
 import type { RemoteServerUpdatesSlice } from './slices/remote-server-updates'
 import type { TerminalQuickCommandHostsSlice } from './slices/terminal-quick-command-hosts'
+import type { ExtensionSlicesDisjointFrom } from '../extensions/extension-store-slices' // fork-seam: store-slices
 
-export type AppState = RepoSlice &
+export type AppState = CoreAppState & ExtensionSlicesDisjointFrom<CoreAppState> // fork-seam: store-slices
+type CoreAppState = RepoSlice &
   SparsePresetsSlice &
   WorktreeSlice &
   TerminalSlice &

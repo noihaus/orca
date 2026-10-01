@@ -47,6 +47,7 @@ import { createFeedbackDraftSlice } from './slices/feedback-draft'
 import { createTaskCreationDraftsSlice } from './slices/task-creation-drafts'
 import { createRemoteServerUpdatesSlice } from './slices/remote-server-updates'
 import { createTerminalQuickCommandHostsSlice } from './slices/terminal-quick-command-hosts'
+import { createExtensionSlices } from '@/extensions/extension-store-slices' // fork-seam: store-slices
 import { e2eConfig } from '@/lib/e2e-config'
 import type { createWebRuntimeSessionTerminal } from '@/runtime/web-runtime-session'
 import {
@@ -76,6 +77,7 @@ export const useAppStore = create<AppState>()(
       // Why: the inner api is only reachable here, before create() copies subscribe onto the hook.
       installStoreListenerCensus(a[2])
       return {
+        ...createExtensionSlices(...a), // fork-seam: store-slices
         ...createRepoSlice(...a),
         ...createSparsePresetsSlice(...a),
         ...createWorktreeSlice(...a),

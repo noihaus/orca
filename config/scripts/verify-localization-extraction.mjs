@@ -5,6 +5,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
 import { pathToFileURL } from 'node:url'
+import { readEnglishCatalogWithExtensions } from './localization-extension-catalogs.mjs' // fork-seam: localization-scripts
 
 const execFileAsync = promisify(execFile)
 const EN_CATALOG_PATH = path.join('src', 'renderer', 'src', 'i18n', 'locales', 'en.json')
@@ -102,7 +103,7 @@ export async function main(root = process.cwd()) {
   try {
     const [extractedCatalog, englishCatalog] = await Promise.all([
       extractToTemporaryCatalog(root, tempDir),
-      fs.readFile(path.join(root, EN_CATALOG_PATH), 'utf8').then(JSON.parse)
+      readEnglishCatalogWithExtensions(root, EN_CATALOG_PATH) // fork-seam: localization-scripts
     ])
     const result = compareExtraction(extractedCatalog, englishCatalog)
 

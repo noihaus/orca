@@ -18,6 +18,7 @@ import { createLinearSlice } from './linear'
 import { createPreflightSlice } from './preflight'
 import { createJiraSlice } from './jira'
 import { createEditorSlice } from './editor'
+import { createExtensionSlices } from '../../extensions/extension-store-slices' // fork-seam: store-slices
 import { createStatsSlice } from './stats'
 import { createMemorySlice } from './memory'
 import { createWorkspaceSpaceSlice } from './workspace-space'
@@ -63,6 +64,7 @@ export const TEST_REPO = {
 
 export function createTestStore() {
   return create<AppState>()((...a) => ({
+    ...createExtensionSlices(...a), // fork-seam: store-slices
     ...createRepoSlice(...a),
     ...createSparsePresetsSlice(...a),
     ...createWorktreeSlice(...a),

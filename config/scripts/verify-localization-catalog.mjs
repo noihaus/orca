@@ -8,6 +8,7 @@ import ts from 'typescript-api'
 
 import { canonicalGenericRenderings } from './locale-generic-ui-terms.mjs'
 import { repairTranslatedValue } from './locale-translation-policy.mjs'
+import { verifyExtensionCatalogs } from './localization-extension-catalogs.mjs' // fork-seam: localization-scripts
 
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts'])
 const SKIP_PATH_PARTS = new Set(['.git', 'dist', 'node_modules', 'out', '__snapshots__', 'assets'])
@@ -481,7 +482,17 @@ export async function main(
     return 0
   }
   let catalogKeys = new Set(flattenCatalogKeys(catalog))
-  const references = sharedReferences ?? (await collectLocalizationReferences(root))
+  const extensionCheck = await verifyExtensionCatalogs(
+    // fork-seam: localization-scripts
+    root,
+    catalog,
+    sharedReferences ?? (await collectLocalizationReferences(root)),
+    { fix: options.fix, verifyLocaleCatalog }
+  )
+  if (extensionCheck.exitCode !== 0) {
+    return extensionCheck.exitCode
+  }
+  const references = extensionCheck.coreReferences
 
   const missing = references.filter((reference) => !catalogKeys.has(reference.key))
   if (missing.length > 0) {

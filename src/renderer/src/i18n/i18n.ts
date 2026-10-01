@@ -12,6 +12,7 @@ import { DEFAULT_LOCALE, resolveUiLocale } from './supported-languages'
 import type { SupportedUiLocale } from '../../../shared/ui-locale'
 import { isPluginUiLanguage, type UiLanguage } from '../../../shared/ui-language'
 import type { PluginLanguagePackRegistration } from '../../../shared/plugins/plugin-language-pack-artifact'
+import * as extensionLocales from '../extensions/extension-locale-bundles' // fork-seam: i18n-extension-bundles
 
 export const i18n: I18nInstance = i18next.createInstance()
 
@@ -43,7 +44,8 @@ const lazyLocaleBackend: BackendModule = {
       callback(null, false)
       return
     }
-    loader().then(
+    extensionLocales.withExtensionLocaleBundles(language, loader).then(
+      // fork-seam: i18n-extension-bundles
       (mod) => callback(null, mod.default),
       (error) => callback(error instanceof Error ? error : new Error(String(error)), false)
     )
@@ -81,6 +83,7 @@ void i18n
       useSuspense: false
     }
   })
+  .then(() => extensionLocales.addExtensionLocaleBundles(i18n, DEFAULT_LOCALE)) // fork-seam: i18n-extension-bundles
 
 export function translate(key: string, fallback: string, options?: TOptions): string {
   const value = i18n.t(key, { defaultValue: fallback, ...options })
