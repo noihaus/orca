@@ -3,8 +3,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { translate } from '@/i18n/i18n'
 import type { DoorayPriority } from '../../../../../shared/extensions/dooray/dooray-types'
 
-const K = 'auto.ext.dooray.components.dooray.priority'
-
 export const DOORAY_PRIORITY_FILTER_OPTIONS: readonly DoorayPriority[] = [
   'highest',
   'high',
@@ -17,18 +15,18 @@ export const DOORAY_PRIORITY_FILTER_OPTIONS: readonly DoorayPriority[] = [
 export function getDoorayPriorityLabel(priority: DoorayPriority | undefined): string {
   switch (priority) {
     case 'highest':
-      return translate(`${K}.highest`, 'Highest')
+      return translate('auto.ext.dooray.components.dooray.priority.highest', 'Highest')
     case 'high':
-      return translate(`${K}.high`, 'High')
+      return translate('auto.ext.dooray.components.dooray.priority.high', 'High')
     case 'normal':
-      return translate(`${K}.normal`, 'Normal')
+      return translate('auto.ext.dooray.components.dooray.priority.normal', 'Normal')
     case 'low':
-      return translate(`${K}.low`, 'Low')
+      return translate('auto.ext.dooray.components.dooray.priority.low', 'Low')
     case 'lowest':
-      return translate(`${K}.lowest`, 'Lowest')
+      return translate('auto.ext.dooray.components.dooray.priority.lowest', 'Lowest')
     case 'none':
     case undefined:
-      return translate(`${K}.none`, 'None')
+      return translate('auto.ext.dooray.components.dooray.priority.none', 'None')
   }
 }
 

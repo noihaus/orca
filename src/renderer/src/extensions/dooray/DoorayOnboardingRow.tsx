@@ -13,8 +13,6 @@ import {
 import { openDoorayUrl } from './lib/dooray-open-link'
 import { useDoorayConnectionStatus } from './use-dooray-connection-status'
 
-const K = 'auto.ext.dooray.components.onboarding.DoorayRow'
-
 export function DoorayOnboardingRow(): React.JSX.Element {
   const checkDoorayConnection = useAppStore((s) => s.checkDoorayConnection)
   const { status, checking, connected } = useDoorayConnectionStatus()
@@ -35,31 +33,40 @@ export function DoorayOnboardingRow(): React.JSX.Element {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-[15px] font-semibold leading-tight text-foreground">
-                  {translate(`${K}.name`, 'Dooray')}
+                  {translate('auto.ext.dooray.components.onboarding.DoorayRow.name', 'Dooray')}
                 </h3>
                 {connected ? (
                   <IntegrationStatusPill tone="connected">
-                    {translate(`${K}.connected`, 'Connected')}
+                    {translate(
+                      'auto.ext.dooray.components.onboarding.DoorayRow.connected',
+                      'Connected'
+                    )}
                   </IntegrationStatusPill>
                 ) : checking ? (
                   <IntegrationStatusPill tone="neutral">
-                    {translate(`${K}.checking`, 'Checking…')}
+                    {translate(
+                      'auto.ext.dooray.components.onboarding.DoorayRow.checking',
+                      'Checking…'
+                    )}
                   </IntegrationStatusPill>
                 ) : (
                   <IntegrationStatusPill tone="attention">
-                    {translate(`${K}.not_connected`, 'Not connected')}
+                    {translate(
+                      'auto.ext.dooray.components.onboarding.DoorayRow.not_connected',
+                      'Not connected'
+                    )}
                   </IntegrationStatusPill>
                 )}
               </div>
               <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
                 {connected
                   ? translate(
-                      `${K}.connected_description`,
+                      'auto.ext.dooray.components.onboarding.DoorayRow.connected_description',
                       'Connected as {{value0}}. Dooray tasks are ready to start workspaces from.',
                       { value0: status.viewer?.name ?? status.viewer?.userCode ?? 'unknown' }
                     )
                   : translate(
-                      `${K}.description`,
+                      'auto.ext.dooray.components.onboarding.DoorayRow.description',
                       'Start a workspace from a Dooray task, with its title and link attached.'
                     )}
               </p>
@@ -67,7 +74,7 @@ export function DoorayOnboardingRow(): React.JSX.Element {
                 <ul className="mt-2 space-y-1 text-[12px] leading-relaxed text-muted-foreground">
                   <li>
                     {translate(
-                      `${K}.hint_token`,
+                      'auto.ext.dooray.components.onboarding.DoorayRow.hint_token',
                       'API token: create a personal token in Dooray under Settings → API.'
                     )}{' '}
                     <button
@@ -75,19 +82,22 @@ export function DoorayOnboardingRow(): React.JSX.Element {
                       className="underline underline-offset-2 hover:text-foreground"
                       onClick={() => openDoorayUrl(DOORAY_TOKEN_SETTINGS_URL)}
                     >
-                      {translate(`${K}.hint_token_link`, 'Open token page')}
+                      {translate(
+                        'auto.ext.dooray.components.onboarding.DoorayRow.hint_token_link',
+                        'Open token page'
+                      )}
                     </button>
                   </li>
                   <li>
                     {translate(
-                      `${K}.hint_api_url`,
+                      'auto.ext.dooray.components.onboarding.DoorayRow.hint_api_url',
                       'API URL: {{value0}} (leave empty to use this default).',
                       { value0: DOORAY_DEFAULT_API_URL }
                     )}
                   </li>
                   <li>
                     {translate(
-                      `${K}.hint_web_url`,
+                      'auto.ext.dooray.components.onboarding.DoorayRow.hint_web_url',
                       'Web URL: your tenant address, for example {{value0}}.',
                       { value0: DOORAY_DEFAULT_WEB_URL }
                     )}
@@ -103,12 +113,18 @@ export function DoorayOnboardingRow(): React.JSX.Element {
               onClick={() => setDialogOpen(true)}
             >
               {connected
-                ? translate(`${K}.reconnect`, 'Reconnect')
-                : translate(`${K}.connect`, 'Connect Dooray')}
+                ? translate(
+                    'auto.ext.dooray.components.onboarding.DoorayRow.reconnect',
+                    'Reconnect'
+                  )
+                : translate(
+                    'auto.ext.dooray.components.onboarding.DoorayRow.connect',
+                    'Connect Dooray'
+                  )}
             </Button>
             {!connected ? (
               <Button variant="ghost" size="sm" onClick={() => void checkDoorayConnection()}>
-                {translate(`${K}.recheck`, 'Re-check')}
+                {translate('auto.ext.dooray.components.onboarding.DoorayRow.recheck', 'Re-check')}
               </Button>
             ) : null}
           </div>

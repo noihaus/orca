@@ -104,10 +104,12 @@ export function useComposerSourceContextState(input: ComposerSourceContextStateI
     initialTaskSourceContext
   )
 
+  // Extension-owned items carry their own branch and never have a Jira source context.
   const initialLinkedWorkItemSeed =
     normalizedInitialLinkedWorkItem &&
     getLinkedWorkItemProvider(normalizedInitialLinkedWorkItem) === 'jira' &&
-    !initialLinkedTaskSourceContext
+    !initialLinkedTaskSourceContext &&
+    !normalizedInitialLinkedWorkItem.branchNameOverride // fork-seam: linked-work-item-branch
       ? null
       : normalizedInitialLinkedWorkItem
 

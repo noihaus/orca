@@ -18,7 +18,6 @@ import type { DooraySortKey } from '../lib/dooray-issue-ordering'
 import { formatDoorayMilestoneLabel } from '../lib/dooray-milestone-labels'
 import { DOORAY_PRIORITY_FILTER_OPTIONS, getDoorayPriorityLabel } from './DoorayPriorityIndicator'
 
-const K = 'auto.ext.dooray.components.TaskPageDooray'
 // Radix Select forbids an empty item value, so "all" needs a sentinel.
 const ALL = '__all__'
 
@@ -35,19 +34,19 @@ const SORT_KEYS: readonly DooraySortKey[] = [
 function sortKeyLabel(key: DooraySortKey): string {
   switch (key) {
     case 'number':
-      return translate(`${K}.sort_number`, 'Task number')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_number', 'Task number')
     case 'subject':
-      return translate(`${K}.sort_subject`, 'Subject')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_subject', 'Subject')
     case 'workflow':
-      return translate(`${K}.sort_workflow`, 'Workflow')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_workflow', 'Workflow')
     case 'milestone':
-      return translate(`${K}.sort_milestone`, 'Milestone')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_milestone', 'Milestone')
     case 'priority':
-      return translate(`${K}.sort_priority`, 'Priority')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_priority', 'Priority')
     case 'created':
-      return translate(`${K}.sort_created`, 'Created')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_created', 'Created')
     case 'updated':
-      return translate(`${K}.sort_updated`, 'Updated')
+      return translate('auto.ext.dooray.components.TaskPageDooray.sort_updated', 'Updated')
   }
 }
 
@@ -91,13 +90,28 @@ export function DooraySortControls(props: DooraySortControlsProps): React.JSX.El
     'Sort {{value0}}',
     { value0: nextDirectionLabel }
   )
-  const allMilestonesLabel = translate(`${K}.milestone_all`, 'All milestones')
-  const allWorkflowsLabel = translate(`${K}.workflow_all`, 'All stages')
-  const allPrioritiesLabel = translate(`${K}.priority_all`, 'All priorities')
+  const allMilestonesLabel = translate(
+    'auto.ext.dooray.components.TaskPageDooray.milestone_all',
+    'All milestones'
+  )
+  const allWorkflowsLabel = translate(
+    'auto.ext.dooray.components.TaskPageDooray.workflow_all',
+    'All stages'
+  )
+  const allPrioritiesLabel = translate(
+    'auto.ext.dooray.components.TaskPageDooray.priority_all',
+    'All priorities'
+  )
   const loadedOnlyHint = props.hasActiveClientFilter
-    ? translate(`${K}.milestone_loaded_only`, 'Filtered across loaded tasks only')
+    ? translate(
+        'auto.ext.dooray.components.TaskPageDooray.milestone_loaded_only',
+        'Filtered across loaded tasks only'
+      )
     : props.clientOnlySort
-      ? translate(`${K}.sort_loaded_only`, 'Sorted across loaded tasks only')
+      ? translate(
+          'auto.ext.dooray.components.TaskPageDooray.sort_loaded_only',
+          'Sorted across loaded tasks only'
+        )
       : null
 
   return (

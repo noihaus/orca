@@ -10,6 +10,7 @@ import {
   waitFor
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Worktree } from '../../../../../shared/worktree/types'
 import type {
   DoorayIssue,
   DoorayStatus
@@ -21,7 +22,16 @@ import { getProviderRuntimeContextKey } from '@/lib/provider-runtime-context'
 import { useAppStore } from '@/store'
 import { findExtensionTaskSource } from '../../extension-slot-hooks'
 import { INSTALLED_RENDERER_EXTENSIONS } from '../../installed-renderer-extensions'
+import {
+  getDoorayIssueWorkspaceSeed,
+  buildDoorayLinkedWorkItem
+} from '../lib/dooray-linked-work-item'
 import { DoorayTaskSourcePanel } from './DoorayTaskSourcePanel'
+
+const toastError = vi.hoisted(() => vi.fn())
+vi.mock('sonner', () => ({ toast: { error: toastError, success: vi.fn() } }))
+const activateAndRevealWorktree = vi.hoisted(() => vi.fn())
+vi.mock('@/lib/worktree-activation', () => ({ activateAndRevealWorktree }))
 
 const api = vi.hoisted(() => ({
   listProjects: vi.fn(),
@@ -71,10 +81,12 @@ function issue(n: number): DoorayIssue {
   }
 }
 
+const onStartNewWorkspace = vi.fn()
+
 function renderPanel(): void {
   render(
     <TooltipProvider>
-      <DoorayTaskSourcePanel />
+      <DoorayTaskSourcePanel onStartNewWorkspace={onStartNewWorkspace} startRepo={null} />
     </TooltipProvider>
   )
 }
@@ -128,7 +140,6 @@ describe('DoorayTaskSourcePanel', () => {
     expect(await screen.findByText('Task 1')).toBeTruthy()
     expect(screen.getAllByTestId('dooray-issue-row')).toHaveLength(2)
     expect(screen.getByText('2 / 2 shown')).toBeTruthy()
-    expect(screen.queryByRole('button', { name: /Start workspace from/ })).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Done' }))
     await waitFor(() =>
@@ -152,7 +163,7 @@ describe('DoorayTaskSourcePanel', () => {
 
     expect(await screen.findByText('Full body text')).toBeTruthy()
     expect(await screen.findByText('First comment')).toBeTruthy()
-    expect(screen.queryByRole('button', { name: /^Start workspace/ })).toBeNull()
+    expect(screen.getAllByRole('button', { name: /^Start workspace$/ }).length).toBeGreaterThan(0)
 
     const pill = await screen.findByRole('button', { name: 'Doing' })
     await waitFor(() => expect(pill).toHaveProperty('disabled', false))
@@ -193,6 +204,90 @@ describe('DoorayTaskSourcePanel', () => {
     api.listIssues.mockRejectedValue(new Error('Not connected to Dooray.'))
     renderPanel()
     expect((await screen.findByRole('alert')).textContent).toBe('Not connected to Dooray.')
+  })
+})
+
+function seedWorktree(branch: string): void {
+  useAppStore.setState({
+    worktreesByRepo: {
+      'repo-1': [
+        {
+          id: 'repo-1::/wt',
+          repoId: 'repo-1',
+          path: '/wt',
+          branch,
+          head: 'abc',
+          isBare: false,
+          isMainWorktree: false,
+          displayName: 'wt',
+          comment: '',
+          linkedIssue: null,
+          linkedPR: null,
+          linkedLinearIssue: null,
+          isArchived: false,
+          isUnread: false,
+          isPinned: false,
+          sortOrder: 0,
+          lastActivityAt: 1
+        } satisfies Worktree
+      ]
+    }
+  })
+}
+
+describe('starting a workspace from a task', () => {
+  beforeEach(() => useAppStore.setState({ worktreesByRepo: {} }))
+
+  it('hands the linked item and seed name to onStartNewWorkspace from the row', async () => {
+    seed(connected)
+    renderPanel()
+    fireEvent.click(await screen.findByRole('button', { name: 'Start workspace from A/2' }))
+    expect(onStartNewWorkspace).toHaveBeenCalledWith(
+      buildDoorayLinkedWorkItem(issue(2)),
+      getDoorayIssueWorkspaceSeed(issue(2))
+    )
+  })
+
+  it('shows Open workspace for a task that already has a workspace', async () => {
+    seed(connected)
+    seedWorktree('feature/A/1')
+    activateAndRevealWorktree.mockReturnValue({})
+    renderPanel()
+    fireEvent.click(await screen.findByRole('button', { name: 'Open workspace for A/1' }))
+    expect(activateAndRevealWorktree).toHaveBeenCalledWith('repo-1::/wt')
+    expect(onStartNewWorkspace).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Start workspace from A/2' })).toBeTruthy()
+  })
+
+  it('toasts when the workspace cannot be opened', async () => {
+    seed(connected)
+    seedWorktree('feature/A/1')
+    activateAndRevealWorktree.mockReturnValue(false)
+    renderPanel()
+    fireEvent.click(await screen.findByRole('button', { name: 'Open workspace for A/1' }))
+    expect(toastError).toHaveBeenCalledWith('Unable to open the workspace for this task.')
+  })
+
+  it('makes the sheet primary action Open workspace when one exists', async () => {
+    seed(connected)
+    seedWorktree('feature/A/1')
+    activateAndRevealWorktree.mockReturnValue({})
+    renderPanel()
+    fireEvent.click((await screen.findAllByTestId('dooray-issue-row'))[0])
+    const [open] = await screen.findAllByRole('button', { name: 'Open workspace' })
+    fireEvent.click(open)
+    expect(activateAndRevealWorktree).toHaveBeenCalledWith('repo-1::/wt')
+  })
+
+  it('starts a workspace from the sheet for an unattached task', async () => {
+    seed(connected)
+    renderPanel()
+    fireEvent.click((await screen.findAllByTestId('dooray-issue-row'))[1])
+    fireEvent.click((await screen.findAllByRole('button', { name: /^Start workspace$/ }))[0])
+    expect(onStartNewWorkspace).toHaveBeenCalledWith(
+      buildDoorayLinkedWorkItem(issue(2)),
+      getDoorayIssueWorkspaceSeed(issue(2))
+    )
   })
 })
 

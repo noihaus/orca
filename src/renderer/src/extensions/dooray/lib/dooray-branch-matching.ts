@@ -41,7 +41,7 @@ export function findDoorayWorkspaceMatch<
 
     if (branchMatch || displayNameMatch) {
       const activity = wt.lastActivityAt ?? -Infinity
-      if (activity > latestActivity) {
+      if (matched === null || activity > latestActivity) {
         latestActivity = activity
         matched = wt
       }

@@ -75,6 +75,7 @@
 
 - 목적: 연결된 작업 항목에서 정확한 브랜치명을 확장이 지정하게 한다.
 - 확장 등록: `RendererExtension.resolveLinkedWorkItemBranch(item)`.
+- `LinkedWorkItemSummary.branchNameOverride`가 있으면 Jira source context가 없어도 composer seed를 버리지 않는다(`source-context-state.ts`). 확장 항목은 자체 브랜치를 갖고 Jira context를 만들 수 없기 때문이다.
 - 파일:
   - `src/renderer/src/hooks/composer-state/source-context-state.ts`
   - `src/renderer/src/hooks/composer-state/source-identity-actions.ts`

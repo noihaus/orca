@@ -1,4 +1,4 @@
-import { ArrowRight, ExternalLink } from 'lucide-react'
+import { ArrowRight, ExternalLink, FolderOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
@@ -8,35 +8,62 @@ import { openDoorayUrl } from '../lib/dooray-open-link'
 import { DoorayPriorityIndicator } from './DoorayPriorityIndicator'
 import { DoorayWorkflowPill } from './DoorayWorkflowPill'
 
-const K = 'auto.ext.dooray.components.TaskPageDooray'
-
 export type DoorayIssueRowProps = {
   issue: DoorayIssue
   selected?: boolean
   onSelectIssue?: (issue: DoorayIssue) => void
   onStartIssue?: (issue: DoorayIssue) => void
+  // A matching workspace swaps "start" for "open".
+  onOpenWorkspace?: (issue: DoorayIssue) => void
 }
 
 function assigneeLabel(issue: DoorayIssue): string {
   return issue.assignees.length > 0
     ? issue.assignees.join(', ')
-    : translate(`${K}.unassigned`, 'Unassigned')
+    : translate('auto.ext.dooray.components.TaskPageDooray.unassigned', 'Unassigned')
 }
 
 function RowActions({
   issue,
-  onStartIssue
-}: Pick<DoorayIssueRowProps, 'issue' | 'onStartIssue'>): React.JSX.Element {
+  onStartIssue,
+  onOpenWorkspace
+}: Pick<DoorayIssueRowProps, 'issue' | 'onStartIssue' | 'onOpenWorkspace'>): React.JSX.Element {
   return (
     <div className="flex shrink-0 items-center justify-end gap-1 md:opacity-0 md:transition-opacity md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100">
-      {onStartIssue ? (
+      {onOpenWorkspace ? (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="icon-xs"
               aria-label={translate(
-                `${K}.start_workspace_from`,
+                'auto.ext.dooray.components.TaskPageDooray.open_workspace_for',
+                'Open workspace for {{value0}}',
+                { value0: issue.taskNumber }
+              )}
+              onClick={(event) => {
+                event.stopPropagation()
+                onOpenWorkspace(issue)
+              }}
+            >
+              <FolderOpen className="size-3.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={6}>
+            {translate(
+              'auto.ext.dooray.components.TaskPageDooray.open_workspace',
+              'Open workspace'
+            )}
+          </TooltipContent>
+        </Tooltip>
+      ) : onStartIssue ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label={translate(
+                'auto.ext.dooray.components.TaskPageDooray.start_workspace_from',
                 'Start workspace from {{value0}}',
                 {
                   value0: issue.taskNumber
@@ -61,9 +88,13 @@ function RowActions({
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label={translate(`${K}.open_in_dooray_aria`, 'Open {{value0}} in Dooray', {
-                value0: issue.taskNumber
-              })}
+              aria-label={translate(
+                'auto.ext.dooray.components.TaskPageDooray.open_in_dooray_aria',
+                'Open {{value0}} in Dooray',
+                {
+                  value0: issue.taskNumber
+                }
+              )}
               onClick={(event) => {
                 event.stopPropagation()
                 openDoorayUrl(issue.url)
@@ -73,7 +104,10 @@ function RowActions({
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={6}>
-            {translate(`${K}.open_in_dooray`, 'Open in Dooray')}
+            {translate(
+              'auto.ext.dooray.components.TaskPageDooray.open_in_dooray',
+              'Open in Dooray'
+            )}
           </TooltipContent>
         </Tooltip>
       ) : null}
@@ -85,7 +119,8 @@ export function DoorayIssueRow({
   issue,
   selected = false,
   onSelectIssue,
-  onStartIssue
+  onStartIssue,
+  onOpenWorkspace
 }: DoorayIssueRowProps): React.JSX.Element {
   const interactive = onSelectIssue !== undefined
   return (
@@ -155,7 +190,7 @@ export function DoorayIssueRow({
         </TooltipContent>
       </Tooltip>
 
-      <RowActions issue={issue} onStartIssue={onStartIssue} />
+      <RowActions issue={issue} onStartIssue={onStartIssue} onOpenWorkspace={onOpenWorkspace} />
     </div>
   )
 }

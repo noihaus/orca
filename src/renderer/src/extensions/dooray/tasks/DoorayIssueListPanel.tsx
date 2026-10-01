@@ -18,21 +18,34 @@ import { DoorayIssueRow } from './DoorayIssueRow'
 import { DooraySortControls } from './DooraySortControls'
 import type { DoorayIssueListModel } from './use-dooray-issue-list'
 
-const K = 'auto.ext.dooray.components.TaskPageDooray'
-
 export type DoorayIssueListPanelProps = {
   list: DoorayIssueListModel
   credentialError?: string
   selectedIssueId?: string | null
   onSelectIssue?: (issue: DoorayIssue) => void
   onStartIssue?: (issue: DoorayIssue) => void
+  // Issues with an existing workspace show "open" instead of "start".
+  attachedIssueIds?: ReadonlySet<string>
+  onOpenWorkspace?: (issue: DoorayIssue) => void
 }
 
 function filterOptions(): { id: DoorayIssueFilter; label: string }[] {
   return [
-    { id: 'assigned', label: translate(`${K}.filter_assigned`, 'Assigned to me') },
-    { id: 'all', label: translate(`${K}.filter_all`, 'All Open') },
-    { id: 'done', label: translate(`${K}.filter_done`, 'Done') }
+    {
+      id: 'assigned',
+      label: translate(
+        'auto.ext.dooray.components.TaskPageDooray.filter_assigned',
+        'Assigned to me'
+      )
+    },
+    {
+      id: 'all',
+      label: translate('auto.ext.dooray.components.TaskPageDooray.filter_all', 'All Open')
+    },
+    {
+      id: 'done',
+      label: translate('auto.ext.dooray.components.TaskPageDooray.filter_done', 'Done')
+    }
   ]
 }
 
@@ -62,9 +75,14 @@ export function DoorayIssueListPanel({
   credentialError,
   selectedIssueId = null,
   onSelectIssue,
-  onStartIssue
+  onStartIssue,
+  attachedIssueIds,
+  onOpenWorkspace
 }: DoorayIssueListPanelProps): React.JSX.Element {
-  const refreshLabel = translate(`${K}.refresh`, 'Refresh tasks')
+  const refreshLabel = translate(
+    'auto.ext.dooray.components.TaskPageDooray.refresh',
+    'Refresh tasks'
+  )
   const anyError = credentialError ?? list.projectsError ?? list.error
   const showEmpty = !list.loading && !list.projectsLoading && list.issues.length === 0 && !anyError
 
@@ -72,7 +90,7 @@ export function DoorayIssueListPanel({
     <div className="flex max-h-full min-h-0 flex-col overflow-hidden rounded-md rounded-t-none border border-t-0 border-border/50 bg-background shadow-sm">
       <div className="flex h-10 flex-none items-center justify-between gap-3 border-b border-border/50 bg-muted/35 px-3">
         <div className="min-w-0 text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
-          {translate(`${K}.panel_title`, 'Dooray tasks')}
+          {translate('auto.ext.dooray.components.TaskPageDooray.panel_title', 'Dooray tasks')}
         </div>
         <div className="shrink-0 text-[11px] text-muted-foreground">
           {list.issues.length} / {list.totalCount}{' '}
@@ -90,8 +108,14 @@ export function DoorayIssueListPanel({
             <SelectValue
               placeholder={
                 list.projectsLoading
-                  ? translate(`${K}.loading_projects`, 'Loading projects…')
-                  : translate(`${K}.select_project`, 'Select project')
+                  ? translate(
+                      'auto.ext.dooray.components.TaskPageDooray.loading_projects',
+                      'Loading projects…'
+                    )
+                  : translate(
+                      'auto.ext.dooray.components.TaskPageDooray.select_project',
+                      'Select project'
+                    )
               }
             />
           </SelectTrigger>
@@ -164,10 +188,16 @@ export function DoorayIssueListPanel({
         {showEmpty ? (
           <div className="px-4 py-10 text-center">
             <p className="text-sm font-medium text-foreground">
-              {translate(`${K}.no_tasks`, 'No Dooray tasks found')}
+              {translate(
+                'auto.ext.dooray.components.TaskPageDooray.no_tasks',
+                'No Dooray tasks found'
+              )}
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              {translate(`${K}.no_tasks_hint`, 'No tasks match the selected project and filter.')}
+              {translate(
+                'auto.ext.dooray.components.TaskPageDooray.no_tasks_hint',
+                'No tasks match the selected project and filter.'
+              )}
             </p>
           </div>
         ) : null}
@@ -179,13 +209,14 @@ export function DoorayIssueListPanel({
               selected={issue.id === selectedIssueId}
               onSelectIssue={onSelectIssue}
               onStartIssue={onStartIssue}
+              onOpenWorkspace={attachedIssueIds?.has(issue.id) ? onOpenWorkspace : undefined}
             />
           ))}
         </div>
         {list.canLoadMore ? (
           <div className="flex justify-center px-3 py-3">
             <Button variant="outline" size="sm" onClick={list.loadMore}>
-              {translate(`${K}.load_more`, 'Load more')}
+              {translate('auto.ext.dooray.components.TaskPageDooray.load_more', 'Load more')}
             </Button>
           </div>
         ) : null}

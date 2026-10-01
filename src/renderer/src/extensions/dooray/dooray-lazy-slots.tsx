@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import type { TaskSourcePanelProps } from '../renderer-extension-contract'
 
 // Lazy so the installed-extension list stays free of eager store-importing components.
 const LazyCard = lazy(() =>
@@ -28,10 +29,10 @@ const LazyTaskSourcePanel = lazy(() =>
   import('./tasks/DoorayTaskSourcePanel').then((m) => ({ default: m.DoorayTaskSourcePanel }))
 )
 
-export function DoorayTaskSourcePanelSlot(): React.JSX.Element {
+export function DoorayTaskSourcePanelSlot(props: TaskSourcePanelProps): React.JSX.Element {
   return (
     <Suspense fallback={null}>
-      <LazyTaskSourcePanel />
+      <LazyTaskSourcePanel {...props} />
     </Suspense>
   )
 }

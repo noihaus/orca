@@ -25,8 +25,6 @@ type DoorayConnectDialogProps = {
 
 type ConnectState = 'idle' | 'connecting' | 'error'
 
-const K = 'auto.ext.dooray.components.dooray.connect.dialog'
-
 export function DoorayConnectDialog({
   open,
   onOpenChange,
@@ -62,11 +60,11 @@ export function DoorayConnectDialog({
   const canSubmit = Boolean(apiToken.trim()) && !connecting
   const credentialStorageCopy = hasRemoteProviderRuntime(settings)
     ? translate(
-        `${K}.credential_remote`,
+        'auto.ext.dooray.components.dooray.connect.dialog.credential_remote',
         'Your token is sent to the selected remote runtime and stored there with runtime-supported encryption.'
       )
     : translate(
-        `${K}.credential_local`,
+        'auto.ext.dooray.components.dooray.connect.dialog.credential_local',
         'Your token is stored locally and encrypted when local runtime storage supports it.'
       )
 
@@ -124,10 +122,12 @@ export function DoorayConnectDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent overlayClassName="z-[110]" className="z-[120] sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{translate(`${K}.title`, 'Connect Dooray')}</DialogTitle>
+          <DialogTitle>
+            {translate('auto.ext.dooray.components.dooray.connect.dialog.title', 'Connect Dooray')}
+          </DialogTitle>
           <DialogDescription>
             {translate(
-              `${K}.description`,
+              'auto.ext.dooray.components.dooray.connect.dialog.description',
               'Use a Dooray personal API token to browse tasks. Create one in Dooray under Settings → API.'
             )}
           </DialogDescription>
@@ -142,12 +142,20 @@ export function DoorayConnectDialog({
         >
           <div className="flex flex-col gap-3">
             <div className="space-y-2">
-              <Label htmlFor={tokenId}>{translate(`${K}.token_label`, 'API token')}</Label>
+              <Label htmlFor={tokenId}>
+                {translate(
+                  'auto.ext.dooray.components.dooray.connect.dialog.token_label',
+                  'API token'
+                )}
+              </Label>
               <Input
                 id={tokenId}
                 autoFocus
                 type="password"
-                placeholder={translate(`${K}.token_placeholder`, 'Dooray personal API token')}
+                placeholder={translate(
+                  'auto.ext.dooray.components.dooray.connect.dialog.token_placeholder',
+                  'Dooray personal API token'
+                )}
                 value={apiToken}
                 onChange={(event) => {
                   setApiToken(event.target.value)
@@ -159,10 +167,18 @@ export function DoorayConnectDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={apiUrlId}>{translate(`${K}.api_url_label`, 'API URL')}</Label>
+              <Label htmlFor={apiUrlId}>
+                {translate(
+                  'auto.ext.dooray.components.dooray.connect.dialog.api_url_label',
+                  'API URL'
+                )}
+              </Label>
               <Input
                 id={apiUrlId}
-                placeholder={translate(`${K}.api_url_placeholder`, 'https://api.dooray.com')}
+                placeholder={translate(
+                  'auto.ext.dooray.components.dooray.connect.dialog.api_url_placeholder',
+                  'https://api.dooray.com'
+                )}
                 value={apiUrl}
                 onChange={(event) => {
                   setApiUrl(event.target.value)
@@ -173,11 +189,17 @@ export function DoorayConnectDialog({
             </div>
             <div className="space-y-2">
               <Label htmlFor={webUrlId}>
-                {translate(`${K}.web_url_label`, 'Web URL (optional, for task links)')}
+                {translate(
+                  'auto.ext.dooray.components.dooray.connect.dialog.web_url_label',
+                  'Web URL (optional, for task links)'
+                )}
               </Label>
               <Input
                 id={webUrlId}
-                placeholder={translate(`${K}.web_url_placeholder`, 'https://yourtenant.dooray.com')}
+                placeholder={translate(
+                  'auto.ext.dooray.components.dooray.connect.dialog.web_url_placeholder',
+                  'https://yourtenant.dooray.com'
+                )}
                 value={webUrl}
                 onChange={(event) => {
                   setWebUrl(event.target.value)
@@ -203,16 +225,19 @@ export function DoorayConnectDialog({
               onClick={() => onOpenChange(false)}
               disabled={connecting}
             >
-              {translate(`${K}.cancel`, 'Cancel')}
+              {translate('auto.ext.dooray.components.dooray.connect.dialog.cancel', 'Cancel')}
             </Button>
             <Button type="submit" disabled={!canSubmit}>
               {connecting ? (
                 <>
                   <LoaderCircle className="size-4 animate-spin" />
-                  {translate(`${K}.verifying`, 'Verifying…')}
+                  {translate(
+                    'auto.ext.dooray.components.dooray.connect.dialog.verifying',
+                    'Verifying…'
+                  )}
                 </>
               ) : (
-                translate(`${K}.connect`, 'Connect')
+                translate('auto.ext.dooray.components.dooray.connect.dialog.connect', 'Connect')
               )}
             </Button>
           </DialogFooter>

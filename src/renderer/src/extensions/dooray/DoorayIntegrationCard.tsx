@@ -20,9 +20,6 @@ import { useDoorayConnectionStatus } from './use-dooray-connection-status'
 
 type VerificationResult = { state: 'ok' } | { state: 'error'; error: string }
 
-const K = 'auto.ext.dooray.components.settings.dooray.integration.card'
-const CORE_CARDS = 'auto.components.settings.task.tracker.integration.cards'
-
 export function DoorayIntegrationCard(): React.JSX.Element {
   const checkDoorayConnection = useAppStore((s) => s.checkDoorayConnection)
   const disconnectDooray = useAppStore((s) => s.disconnectDooray)
@@ -40,11 +37,11 @@ export function DoorayIntegrationCard(): React.JSX.Element {
   const accountScopeRowClass = useIntegrationSubordinateRowClass('text-xs')
   const credentialCopy = hasRemoteProviderRuntime(settings)
     ? translate(
-        `${K}.credential_remote`,
+        'auto.ext.dooray.components.settings.dooray.integration.card.credential_remote',
         'Connect Dooray with a personal API token. The token is sent to the selected remote runtime and stored there with runtime-supported encryption.'
       )
     : translate(
-        `${K}.credential_local`,
+        'auto.ext.dooray.components.settings.dooray.integration.card.credential_local',
         'Connect Dooray with a personal API token. The token is stored locally and encrypted when local runtime storage supports it.'
       )
   const viewerName = status.viewer?.name ?? status.viewer?.userCode ?? 'unknown'
@@ -56,7 +53,10 @@ export function DoorayIntegrationCard(): React.JSX.Element {
       toast.error(
         error instanceof Error && error.message
           ? translateDoorayError(error.message)
-          : translate(`${K}.disconnect_failed`, 'Failed to disconnect Dooray.')
+          : translate(
+              'auto.ext.dooray.components.settings.dooray.integration.card.disconnect_failed',
+              'Failed to disconnect Dooray.'
+            )
       )
       return
     }
@@ -84,16 +84,20 @@ export function DoorayIntegrationCard(): React.JSX.Element {
       name="Dooray"
       description={
         connected
-          ? translate(`${K}.connected_description`, 'Connected as {{value0}}', {
-              value0: viewerName
-            })
+          ? translate(
+              'auto.ext.dooray.components.settings.dooray.integration.card.connected_description',
+              'Connected as {{value0}}',
+              {
+                value0: viewerName
+              }
+            )
           : checking
             ? translate(
-                `${K}.checking_description`,
+                'auto.ext.dooray.components.settings.dooray.integration.card.checking_description',
                 'Checking Dooray access before showing setup actions.'
               )
             : translate(
-                `${K}.description`,
+                'auto.ext.dooray.components.settings.dooray.integration.card.description',
                 'Connect Dooray to browse and start work from your tasks.'
               )
       }
@@ -115,15 +119,24 @@ export function DoorayIntegrationCard(): React.JSX.Element {
             onClick={() => setDialogOpen(true)}
           >
             {connected
-              ? translate(`${K}.reconnect`, 'Reconnect')
-              : translate(`${K}.connect`, 'Connect Dooray')}
+              ? translate(
+                  'auto.ext.dooray.components.settings.dooray.integration.card.reconnect',
+                  'Reconnect'
+                )
+              : translate(
+                  'auto.ext.dooray.components.settings.dooray.integration.card.connect',
+                  'Connect Dooray'
+                )}
           </Button>
         ) : null
       }
     >
       <IntegrationCardDetails>
         <ProviderHostScopeControl
-          labelPrefix={translate(`${CORE_CARDS}.account_scope_prefix`, 'Account scope')}
+          labelPrefix={translate(
+            'auto.components.settings.task.tracker.integration.cards.account_scope_prefix',
+            'Account scope'
+          )}
           scope={accountScope}
           className={accountScopeRowClass}
         />
@@ -145,7 +158,10 @@ export function DoorayIntegrationCard(): React.JSX.Element {
             {testResult?.state === 'ok' ? (
               <span className="flex shrink-0 items-center gap-1 text-xs text-status-success">
                 <CheckCircle2 className="size-3.5" />
-                {translate(`${CORE_CARDS}.a2c0015fb8`, 'Verified')}
+                {translate(
+                  'auto.components.settings.task.tracker.integration.cards.a2c0015fb8',
+                  'Verified'
+                )}
               </span>
             ) : null}
             {testResult?.state === 'error' ? (
@@ -163,16 +179,25 @@ export function DoorayIntegrationCard(): React.JSX.Element {
               {testing ? (
                 <>
                   <LoaderCircle className="size-3.5 mr-1.5 animate-spin" />
-                  {translate(`${CORE_CARDS}.3e7c10d286`, 'Testing...')}
+                  {translate(
+                    'auto.components.settings.task.tracker.integration.cards.3e7c10d286',
+                    'Testing...'
+                  )}
                 </>
               ) : (
-                translate(`${CORE_CARDS}.c24e56c532`, 'Test')
+                translate(
+                  'auto.components.settings.task.tracker.integration.cards.c24e56c532',
+                  'Test'
+                )
               )}
             </Button>
             <button
               type="button"
               onClick={() => void handleDisconnect()}
-              aria-label={translate(`${K}.disconnect`, 'Disconnect Dooray')}
+              aria-label={translate(
+                'auto.ext.dooray.components.settings.dooray.integration.card.disconnect',
+                'Disconnect Dooray'
+              )}
               className="rounded-md p-1 text-muted-foreground/50 transition-colors hover:text-destructive"
             >
               <Unlink className="size-3.5" />
@@ -182,7 +207,10 @@ export function DoorayIntegrationCard(): React.JSX.Element {
           <>
             <p className="text-xs text-muted-foreground">{credentialCopy}</p>
             <Button variant="ghost" size="sm" onClick={() => void checkDoorayConnection()}>
-              {translate(`${CORE_CARDS}.c90f2ef419`, 'Re-check')}
+              {translate(
+                'auto.components.settings.task.tracker.integration.cards.c90f2ef419',
+                'Re-check'
+              )}
             </Button>
           </>
         ) : null}
