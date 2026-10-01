@@ -1,7 +1,16 @@
 import { translate } from '@/i18n/i18n'
 
+const IPC_ERROR_PREFIX = /^Error invoking remote method '[^']*':\s*/
+const ERROR_NAME_PREFIX = /^(?:[A-Z]\w*)?Error:\s*/
+
+// Electron IPC rejections arrive as "Error invoking remote method 'x': SomeError: msg".
+function stripIpcErrorPrefix(message: string): string {
+  return message.replace(IPC_ERROR_PREFIX, '').replace(ERROR_NAME_PREFIX, '')
+}
+
 // Main-process error strings are English; map the known ones to the UI locale.
-export function translateDoorayError(message: string): string {
+export function translateDoorayError(rawMessage: string): string {
+  const message = stripIpcErrorPrefix(rawMessage)
   switch (message) {
     case 'API token is required.':
       return translate(
