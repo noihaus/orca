@@ -15,9 +15,7 @@ describe('deferredLazyComponent', () => {
         </Suspense>
       )
     expect(render()).toBe('loading')
-    await load.mock.results[0]?.value
-    await Promise.resolve()
-    expect(render()).toBe('<p>hi kim</p>')
+    await vi.waitFor(() => expect(render()).toBe('<p>hi kim</p>'))
     expect(load).toHaveBeenCalledOnce()
   })
 })
