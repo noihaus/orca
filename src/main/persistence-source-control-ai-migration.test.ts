@@ -14,6 +14,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import type { PersistedState } from '../shared/persisted-state-types'
 import { setSourceControlActionDefault } from '../shared/source-control-ai-actions'
+import { seededVisibleTaskProviders } from '../shared/extensions/extension-task-sources' // fork-seam: extension-provider-seeding
 
 // Stub the ~/.ssh/config parser so the SSH-import test drives the real Store with deterministic hosts, not the operator's actual ~/.ssh/config.
 const { loadUserSshConfigMock, sshConfigHostsToTargetsMock } = vi.hoisted(() => ({
@@ -107,7 +108,10 @@ describe('Store', () => {
     expect(store.getSettings().showTasksButton).toBe(true)
     expect(store.getSettings().showAutomationsButton).toBe(true)
     expect(store.getSettings().combinedDiffFileTreeVisibleByDefault).toBe(false)
-    expect(store.getSettings().visibleTaskProviders).toEqual(['github', 'gitlab', 'linear', 'jira'])
+    expect(store.getSettings().visibleTaskProviders).toEqual(
+      // fork-seam: extension-provider-seeding
+      seededVisibleTaskProviders(['github', 'gitlab', 'linear', 'jira'])
+    )
     expect(store.getSettings().experimentalActivity).toBe(false)
     expect(store.getSettings().experimentalActivityDefaultedOffForAllUsers).toBe(true)
     expect(store.getSettings().experimentalTerminalAttention).toBe(false)
@@ -474,7 +478,10 @@ describe('Store', () => {
     })
 
     const store = await createStore()
-    expect(store.getSettings().visibleTaskProviders).toEqual(['gitlab', 'jira'])
+    expect(store.getSettings().visibleTaskProviders).toEqual(
+      // fork-seam: extension-provider-seeding
+      seededVisibleTaskProviders(['gitlab', 'jira'])
+    )
   })
 
   it('preserves a deliberate Jira provider opt-out after migration', async () => {
@@ -492,7 +499,7 @@ describe('Store', () => {
     })
 
     const store = await createStore()
-    expect(store.getSettings().visibleTaskProviders).toEqual(['gitlab'])
+    expect(store.getSettings().visibleTaskProviders).toEqual(seededVisibleTaskProviders(['gitlab'])) // fork-seam: extension-provider-seeding
   })
 
   it('normalizes malformed terminal shortcut policy on load', async () => {
@@ -538,7 +545,10 @@ describe('Store', () => {
 
     const store = await createStore()
     expect(store.getSettings().defaultTaskSource).toBe('github')
-    expect(store.getSettings().visibleTaskProviders).toEqual(['github', 'linear', 'jira'])
+    expect(store.getSettings().visibleTaskProviders).toEqual(
+      // fork-seam: extension-provider-seeding
+      seededVisibleTaskProviders(['github', 'linear', 'jira'])
+    )
   })
 
   it('normalizes invalid task provider defaults on load', async () => {
@@ -554,7 +564,10 @@ describe('Store', () => {
 
     const store = await createStore()
     expect(store.getSettings().defaultTaskSource).toBe('gitlab')
-    expect(store.getSettings().visibleTaskProviders).toEqual(['gitlab', 'jira'])
+    expect(store.getSettings().visibleTaskProviders).toEqual(
+      // fork-seam: extension-provider-seeding
+      seededVisibleTaskProviders(['gitlab', 'jira'])
+    )
   })
 
   it('normalizes persisted open-in applications on load', async () => {

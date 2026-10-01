@@ -13,6 +13,7 @@ import { tmpdir } from 'node:os'
 import type { GlobalSettings } from '../shared/global-settings-types'
 import type { PersistedState } from '../shared/persisted-state-types'
 import { getDefaultPersistedState } from '../shared/constants'
+import { seededVisibleTaskProviders } from '../shared/extensions/extension-task-sources' // fork-seam: extension-provider-seeding
 import { ONBOARDING_FINAL_STEP, ONBOARDING_FLOW_VERSION } from '../shared/onboarding-defaults'
 
 // Stub the ~/.ssh/config parser so the SSH-import test drives the real Store with deterministic hosts, not the operator's actual ~/.ssh/config.
@@ -91,7 +92,10 @@ describe('Store', () => {
     expect(settings.rightSidebarOpenByDefault).toBe(true)
     expect(settings.showTasksButton).toBe(true)
     expect(settings.showAutomationsButton).toBe(true)
-    expect(settings.visibleTaskProviders).toEqual(['github', 'gitlab', 'linear', 'jira'])
+    expect(settings.visibleTaskProviders).toEqual(
+      // fork-seam: extension-provider-seeding
+      seededVisibleTaskProviders(['github', 'gitlab', 'linear', 'jira'])
+    )
     expect(settings.openInApplications).toEqual([
       { id: 'vscode', label: 'VS Code', command: 'code' }
     ])

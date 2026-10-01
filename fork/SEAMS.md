@@ -39,7 +39,10 @@
 
 - 목적: 확장 provider를 프로필당 한 번 표시 목록에 넣고, 사용자가 끈 선택은 유지한다.
 - 확장 등록: manifest의 `defaultVisible`만 지정한다. 별도 등록 없음.
+- upstream 테스트의 기대값은 하드코딩하지 않고 `seededVisibleTaskProviders([...])`로 계산한다. 설치 목록이 바뀌어도 테스트를 다시 고치지 않기 위해서다.
 - 파일:
+  - `src/main/persistence-settings-ui-defaults.test.ts`
+  - `src/main/persistence-source-control-ai-migration.test.ts`
   - `src/main/persistence/applying-settings/settings-update.ts`
   - `src/main/persistence/loading-store/normalize-loaded-global-settings.ts`
   - `src/main/persistence/loading-store/prepare-loaded-profile-settings.ts`

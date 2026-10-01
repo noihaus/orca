@@ -16,6 +16,11 @@ export const FORK_SEAMS = [
     name: 'confirmation-alternate-action',
     file: 'src/renderer/src/components/confirmation-dialog.tsx'
   },
+  { name: 'extension-provider-seeding', file: 'src/main/persistence-settings-ui-defaults.test.ts' },
+  {
+    name: 'extension-provider-seeding',
+    file: 'src/main/persistence-source-control-ai-migration.test.ts'
+  },
   {
     name: 'extension-provider-seeding',
     file: 'src/main/persistence/applying-settings/settings-update.ts'

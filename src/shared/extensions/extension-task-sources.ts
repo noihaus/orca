@@ -113,3 +113,8 @@ export function seedExtensionTaskProviders<P extends string>(
     changed: newlySeeded.length > 0
   }
 }
+
+/** A visible-provider list as an unseeded profile ends up after load: defaultVisible extensions in front. */
+export function seededVisibleTaskProviders(builtin: readonly string[]): string[] {
+  return seedExtensionTaskProviders(builtin, undefined).visibleTaskProviders
+}
