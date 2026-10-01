@@ -20,6 +20,10 @@ export function findDoorayWorkspaceMatch<
 >(wts: W[], taskNumber: string): W | null {
   const taskSlug = slugifyDoorayRef(taskNumber)
 
+  if (!taskSlug) {
+    return null
+  }
+
   let matched: W | null = null
   let latestActivity = -Infinity
 

@@ -55,6 +55,11 @@ describe('dooray-branch-matching', () => {
       ]
       expect(findDoorayWorkspaceMatch(wts, 'dooray-D-TF/2619')).toBe(wts[2])
     })
+
+    it('returns null for empty task slug', () => {
+      const wts = [{ branch: 'feature/test', lastActivityAt: 1 }]
+      expect(findDoorayWorkspaceMatch(wts, '---')).toBeNull()
+    })
   })
 
   describe('getDoorayTaskBranchName', () => {

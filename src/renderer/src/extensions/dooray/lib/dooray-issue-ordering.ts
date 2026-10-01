@@ -63,16 +63,26 @@ export function sortDoorayIssues(
           cmp = -1
         } else if (a.milestoneName && b.milestoneName) {
           cmp = a.milestoneName.localeCompare(b.milestoneName)
+          cmp = dir === 'asc' ? cmp : -cmp
         }
-        break
+        return cmp
       }
       case 'priority': {
-        // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: priority is subset of DoorayPriority
-        const aRank = doorayPriorityRank(a.priority as DoorayPriority)
-        // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: priority is subset of DoorayPriority
-        const bRank = doorayPriorityRank(b.priority as DoorayPriority)
-        cmp = aRank - bRank
-        break
+        const aRank = doorayPriorityRank(a.priority)
+        const bRank = doorayPriorityRank(b.priority)
+        const aUnset = aRank === 5
+        const bUnset = bRank === 5
+        if (aUnset && bUnset) {
+          cmp = 0
+        } else if (aUnset) {
+          cmp = 1
+        } else if (bUnset) {
+          cmp = -1
+        } else {
+          cmp = aRank - bRank
+          cmp = dir === 'asc' ? cmp : -cmp
+        }
+        return cmp
       }
       case 'created':
         cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
