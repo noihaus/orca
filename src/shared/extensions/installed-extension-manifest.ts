@@ -13,4 +13,6 @@ export type ExtensionCredentialService = (typeof INSTALLED_CREDENTIAL_SERVICES)[
 export const INSTALLED_RUNTIME_NAMESPACE_API_KEYS = ['dooray'] as const satisfies readonly string[]
 
 // Right-sidebar tab keys (`ext:<id>/<panel>`) main-side persistence keeps; a drift test pins these to the renderer registry.
-export const INSTALLED_RIGHT_SIDEBAR_TAB_KEYS = [] as const satisfies readonly `ext:${string}`[]
+export const INSTALLED_RIGHT_SIDEBAR_TAB_KEYS = [
+  'ext:dooray/tasks'
+] as const satisfies readonly `ext:${string}`[]

@@ -36,3 +36,8 @@ export function DoorayTaskSourcePanelSlot(props: TaskSourcePanelProps): React.JS
     </Suspense>
   )
 }
+
+// The sidebar tab contract wants a LazyExoticComponent, so this is exported unwrapped.
+export const DoorayRightSidebarTasksPanel = lazy(() =>
+  import('./sidebar/DoorayTasksPanel').then((m) => ({ default: m.DoorayTasksPanel }))
+)

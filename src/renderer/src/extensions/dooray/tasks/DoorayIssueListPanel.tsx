@@ -30,7 +30,7 @@ export type DoorayIssueListPanelProps = {
   onNewTask?: () => void
 }
 
-function filterOptions(): { id: DoorayIssueFilter; label: string }[] {
+export function filterOptions(): { id: DoorayIssueFilter; label: string }[] {
   return [
     {
       id: 'assigned',

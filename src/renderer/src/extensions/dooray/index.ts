@@ -4,6 +4,7 @@ import { createDooraySlice } from './dooray-slice'
 import {
   DoorayIntegrationCardSlot,
   DoorayOnboardingRowSlot,
+  DoorayRightSidebarTasksPanel,
   DoorayTaskSourcePanelSlot
 } from './dooray-lazy-slots'
 import { ensureBoundDoorayStatus, useBoundDoorayTaskSourceStatus } from './dooray-store-handle'
@@ -28,6 +29,18 @@ export const doorayRendererExtension = {
   id: 'dooray',
   createSlice: createDooraySlice,
   taskSource: doorayTaskSource,
+  rightSidebarTabs: [
+    {
+      id: 'ext:dooray/tasks',
+      title: () =>
+        translateDoorayLabel(
+          'auto.ext.dooray.components.right.sidebar.index.doorayTasks',
+          'Dooray Tasks'
+        ),
+      Icon: DoorayIcon,
+      Panel: DoorayRightSidebarTasksPanel
+    }
+  ],
   integrationCards: [DoorayIntegrationCardSlot],
   onboardingIntegrationRows: [DoorayOnboardingRowSlot],
   locales: {

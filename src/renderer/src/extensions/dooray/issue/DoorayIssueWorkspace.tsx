@@ -78,7 +78,7 @@ function useDisplayedIssue(issue: DoorayIssue | null) {
   return { fullIssue, setFullIssue, loading }
 }
 
-function WorkflowPicker({
+export function WorkflowPicker({
   issue,
   onIssuePatched
 }: {
