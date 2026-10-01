@@ -17,6 +17,13 @@
 - 파일:
   - `src/renderer/src/App.tsx`
 
+### `audited-extension-fetch-calls`
+
+- 목적: 확장의 main HTTP 호출 지점을 proxy 감사 테스트의 호출 수 목록에 합친다. 호출을 함수 참조로 숨기지 않고 감사 대상으로 남기기 위해서다.
+- 확장 등록: `src/main/extensions/installed-audited-fetch-calls.ts`에 `[파일, 호출 수]`와 한 줄 사유 추가.
+- 파일:
+  - `src/main/proxy-guarded-fetch-call-site-audit.test.ts`
+
 ### `auto-update-gate`
 
 - 목적: 포크 빌드에서 자동 업데이트를 끄고, 메뉴 "업데이트 확인"에는 "최신"으로 응답한다.

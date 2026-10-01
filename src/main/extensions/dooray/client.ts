@@ -32,9 +32,8 @@ async function sendThroughMainHttpClient(url: string, init?: RequestInit): Promi
     ...(proxySession ? { proxySession } : {}),
     probeUrl: url
   }).catch(() => undefined)
-  // Port fetch as a function reference, like orcad-bun-runtime-materializer.
-  const send = httpClient.fetch
-  return send(url, init)
+  // Audited in proxy-guarded-fetch-call-site-audit via installed-audited-fetch-calls.ts.
+  return httpClient.fetch(url, init)
 }
 
 const mainTransport: DoorayTransport = {

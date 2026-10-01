@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { INSTALLED_AUDITED_NON_NET_FETCH_CALLS } from './extensions/installed-audited-fetch-calls' // fork-seam: audited-extension-fetch-calls
 
 // Startup applies the persisted proxy to `session.defaultSession` only, and
 // `installElectronProxyRequestGuard(session.defaultSession)` is what actually holds requests
@@ -20,7 +21,8 @@ const AUDITED_NON_NET_FETCH_CALLS = new Map<string, number>([
   ['main/rate-limits/minimax/minimax-request-context.ts', 2],
   // Injected HttpClient, not a session: resolves to net.fetch on defaultSession
   // (main/host/electron-http-client.ts) or to the global-fetch-audited Node fallback.
-  ['main/jira/authenticated-request.ts', 1]
+  ['main/jira/authenticated-request.ts', 1], // fork-seam: audited-extension-fetch-calls
+  ...INSTALLED_AUDITED_NON_NET_FETCH_CALLS
 ])
 
 // `globalThis.fetch` / `global.fetch` belong to global-fetch-call-site-audit.test.ts.
