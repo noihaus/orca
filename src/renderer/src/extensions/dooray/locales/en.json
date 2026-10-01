@@ -282,7 +282,8 @@
               "no_member_profile": "Dooray did not return a member profile for this token.",
               "not_connected": "Not connected to Dooray.",
               "connection_failed": "Connection failed.",
-              "test_failed": "Test failed."
+              "test_failed": "Test failed.",
+              "timed_out": "Dooray did not respond in time."
             },
             "viewer_unknown": "unknown",
             "sidebar": {

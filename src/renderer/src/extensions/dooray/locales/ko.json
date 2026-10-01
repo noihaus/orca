@@ -282,7 +282,8 @@
               "no_member_profile": "이 토큰으로 두레이 멤버 정보를 가져오지 못했습니다.",
               "not_connected": "두레이에 연결되어 있지 않습니다.",
               "connection_failed": "연결하지 못했습니다.",
-              "test_failed": "연결 테스트에 실패했습니다."
+              "test_failed": "연결 테스트에 실패했습니다.",
+              "timed_out": "두레이가 제때 응답하지 않았습니다."
             },
             "viewer_unknown": "알 수 없음",
             "sidebar": {

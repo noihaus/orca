@@ -7,7 +7,7 @@ import type {
 import { asRecord, asString } from './dooray-json-guards'
 import { toPriority } from './dooray-issue-mapping'
 import { doorayProjectPath } from './dooray-issue-queries'
-import { doorayRequest, type DoorayClient } from './dooray-request'
+import { DOORAY_UPLOAD_TIMEOUT_MS, doorayRequest, type DoorayClient } from './dooray-request'
 
 const MARKDOWN = 'text/x-markdown'
 
@@ -103,7 +103,7 @@ export async function uploadDoorayIssueFile(
     await doorayRequest(
       client,
       `${doorayProjectPath(args.projectId)}/posts/${encodeURIComponent(args.postId)}/files`,
-      { method: 'POST', body: form }
+      { method: 'POST', body: form, timeoutMs: DOORAY_UPLOAD_TIMEOUT_MS }
     )
     return { ok: true }
   } catch (error) {

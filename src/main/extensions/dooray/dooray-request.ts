@@ -26,6 +26,12 @@ export class DoorayApiError extends Error {
   }
 }
 
+// A hung connection would otherwise hold one of the few slots forever.
+export const DOORAY_REQUEST_TIMEOUT_MS = 30_000
+export const DOORAY_UPLOAD_TIMEOUT_MS = 120_000
+
+export type DoorayRequestInit = RequestInit & { timeoutMs?: number }
+
 const MAX_CONCURRENT = 4
 let active = 0
 const waiters: (() => void)[] = []
@@ -66,18 +72,36 @@ function readHeader(body: unknown): { isSuccessful?: boolean; resultMessage?: st
 export async function doorayRequest(
   client: DoorayClient,
   path: string,
-  init?: RequestInit
+  requestInit?: DoorayRequestInit
 ): Promise<DoorayEnvelope> {
-  const headers = new Headers(init?.headers)
+  const { timeoutMs = DOORAY_REQUEST_TIMEOUT_MS, ...init } = requestInit ?? {}
+  const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
   // Multipart bodies need the runtime to set the boundary.
-  if (!(init?.body instanceof FormData)) {
+  if (!(init.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json')
   }
   headers.set('Authorization', client.authorization)
   return withDoorayRequestSlot(async () => {
-    const response = await client.transport.send(`${client.apiUrl}${path}`, { ...init, headers })
-    const body: unknown = await response.json().catch(() => null)
+    // Started inside the slot so queueing time does not count against the request.
+    const timeout = AbortSignal.timeout(timeoutMs)
+    const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout
+    let response: Response
+    let body: unknown
+    try {
+      response = await client.transport.send(`${client.apiUrl}${path}`, {
+        ...init,
+        headers,
+        signal
+      })
+      body = await response.json().catch(() => null)
+    } catch (error) {
+      throw timeout.aborted ? new DoorayApiError('Dooray did not respond in time.') : error
+    }
+    // A body read cut off by the timeout reads as null, not as an empty success.
+    if (timeout.aborted) {
+      throw new DoorayApiError('Dooray did not respond in time.')
+    }
     const header = readHeader(body)
     if (!response.ok) {
       throw new DoorayApiError(

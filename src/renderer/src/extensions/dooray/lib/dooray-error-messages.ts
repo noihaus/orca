@@ -25,6 +25,11 @@ export function translateDoorayError(rawMessage: string): string {
         'auto.ext.dooray.components.dooray.errors.not_connected',
         'Not connected to Dooray.'
       )
+    case 'Dooray did not respond in time.':
+      return translate(
+        'auto.ext.dooray.components.dooray.errors.timed_out',
+        'Dooray did not respond in time.'
+      )
     case 'Connection failed.':
       return translate(
         'auto.ext.dooray.components.dooray.errors.connection_failed',
