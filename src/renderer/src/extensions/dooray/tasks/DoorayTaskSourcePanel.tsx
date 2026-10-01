@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
 import { DoorayConnectDialog } from '../DoorayConnectDialog'
 import { DoorayIcon } from '../DoorayIcon'
+import { DoorayIssueWorkspace } from '../issue/DoorayIssueWorkspace'
 import { useDoorayConnectionStatus } from '../use-dooray-connection-status'
 import { DoorayIssueListPanel } from './DoorayIssueListPanel'
 import { useDoorayIssueList } from './use-dooray-issue-list'
@@ -39,14 +40,31 @@ function DoorayConnectCta(): React.JSX.Element {
   )
 }
 
-// Owns the list model so the detail sheet (D9) and task creation (D11) can share it.
+// Owns the list model so the detail sheet and task creation (D11) can share it.
 function ConnectedDoorayTaskPanel({
   credentialError
 }: {
   credentialError?: string
 }): React.JSX.Element {
   const list = useDoorayIssueList({ withMilestones: true })
-  return <DoorayIssueListPanel list={list} credentialError={credentialError} />
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null)
+  // Derived from the list so workflow patches flow back into the open sheet.
+  const selectedIssue = list.rawIssues.find((issue) => issue.id === selectedIssueId) ?? null
+  return (
+    <>
+      <DoorayIssueListPanel
+        list={list}
+        credentialError={credentialError}
+        selectedIssueId={selectedIssueId}
+        onSelectIssue={(issue) => setSelectedIssueId(issue.id)}
+      />
+      <DoorayIssueWorkspace
+        issue={selectedIssue}
+        onClose={() => setSelectedIssueId(null)}
+        onIssuePatched={list.patchIssue}
+      />
+    </>
+  )
 }
 
 // The Tasks-page body for the Dooray source; start-workspace wiring (TaskSourcePanelProps) lands with D10.

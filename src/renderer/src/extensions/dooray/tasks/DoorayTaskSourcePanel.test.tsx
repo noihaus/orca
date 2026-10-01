@@ -27,7 +27,11 @@ const api = vi.hoisted(() => ({
   listProjects: vi.fn(),
   listIssues: vi.fn(),
   listMilestones: vi.fn(),
-  listWorkflows: vi.fn()
+  listWorkflows: vi.fn(),
+  getIssue: vi.fn(),
+  issueComments: vi.fn(),
+  addIssueComment: vi.fn(),
+  setWorkflow: vi.fn()
 }))
 vi.mock('../use-dooray-api', () => ({ useDoorayApi: () => api }))
 
@@ -85,6 +89,8 @@ beforeEach(async () => {
   api.listIssues.mockResolvedValue({ totalCount: 2, issues: [issue(1), issue(2)] })
   api.listMilestones.mockResolvedValue([])
   api.listWorkflows.mockResolvedValue([])
+  api.getIssue.mockResolvedValue(null)
+  api.issueComments.mockResolvedValue([])
 })
 afterEach(cleanup)
 
@@ -122,8 +128,6 @@ describe('DoorayTaskSourcePanel', () => {
     expect(await screen.findByText('Task 1')).toBeTruthy()
     expect(screen.getAllByTestId('dooray-issue-row')).toHaveLength(2)
     expect(screen.getByText('2 / 2 shown')).toBeTruthy()
-    // Rows stay passive until the detail sheet (D9) wires onSelectIssue.
-    expect(screen.getAllByTestId('dooray-issue-row')[0].getAttribute('role')).toBeNull()
     expect(screen.queryByRole('button', { name: /Start workspace from/ })).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: 'Done' }))
@@ -133,6 +137,37 @@ describe('DoorayTaskSourcePanel', () => {
       )
     )
     expect(screen.getByRole('button', { name: 'Done' }).getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('opens the detail sheet from a row and a workflow change patches the row', async () => {
+    seed(connected)
+    api.getIssue.mockResolvedValue({ ...issue(1), body: 'Full body text' })
+    api.issueComments.mockResolvedValue([
+      { id: 'c1', body: 'First comment', createdAt: '2026-09-02T00:00:00Z', authorName: 'Lee' }
+    ])
+    api.listWorkflows.mockResolvedValue([{ id: 'w9', name: 'Finished', workflowClass: 'closed' }])
+    api.setWorkflow.mockResolvedValue({ ok: true })
+    renderPanel()
+    fireEvent.click((await screen.findAllByTestId('dooray-issue-row'))[0])
+
+    expect(await screen.findByText('Full body text')).toBeTruthy()
+    expect(await screen.findByText('First comment')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /^Start workspace/ })).toBeNull()
+
+    const pill = await screen.findByRole('button', { name: 'Doing' })
+    await waitFor(() => expect(pill).toHaveProperty('disabled', false))
+    fireEvent.click(pill)
+    fireEvent.click(await screen.findByRole('button', { name: 'Finished' }))
+    await waitFor(() =>
+      expect(api.setWorkflow).toHaveBeenCalledWith({
+        projectId: 'proj-a',
+        postId: 'p1',
+        workflowId: 'w9'
+      })
+    )
+    await waitFor(() =>
+      expect(screen.getAllByTestId('dooray-issue-row')[0].textContent).toContain('Finished')
+    )
   })
 
   it('loads the next page from the load-more button', async () => {
