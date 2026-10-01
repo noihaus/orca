@@ -22,6 +22,7 @@ import {
   type FeatureWallSetupProgress
 } from '../feature-wall/feature-wall-setup-progress'
 import { deriveIntegrationConnectionStatus } from '../feature-wall/use-integration-connection-status'
+import { useRefreshedExtensionTaskSourceFacts } from '@/extensions/extension-task-source-status' // fork-seam: integration-cards
 import { useSetupGuideBrowserMilestoneProgress } from './setup-guide-browser-milestone-progress'
 import {
   getComputerUsePermissionSetupState,
@@ -235,6 +236,7 @@ export function useSetupGuideProgress(
     }
   }, [computerUseSkillInstalled, readComputerUsePermissions, shouldRefreshCoreState])
 
+  const extensionTaskSources = useRefreshedExtensionTaskSourceFacts() // fork-seam: integration-cards
   const taskSourceStatus = deriveIntegrationConnectionStatus({
     preflightStatus,
     preflightStatusChecked,
@@ -248,7 +250,8 @@ export function useSetupGuideProgress(
     jiraStatus,
     jiraStatusChecked,
     jiraStatusContextKey,
-    providerRuntimeContextKey
+    providerRuntimeContextKey,
+    extensionTaskSources // fork-seam: integration-cards
   })
   const hasConnectedTaskSource = taskSourceStatus.trackerConnected
   const gitRepoCount = orderedGitRepos.length

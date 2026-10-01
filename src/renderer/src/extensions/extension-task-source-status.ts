@@ -31,3 +31,11 @@ export function useExtensionTaskSourceStatusRefresh(
     }
   }, [extensions])
 }
+
+// For surfaces that read facts without the integrations pane mounted.
+export function useRefreshedExtensionTaskSourceFacts(
+  extensions: readonly RendererExtension[] = INSTALLED_RENDERER_EXTENSIONS
+): ExtensionTaskSourceFact[] {
+  useExtensionTaskSourceStatusRefresh(extensions)
+  return useExtensionTaskSourceFacts(extensions)
+}

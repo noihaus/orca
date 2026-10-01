@@ -4,6 +4,7 @@ import { useAppStore } from '@/store'
 import { getLocalPreflightContext, localPreflightContextKey } from '@/lib/local-preflight-context'
 import { getProviderRuntimeContextKey } from '@/lib/provider-runtime-context'
 import { deriveIntegrationConnectionStatus } from './use-integration-connection-status'
+import { useRefreshedExtensionTaskSourceFacts } from '@/extensions/extension-task-source-status' // fork-seam: integration-cards
 
 export type FeatureWallTaskSourcePresentation = {
   workflow: FeatureWallWorkflow
@@ -74,6 +75,7 @@ export function useFeatureWallTaskSourcePresentation(
     refreshPreflightStatus
   ])
 
+  const extensionTaskSources = useRefreshedExtensionTaskSourceFacts() // fork-seam: integration-cards
   const taskSourceStatus = deriveIntegrationConnectionStatus({
     preflightStatus,
     preflightStatusChecked,
@@ -87,7 +89,8 @@ export function useFeatureWallTaskSourcePresentation(
     jiraStatus,
     jiraStatusChecked,
     jiraStatusContextKey,
-    providerRuntimeContextKey
+    providerRuntimeContextKey,
+    extensionTaskSources // fork-seam: integration-cards
   })
 
   return {

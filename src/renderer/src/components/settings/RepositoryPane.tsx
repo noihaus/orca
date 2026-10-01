@@ -37,6 +37,7 @@ export { getRepositoryPaneSearchEntries }
 export { matchesRepositoryIdentitySearch } from './repository-identity-search'
 
 export type RepositoryPaneRepoUpdate = Omit<
+  // fork-seam: repository-settings-sections
   Partial<Repo>,
   'sourceControlAi' | 'externalWorktreeVisibility' | 'ghAccount'
 > & {
