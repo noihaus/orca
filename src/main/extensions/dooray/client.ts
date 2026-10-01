@@ -5,6 +5,7 @@ import type {
   DoorayViewer
 } from '../../../shared/extensions/dooray/dooray-types'
 import { getMainHttpClient } from '../../network/http-client'
+import { ensureElectronProxyFromEnvironment } from '../../network/proxy-settings'
 import { withSpan } from '../../observability/tracer'
 import {
   clearDoorayCredentials,
@@ -22,10 +23,23 @@ import { DEFAULT_DOORAY_API_URL, normalizeDoorayUrl } from './dooray-url'
 export { DoorayApiError, doorayRequest, withDoorayRequestSlot } from './dooray-request'
 export type { DoorayClient } from './dooray-request'
 
-// Assembly point: the only place that binds main-process HTTP and tracing.
+// Assembly point: the only place that binds main-process HTTP, proxy setup and tracing.
+async function sendThroughMainHttpClient(url: string, init?: RequestInit): Promise<Response> {
+  const httpClient = getMainHttpClient()
+  const proxySession = httpClient.proxySession()
+  // Same proxy guard as Jira: a failed proxy apply must not block the request.
+  await ensureElectronProxyFromEnvironment({
+    ...(proxySession ? { proxySession } : {}),
+    probeUrl: url
+  }).catch(() => undefined)
+  // Port fetch as a function reference, like orcad-bun-runtime-materializer.
+  const send = httpClient.fetch
+  return send(url, init)
+}
+
 const mainTransport: DoorayTransport = {
-  fetch: (url, init) =>
-    withSpan('dooray.request', () => getMainHttpClient().fetch(url, init), { kind: 'client' })
+  send: (url, init) =>
+    withSpan('dooray.request', () => sendThroughMainHttpClient(url, init), { kind: 'client' })
 }
 
 export function toDoorayViewer(data: unknown): DoorayViewer {

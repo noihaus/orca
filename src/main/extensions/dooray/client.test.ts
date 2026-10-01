@@ -120,7 +120,7 @@ describe('Dooray client', () => {
       webUrl: null,
       viewer: { id: '1', name: 'K', userCode: 'k', email: null },
       authorization: 'dooray-api t',
-      transport: { fetch: (url: string, init?: RequestInit) => netFetchMock(url, init) }
+      transport: { send: (url: string, init?: RequestInit) => netFetchMock(url, init) }
     }
     const all = Promise.all(Array.from({ length: 7 }, () => d.doorayRequest(client, '/x')))
     await new Promise((resolve) => setTimeout(resolve, 10))
@@ -178,7 +178,7 @@ describe('Dooray client', () => {
       webUrl: null,
       viewer: { id: '1', name: 'K', userCode: 'k', email: null },
       authorization: 'dooray-api t',
-      transport: { fetch: (url: string, init?: RequestInit) => netFetchMock(url, init) }
+      transport: { send: (url: string, init?: RequestInit) => netFetchMock(url, init) }
     }
     const first = d.doorayRequest(client, '/x').catch((error: unknown) => error)
     const rest = [1, 2, 3].map(() => d.doorayRequest(client, '/x'))

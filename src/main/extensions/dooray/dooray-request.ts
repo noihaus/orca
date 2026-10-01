@@ -2,7 +2,7 @@ import { isRecord } from './dooray-json-guards'
 import type { DoorayViewer } from '../../../shared/extensions/dooray/dooray-types'
 
 // Injected so a plugin worker can supply its own fetch; no Electron imports here.
-export type DoorayTransport = { fetch: (url: string, init?: RequestInit) => Promise<Response> }
+export type DoorayTransport = { send: (url: string, init?: RequestInit) => Promise<Response> }
 
 export type DoorayClient = {
   apiUrl: string
@@ -76,7 +76,7 @@ export async function doorayRequest(
   }
   headers.set('Authorization', client.authorization)
   return withDoorayRequestSlot(async () => {
-    const response = await client.transport.fetch(`${client.apiUrl}${path}`, { ...init, headers })
+    const response = await client.transport.send(`${client.apiUrl}${path}`, { ...init, headers })
     const body: unknown = await response.json().catch(() => null)
     const header = readHeader(body)
     if (!response.ok) {

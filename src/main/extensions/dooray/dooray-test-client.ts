@@ -7,7 +7,7 @@ export function makeTestDoorayClient(overrides: Partial<DoorayClient> = {}): Doo
     webUrl: 'https://nhnent.dooray.com',
     viewer: { id: 'm1', name: 'Kim', userCode: 'kim', email: null },
     authorization: 'dooray-api tok',
-    transport: { fetch: (url, init) => netFetchMock(url, init) },
+    transport: { send: (url, init) => netFetchMock(url, init) },
     ...overrides
   }
 }
