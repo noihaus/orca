@@ -18,6 +18,7 @@ import type {
   DoorayUploadIssueFileArgs,
   DoorayWorkflow
 } from '../../../shared/extensions/dooray/dooray-types'
+import type { TaskBranchPreloadApi } from '../../../shared/extensions/dooray/task-branch-types'
 
 type ProjectArgs = { projectId: string }
 type PostArgs = { projectId: string; postId: string }
@@ -42,4 +43,6 @@ export type DoorayPreloadApi = {
   addIssueComment: (args: PostArgs & { body: string }) => Promise<DoorayCreateResult>
   listWorkflows: (args: ProjectArgs) => Promise<DoorayWorkflow[]>
   setWorkflow: (args: PostArgs & { workflowId: string }) => Promise<DoorayMutationResult>
+  // Local git worktrees only; the web client has no IPC for it, so consumers must feature-check.
+  taskBranch?: TaskBranchPreloadApi
 }

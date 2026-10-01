@@ -16,6 +16,8 @@ import {
   type Checked
 } from './dooray-arg-validation'
 import { connectDoorayAccount, disconnectDoorayAccount } from './dooray-connection-commands'
+import type { MainExtensionIpcContext } from '../main-extension-contract'
+import { registerTaskBranchIpcHandlers } from './task-branch/task-branch-ipc'
 
 // Invalid args never throw: reads get a benign default, mutations an {ok:false} result.
 function handleRead<T, R>(
@@ -41,7 +43,7 @@ function handleMutation<T, R>(
   })
 }
 
-export function registerDoorayIpcHandlers(): void {
+export function registerDoorayIpcHandlers(context: MainExtensionIpcContext): void {
   handleMutation('dooray:connect', checkConnectArgs, connectDoorayAccount)
   ipcMain.handle('dooray:disconnect', async () => {
     disconnectDoorayAccount()
@@ -66,4 +68,5 @@ export function registerDoorayIpcHandlers(): void {
   handleMutation('dooray:addIssueComment', checkCommentArgs, api.addDoorayIssueComment)
   handleRead('dooray:listWorkflows', checkProjectId, api.listDoorayWorkflows, [])
   handleMutation('dooray:setWorkflow', checkSetWorkflowArgs, api.setDoorayWorkflow)
+  registerTaskBranchIpcHandlers(context.store)
 }

@@ -160,7 +160,7 @@ export function registerCoreHandlers(
   registerHostedReviewHandlers(store, stats)
   registerLinearHandlers()
   registerJiraHandlers()
-  registerMainExtensionIpc()
+  registerMainExtensionIpc({ store }) // fork-seam: main-ipc
   registerBitbucketHandlers()
   registerFeedbackHandlers()
   if (crashReports) {

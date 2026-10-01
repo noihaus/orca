@@ -1,11 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
 import { defineMethod } from '../runtime/rpc/core'
-import type { MainExtension } from './main-extension-contract'
+import type { MainExtension, MainExtensionIpcContext } from './main-extension-contract'
 import {
   bindMainExtensionRuntimeCommands,
   getMainExtensionRpcMethods,
   registerMainExtensionIpc
 } from './register-main-extensions'
+
+// oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: registration only forwards the context
+const FAKE_CONTEXT = { store: {} } as MainExtensionIpcContext
 
 function createFakeExtension(registerIpc = vi.fn()): MainExtension {
   return {
@@ -18,15 +21,15 @@ function createFakeExtension(registerIpc = vi.fn()): MainExtension {
 
 describe('main extension registration', () => {
   it('is a no-op with no extensions', () => {
-    registerMainExtensionIpc([])
+    registerMainExtensionIpc(FAKE_CONTEXT, [])
     expect(getMainExtensionRpcMethods([])).toEqual([])
     expect(bindMainExtensionRuntimeCommands(Object.create(null), {}, [])).toEqual({})
   })
 
   it('registers IPC handlers of each extension', () => {
     const registerIpc = vi.fn()
-    registerMainExtensionIpc([createFakeExtension(registerIpc)])
-    expect(registerIpc).toHaveBeenCalledTimes(1)
+    registerMainExtensionIpc(FAKE_CONTEXT, [createFakeExtension(registerIpc)])
+    expect(registerIpc).toHaveBeenCalledWith(FAKE_CONTEXT)
   })
 
   it('exposes RPC methods that stay callable', () => {

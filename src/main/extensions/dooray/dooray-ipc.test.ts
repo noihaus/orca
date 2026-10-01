@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { handlers, resetPreflightMock, connectMock, disconnectMock, apiMock } = vi.hoisted(() => ({
-  handlers: new Map<string, (event: unknown, input?: unknown) => unknown>(),
-  resetPreflightMock: vi.fn(),
-  connectMock: vi.fn(),
-  disconnectMock: vi.fn(),
-  apiMock: vi.fn()
-}))
+const { handlers, resetPreflightMock, connectMock, disconnectMock, apiMock, taskBranchMock } =
+  vi.hoisted(() => ({
+    handlers: new Map<string, (event: unknown, input?: unknown) => unknown>(),
+    resetPreflightMock: vi.fn(),
+    connectMock: vi.fn(),
+    disconnectMock: vi.fn(),
+    apiMock: vi.fn(),
+    taskBranchMock: vi.fn()
+  }))
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -41,7 +43,13 @@ vi.mock('./dooray-api', () => {
   }
 })
 
+vi.mock('./task-branch/task-branch-ipc', () => ({ registerTaskBranchIpcHandlers: taskBranchMock }))
+
+import type { Store } from '../../persistence'
 import { registerDoorayIpcHandlers } from './dooray-ipc'
+
+// oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: handlers under test never read the store
+const fakeStore = {} as Store
 
 const invoke = (channel: string, input?: unknown) => handlers.get(channel)?.({}, input)
 
@@ -49,12 +57,13 @@ describe('Dooray IPC handlers', () => {
   beforeEach(() => {
     handlers.clear()
     vi.clearAllMocks()
-    registerDoorayIpcHandlers()
+    registerDoorayIpcHandlers({ store: fakeStore })
   })
 
   it('registers all 19 channels', () => {
     expect(handlers.size).toBe(19)
     expect([...handlers.keys()].every((name) => name.startsWith('dooray:'))).toBe(true)
+    expect(taskBranchMock).toHaveBeenCalledWith(fakeStore)
   })
 
   it('returns benign defaults for invalid args', async () => {

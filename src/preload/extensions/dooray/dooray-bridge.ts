@@ -20,5 +20,12 @@ export const doorayApi: DoorayPreloadApi = {
   issueComments: (args) => ipcRenderer.invoke('dooray:issueComments', args),
   addIssueComment: (args) => ipcRenderer.invoke('dooray:addIssueComment', args),
   listWorkflows: (args) => ipcRenderer.invoke('dooray:listWorkflows', args),
-  setWorkflow: (args) => ipcRenderer.invoke('dooray:setWorkflow', args)
+  setWorkflow: (args) => ipcRenderer.invoke('dooray:setWorkflow', args),
+  taskBranch: {
+    listSubmodules: (args) => ipcRenderer.invoke('dooray:taskBranch:listSubmodules', args),
+    inspect: (args) => ipcRenderer.invoke('dooray:taskBranch:inspect', args),
+    stash: (args) => ipcRenderer.invoke('dooray:taskBranch:stash', args),
+    discard: (args) => ipcRenderer.invoke('dooray:taskBranch:discard', args),
+    switch: (args) => ipcRenderer.invoke('dooray:taskBranch:switch', args)
+  }
 }

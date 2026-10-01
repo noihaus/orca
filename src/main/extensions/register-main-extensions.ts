@@ -1,13 +1,14 @@
 import type { RuntimeInstalledCommandSurfaces } from '../runtime/orca-runtime-core'
 import type { RpcAnyMethodDeclaration } from '../runtime/rpc/core'
 import { INSTALLED_MAIN_EXTENSIONS } from './installed-main-extensions'
-import type { MainExtension } from './main-extension-contract'
+import type { MainExtension, MainExtensionIpcContext } from './main-extension-contract'
 
 export function registerMainExtensionIpc(
+  context: MainExtensionIpcContext,
   extensions: readonly MainExtension[] = INSTALLED_MAIN_EXTENSIONS
 ): void {
   for (const extension of extensions) {
-    extension.registerIpcHandlers()
+    extension.registerIpcHandlers(context)
   }
 }
 
