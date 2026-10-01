@@ -23,8 +23,6 @@ import { DoorayCommentComposer, DoorayIssueCommentsSection } from './DoorayIssue
 import { useDoorayComments } from './use-dooray-comments'
 import { useDoorayWorkflows } from './use-dooray-workflows'
 
-const K = 'auto.ext.dooray.components.DoorayIssueWorkspace'
-
 export type DoorayIssueWorkspaceProps = {
   issue: DoorayIssue | null
   onUse?: (issue: DoorayIssue) => void
@@ -39,7 +37,7 @@ export type DoorayIssueWorkspaceProps = {
 function assigneeLabel(issue: DoorayIssue): string {
   return issue.assignees.length > 0
     ? issue.assignees.join(', ')
-    : translate(`${K}.unassigned`, 'Unassigned')
+    : translate('auto.ext.dooray.components.DoorayIssueWorkspace.unassigned', 'Unassigned')
 }
 
 // Fetches the full issue (with body) and keeps optimistic workflow patches local until the list catches up.
@@ -150,13 +148,16 @@ function WorkspaceHeader({
               size="icon-sm"
               className="shrink-0"
               onClick={onClose}
-              aria-label={translate(`${K}.close_preview`, 'Close Dooray task preview')}
+              aria-label={translate(
+                'auto.ext.dooray.components.DoorayIssueWorkspace.close_preview',
+                'Close Dooray task preview'
+              )}
             >
               <X className="size-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={6}>
-            {translate(`${K}.close`, 'Close')}
+            {translate('auto.ext.dooray.components.DoorayIssueWorkspace.close', 'Close')}
           </TooltipContent>
         </Tooltip>
       </div>
@@ -180,10 +181,13 @@ export function DoorayIssueWorkspace({
   const displayed = fullIssue && issue && fullIssue.id === issue.id ? fullIssue : issue
   const handlePatched = useCallback(
     (patched: DoorayIssue) => {
-      setFullIssue(patched)
+      // A late rollback for a previous issue must not clobber the current one's detail.
+      if (patched.id === issue?.id) {
+        setFullIssue(patched)
+      }
       onIssuePatched?.(patched)
     },
-    [onIssuePatched, setFullIssue]
+    [issue?.id, onIssuePatched, setFullIssue]
   )
 
   const startButton = displayed ? (
@@ -206,11 +210,12 @@ export function DoorayIssueWorkspace({
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <SheetTitle className="sr-only">
-          {displayed?.subject ?? translate(`${K}.sheet_title`, 'Dooray task')}
+          {displayed?.subject ??
+            translate('auto.ext.dooray.components.DoorayIssueWorkspace.sheet_title', 'Dooray task')}
         </SheetTitle>
         <SheetDescription className="sr-only">
           {translate(
-            `${K}.sheet_description`,
+            'auto.ext.dooray.components.DoorayIssueWorkspace.sheet_description',
             'Preview, comment, and start work from the selected task.'
           )}
         </SheetDescription>
@@ -223,7 +228,7 @@ export function DoorayIssueWorkspace({
               startButton={startButton}
             />
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/60 px-4 py-2.5">
-              <WorkflowPicker issue={displayed} onIssuePatched={handlePatched} />
+              <WorkflowPicker key={displayed.id} issue={displayed} onIssuePatched={handlePatched} />
               <span className="text-[11px] text-muted-foreground">{assigneeLabel(displayed)}</span>
               {displayed.milestoneName ? (
                 <span className="text-[11px] text-muted-foreground">{displayed.milestoneName}</span>
@@ -247,7 +252,10 @@ export function DoorayIssueWorkspace({
                     />
                   ) : (
                     <p className="text-sm text-muted-foreground italic">
-                      {translate(`${K}.no_description`, 'No description provided.')}
+                      {translate(
+                        'auto.ext.dooray.components.DoorayIssueWorkspace.no_description',
+                        'No description provided.'
+                      )}
                     </p>
                   )}
                 </section>

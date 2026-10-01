@@ -73,4 +73,36 @@ describe('useDoorayWorkflows', () => {
     expect(onPatched.mock.calls[1][0]).toBe(issue)
     expect(toastError).toHaveBeenCalledWith('offline')
   })
+
+  it('does not toast or block the new issue when an old call fails after a switch', async () => {
+    let reject: (error: Error) => void = () => {}
+    api.setWorkflow.mockReturnValue(
+      new Promise((_, r) => {
+        reject = r
+      })
+    )
+    const issueA = makeDoorayIssue({ id: 'post-a' })
+    const issueB = makeDoorayIssue({ id: 'post-b' })
+    const onPatched = vi.fn()
+    const { result, rerender } = renderHook(({ issue }) => useDoorayWorkflows(issue, onPatched), {
+      initialProps: { issue: issueA }
+    })
+    await waitFor(() => expect(result.current.workflows).toHaveLength(1))
+    let pending: Promise<void> = Promise.resolve()
+    act(() => {
+      pending = result.current.selectWorkflow(closed)
+    })
+    expect(result.current.workflowPending).toBe(true)
+
+    rerender({ issue: issueB })
+    expect(result.current.workflowPending).toBe(false)
+
+    await act(async () => {
+      reject(new Error('late failure'))
+      await pending
+    })
+    expect(onPatched).toHaveBeenLastCalledWith(issueA)
+    expect(toastError).not.toHaveBeenCalled()
+    expect(result.current.workflowPending).toBe(false)
+  })
 })

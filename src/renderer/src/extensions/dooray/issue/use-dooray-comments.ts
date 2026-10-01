@@ -12,8 +12,6 @@ import type {
 } from '../../../../../shared/extensions/dooray/dooray-types'
 import { useDoorayApi } from '../use-dooray-api'
 
-const K = 'auto.ext.dooray.components.DoorayIssueWorkspace'
-
 export function useDoorayComments(issue: DoorayIssue | null) {
   const api = useDoorayApi()
   const [comments, setComments] = useState<DoorayComment[]>([])
@@ -89,7 +87,12 @@ export function useDoorayComments(issue: DoorayIssue | null) {
       return
     }
     if (bodyState.status === 'too-large-leading-whitespace') {
-      toast.error(translate(`${K}.comment_too_large`, 'Comment is too large to submit safely.'))
+      toast.error(
+        translate(
+          'auto.ext.dooray.components.DoorayIssueWorkspace.comment_too_large',
+          'Comment is too large to submit safely.'
+        )
+      )
       return
     }
     const requestId = requestIdRef.current
@@ -106,7 +109,7 @@ export function useDoorayComments(issue: DoorayIssue | null) {
         id: result.id || createBrowserUuid(),
         body: bodyState.body,
         createdAt: new Date().toISOString(),
-        authorName: translate(`${K}.you`, 'You')
+        authorName: translate('auto.ext.dooray.components.DoorayIssueWorkspace.you', 'You')
       }
       optimisticRef.current.push(comment)
       setComments((previous) => [...previous, comment])
@@ -115,7 +118,10 @@ export function useDoorayComments(issue: DoorayIssue | null) {
       toast.error(
         error instanceof Error
           ? error.message
-          : translate(`${K}.comment_failed`, 'Failed to add comment.')
+          : translate(
+              'auto.ext.dooray.components.DoorayIssueWorkspace.comment_failed',
+              'Failed to add comment.'
+            )
       )
     } finally {
       if (requestId === requestIdRef.current) {

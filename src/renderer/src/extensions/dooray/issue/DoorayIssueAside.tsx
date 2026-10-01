@@ -7,8 +7,6 @@ import type { DoorayIssue } from '../../../../../shared/extensions/dooray/dooray
 import { buildDoorayPrompt, copyDoorayText } from '../lib/dooray-issue-clipboard'
 import { openDoorayUrl } from '../lib/dooray-open-link'
 
-const K = 'auto.ext.dooray.components.DoorayIssueWorkspace'
-
 export type DoorayStartKind = 'new-worktree' | 'existing-workspace'
 
 export type DoorayStartAction = {
@@ -24,8 +22,14 @@ export type DoorayWorkspaceStart = {
 
 export function doorayStartLabel(kind: DoorayStartKind): string {
   return kind === 'existing-workspace'
-    ? translate(`${K}.start_in_current`, 'Start in current workspace')
-    : translate(`${K}.start_workspace`, 'Start workspace')
+    ? translate(
+        'auto.ext.dooray.components.DoorayIssueWorkspace.start_in_current',
+        'Start in current workspace'
+      )
+    : translate(
+        'auto.ext.dooray.components.DoorayIssueWorkspace.start_workspace',
+        'Start workspace'
+      )
 }
 
 type PrimaryStartProps = {
@@ -111,13 +115,16 @@ function SecondaryStart({
     secondaryStart.disabledReason ??
     (secondaryStart.kind === 'existing-workspace'
       ? translate(
-          `${K}.start_in_current_hint`,
+          'auto.ext.dooray.components.DoorayIssueWorkspace.start_in_current_hint',
           'Switch the active workspace to feature/{{value0}}',
           {
             value0: issue.taskNumber
           }
         )
-      : translate(`${K}.start_new_hint`, 'Create a new worktree for this task.'))
+      : translate(
+          'auto.ext.dooray.components.DoorayIssueWorkspace.start_new_hint',
+          'Create a new worktree for this task.'
+        ))
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -147,12 +154,15 @@ function buildAsideActions(issue: DoorayIssue): AsideAction[] {
   const link: AsideAction[] = issue.url
     ? [
         {
-          label: translate(`${K}.open_in_dooray`, 'Open in Dooray'),
+          label: translate(
+            'auto.ext.dooray.components.DoorayIssueWorkspace.open_in_dooray',
+            'Open in Dooray'
+          ),
           icon: ExternalLink,
           run: () => openDoorayUrl(issue.url)
         },
         {
-          label: translate(`${K}.copy_url`, 'Copy URL'),
+          label: translate('auto.ext.dooray.components.DoorayIssueWorkspace.copy_url', 'Copy URL'),
           icon: Clipboard,
           run: () => void copyDoorayText(issue.url, 'URL')
         }
@@ -161,12 +171,18 @@ function buildAsideActions(issue: DoorayIssue): AsideAction[] {
   return [
     ...link,
     {
-      label: translate(`${K}.copy_task_number`, 'Copy task number'),
+      label: translate(
+        'auto.ext.dooray.components.DoorayIssueWorkspace.copy_task_number',
+        'Copy task number'
+      ),
       icon: Clipboard,
       run: () => void copyDoorayText(issue.taskNumber, 'Task number')
     },
     {
-      label: translate(`${K}.copy_prompt`, 'Copy prompt'),
+      label: translate(
+        'auto.ext.dooray.components.DoorayIssueWorkspace.copy_prompt',
+        'Copy prompt'
+      ),
       icon: Clipboard,
       run: () => void copyDoorayText(buildDoorayPrompt(issue), 'Prompt')
     }

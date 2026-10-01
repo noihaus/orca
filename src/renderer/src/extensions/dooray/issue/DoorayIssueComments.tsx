@@ -8,8 +8,6 @@ import type { DoorayComment } from '../../../../../shared/extensions/dooray/door
 import { handleDoorayMarkdownLinkClick } from '../lib/dooray-open-link'
 import type { useDoorayComments } from './use-dooray-comments'
 
-const K = 'auto.ext.dooray.components.DoorayIssueWorkspace'
-
 type CommentsState = ReturnType<typeof useDoorayComments>
 
 function CommentCard({ comment }: { comment: DoorayComment }): React.JSX.Element {
@@ -17,7 +15,8 @@ function CommentCard({ comment }: { comment: DoorayComment }): React.JSX.Element
     <div className="rounded-md border border-border/50 bg-muted/20">
       <div className="flex min-w-0 items-center gap-2 border-b border-border/40 px-3 py-2">
         <span className="truncate text-[13px] font-semibold text-foreground">
-          {comment.authorName || translate(`${K}.unknown`, 'Unknown')}
+          {comment.authorName ||
+            translate('auto.ext.dooray.components.DoorayIssueWorkspace.unknown', 'Unknown')}
         </span>
         <span className="shrink-0 text-[12px] text-muted-foreground">
           {formatUiRelativeTimeFromDate(comment.createdAt)}
@@ -48,7 +47,7 @@ export function DoorayIssueCommentsSection({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="text-[13px] font-medium text-foreground">
-            {translate(`${K}.comments`, 'Comments')}
+            {translate('auto.ext.dooray.components.DoorayIssueWorkspace.comments', 'Comments')}
           </span>
           {comments.length > 0 ? (
             <span className="text-[12px] text-muted-foreground">{comments.length}</span>
@@ -66,7 +65,7 @@ export function DoorayIssueCommentsSection({
             ) : (
               <RefreshCw className="size-3" />
             )}
-            {translate(`${K}.retry`, 'Retry')}
+            {translate('auto.ext.dooray.components.DoorayIssueWorkspace.retry', 'Retry')}
           </Button>
         ) : null}
       </div>
@@ -80,7 +79,10 @@ export function DoorayIssueCommentsSection({
         </div>
       ) : comments.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          {translate(`${K}.no_comments`, 'No comments yet.')}
+          {translate(
+            'auto.ext.dooray.components.DoorayIssueWorkspace.no_comments',
+            'No comments yet.'
+          )}
         </p>
       ) : (
         <div className="flex flex-col gap-3">
@@ -108,7 +110,10 @@ export function DoorayCommentComposer({
       <Textarea
         value={commentDraft}
         onChange={(event) => setCommentDraft(event.target.value)}
-        placeholder={translate(`${K}.comment_placeholder`, 'Add a Dooray comment...')}
+        placeholder={translate(
+          'auto.ext.dooray.components.DoorayIssueWorkspace.comment_placeholder',
+          'Add a Dooray comment...'
+        )}
         rows={2}
         disabled={commentSubmitting}
         className="min-h-10 flex-1 resize-none"
@@ -123,7 +128,7 @@ export function DoorayCommentComposer({
         ) : (
           <Send className="size-4" />
         )}
-        {translate(`${K}.comment`, 'Comment')}
+        {translate('auto.ext.dooray.components.DoorayIssueWorkspace.comment', 'Comment')}
       </Button>
     </div>
   )
