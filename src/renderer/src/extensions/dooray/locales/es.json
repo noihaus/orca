@@ -1,0 +1,325 @@
+{
+  "auto": {
+    "ext": {
+      "dooray": {
+        "lib": {
+          "dooray": {
+            "start": {
+              "in": {
+                "current": {
+                  "workspace": {
+                    "no_active": "No active workspace to start this task in.",
+                    "already_on": "Already on {{value0}}.",
+                    "dirty": "Uncommitted changes in this workspace block switching branches. Commit or stash them first.",
+                    "switched": "Switched to {{value0}}.",
+                    "failed": "Failed to switch to the task branch.",
+                    "target_missing": "The configured target workspace was not found.",
+                    "unavailable": "Branch switching is unavailable in this client.",
+                    "stashed": "Changes stashed.",
+                    "skipped": "Switched to {{value0}}. Not checked out here: {{value1}}",
+                    "switched_with_submodules": "Switched to {{value0}} ({{count}} checkouts)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "TaskPage": {
+            "dooray_connect_title": "Connect Dooray",
+            "dooray_connect_description": "Browse, comment, and start work from Dooray tasks directly from here.",
+            "dooray_connect_button": "Connect Dooray",
+            "dooray_hide_button": "Hide Dooray",
+            "source_dooray": "Dooray"
+          },
+          "sidebar": {
+            "SidebarNav": {
+              "open_dooray_tasks": "Open Dooray tasks"
+            }
+          },
+          "settings": {
+            "TasksPane": {
+              "dooray_label": "Dooray",
+              "dooray_description": "Show Dooray in the Tasks source picker and sidebar shortcuts."
+            },
+            "dooray": {
+              "integration": {
+                "card": {
+                  "credential_remote": "Connect Dooray with a personal API token. The token is sent to the selected remote runtime and stored there with runtime-supported encryption.",
+                  "credential_local": "Connect Dooray with a personal API token. The token is stored locally and encrypted when local runtime storage supports it.",
+                  "connected_description": "Connected as {{value0}}",
+                  "checking_description": "Checking Dooray access before showing setup actions.",
+                  "description": "Connect Dooray to browse and start work from your tasks.",
+                  "reconnect": "Reconnect",
+                  "connect": "Connect Dooray",
+                  "disconnect": "Disconnect Dooray"
+                }
+              }
+            },
+            "RepositoryDoorayStartSection": {
+              "title": "Dooray Task Start",
+              "description": "How Start behaves on Dooray tasks for this repository.",
+              "longDescription": "Start on a Dooray task can create a new worktree, or check the task branch out in an existing workspace.",
+              "modeLabel": "Dooray task start mode",
+              "newWorktree": "New worktree",
+              "existingWorkspace": "Existing workspace",
+              "activeWorkspace": "Active workspace",
+              "scopeLabel": "Branch scope",
+              "workspaceOnly": "Workspace only",
+              "withSubmodules": "With submodules"
+            }
+          },
+          "right": {
+            "sidebar": {
+              "index": {
+                "doorayTasks": "Dooray Tasks"
+              },
+              "DoorayTasksPanel": {
+                "connect_title": "Connect Dooray",
+                "connect_description": "Connect Dooray to browse your tasks here.",
+                "connect_button": "Connect Dooray",
+                "panel_title": "Dooray tasks",
+                "all_tasks": "All tasks",
+                "toggle_sort": "Toggle sort direction"
+              },
+              "DoorayActiveTaskCard": {
+                "title": "Current task",
+                "loading": "Loading task…",
+                "no_task": "No Dooray task linked to this branch.",
+                "not_found": "Task {{value0}}/{{value1}} was not found.",
+                "description": "Description"
+              }
+            }
+          },
+          "onboarding": {
+            "OnboardingFlow": {
+              "integrationsTitle": "Connect your task sources",
+              "integrationsSubtitle": "Connect GitHub to:",
+              "doorayTitle": "Connect Dooray",
+              "dooraySubtitle": "Bring your tasks into Orca. This is what the Dooray Edition is for.",
+              "doorayFeaturesTitle": "What you just unlocked",
+              "doorayFeaturesSubtitle": "Four things this build adds on top of Orca. You can come back to these any time."
+            },
+            "DoorayRow": {
+              "name": "Dooray",
+              "connected": "Connected",
+              "checking": "Checking…",
+              "not_connected": "Not connected",
+              "connected_description": "Connected as {{value0}}. Dooray tasks are ready to start workspaces from.",
+              "description": "Start a workspace from a Dooray task, with its title and link attached.",
+              "hint_token": "API token: create a personal token in Dooray under Settings → API.",
+              "hint_api_url": "API URL: {{value0}} (leave empty to use this default).",
+              "hint_web_url": "Web URL: your tenant address, for example {{value0}}.",
+              "reconnect": "Reconnect",
+              "connect": "Connect Dooray",
+              "recheck": "Re-check",
+              "hint_token_link": "Open token page"
+            },
+            "DoorayStep": {
+              "capability_tasks": "Browse your Dooray tasks without leaving Orca — filter, sort, read and reply to comments.",
+              "capability_workspace": "Start a workspace straight from a task; the branch is named for you.",
+              "capability_status": "Move a task through its workflow as you go.",
+              "token_note": "The token acts as you and is stored encrypted in your own keychain. Never share it."
+            },
+            "DoorayFeaturesStep": {
+              "tasks_title": "Start work from a task",
+              "tasks_body": "Pick a Dooray task and start a workspace from it — the branch is named for you. Or switch an existing workspace onto the task branch.",
+              "submodules_title": "Submodules can follow along",
+              "submodules_body": "Off by default. Turn it on per project and the task branch is created in your submodules too — Settings › Repositories › Dooray Task Start.",
+              "checks_title": "Every pull request in one place",
+              "checks_body": "The Checks tab lists the workspace PR and each submodule PR as its own collapsible section, with checks and comments.",
+              "review_title": "Review without leaving Orca",
+              "review_body": "Start review on the Files tab to collect line comments, then send them with Approve, Comment, or Request changes in one go.",
+              "footer": "All of this is in the README that came with the download."
+            }
+          },
+          "feature": {
+            "wall": {
+              "ConnectIntegrationsList": {
+                "code_host_tasks_summary": "issues available as tasks · add Dooray or Linear if your team plans work there"
+              },
+              "RepoSetupSuggestions": {
+                "branch_scope_title": "Switch submodules with the Dooray task branch",
+                "branch_scope_description": "Starting a task in an existing workspace switches this project only. Turn this on and its submodules move to the same branch: {{value0}}",
+                "branch_scope_enabled": "On — change which submodules in Settings → Repositories",
+                "branch_scope_enable": "Include submodules",
+                "branch_scope_saved": "Submodules will switch with the task branch",
+                "branch_scope_failed": "Failed to save the branch scope"
+              }
+            }
+          },
+          "DoorayIssueWorkspace": {
+            "workflow_failed": "Failed to update Dooray workflow.",
+            "sheet_title": "Dooray task",
+            "sheet_description": "Preview, comment, and start work from the selected task.",
+            "start_workspace": "Start workspace",
+            "close_preview": "Close Dooray task preview",
+            "close": "Close",
+            "unassigned": "Unassigned",
+            "no_description": "No description provided.",
+            "open_in_dooray": "Open in Dooray",
+            "copy_url": "Copy URL",
+            "copy_task_number": "Copy task number",
+            "copy_prompt": "Copy prompt",
+            "comment_placeholder": "Add a Dooray comment...",
+            "comment": "Comment",
+            "comments": "Comments",
+            "retry": "Retry",
+            "no_comments": "No comments yet.",
+            "unknown": "Unknown",
+            "copied": "{{value0}} copied",
+            "copy_failed": "Failed to copy {{value0}}",
+            "comment_too_large": "Comment is too large to submit safely.",
+            "you": "You",
+            "comment_failed": "Failed to add comment.",
+            "start_in_current": "Start in current workspace",
+            "start_in_current_hint": "Switch the active workspace to feature/{{value0}}",
+            "start_in_current_disabled": "No active workspace — open one first.",
+            "start_new_hint": "Create a new worktree for this task."
+          },
+          "dooray": {
+            "connect": {
+              "dialog": {
+                "title": "Connect Dooray",
+                "description": "Use a Dooray personal API token to browse tasks. Create one in Dooray under Settings → API.",
+                "token_label": "API token",
+                "token_placeholder": "Dooray personal API token",
+                "api_url_label": "API URL",
+                "web_url_label": "Web URL (optional, for task links)",
+                "web_url_placeholder": "https://yourtenant.dooray.com",
+                "cancel": "Cancel",
+                "verifying": "Verifying…",
+                "connect": "Connect",
+                "api_url_placeholder": "https://api.dooray.com"
+              }
+            },
+            "workspace": {
+              "start": {
+                "menu": {
+                  "default": "default"
+                }
+              }
+            },
+            "new": {
+              "task": {
+                "dialog": {
+                  "created": "Task created.",
+                  "failed": "Failed to create the task.",
+                  "title": "New Dooray task",
+                  "description": "Create a task in the selected Dooray project.",
+                  "project": "Project",
+                  "subject": "Subject",
+                  "subject_placeholder": "Task subject",
+                  "body": "Description (markdown, optional)",
+                  "assign_me": "Assign to me",
+                  "cancel": "Cancel",
+                  "creating": "Creating…",
+                  "create": "Create task",
+                  "template_failed": "Failed to load the template.",
+                  "workflow_failed": "Task was created, but applying the workflow failed: {{value0}}",
+                  "tags": "Tags",
+                  "assignees": "Assignees",
+                  "member_search": "Search members by name…",
+                  "cc": "CC",
+                  "template": "Template",
+                  "no_template": "No template",
+                  "workflow": "Workflow",
+                  "no_workflow": "Default",
+                  "priority": "Priority",
+                  "attachments": "Attachments",
+                  "attachments_failed": "Task was created, but {{value0}} attachment(s) failed: {{value1}}",
+                  "milestone": "Milestone",
+                  "no_milestone": "None"
+                },
+                "fields": {
+                  "tags_selected": "{{value0}} tag(s) selected",
+                  "tags_placeholder": "Add tags",
+                  "tags_search": "Search tags…",
+                  "tags_empty": "No matching tags.",
+                  "remove_tag": "Remove tag {{value0}}",
+                  "remove_member": "Remove {{value0}}",
+                  "attach_files": "Add files",
+                  "attach_paste_hint": "or paste an image with Cmd+V",
+                  "remove_attachment": "Remove {{value0}}",
+                  "milestone_include_closed": "Include closed"
+                }
+              }
+            },
+            "tag": {
+              "field": {
+                "ungrouped": "Other",
+                "mandatory": "Required",
+                "missing_required": "Select a required tag from: {{value0}}"
+              }
+            },
+            "priority": {
+              "highest": "Highest",
+              "high": "High",
+              "normal": "Normal",
+              "low": "Low",
+              "lowest": "Lowest",
+              "none": "None"
+            }
+          },
+          "TaskPageDooray": {
+            "unassigned": "Unassigned",
+            "start_workspace_from": "Start workspace from {{value0}}",
+            "open_in_dooray_aria": "Open {{value0}} in Dooray",
+            "open_in_dooray": "Open in Dooray",
+            "filter_assigned": "Assigned to me",
+            "filter_all": "All Open",
+            "filter_done": "Done",
+            "panel_title": "Dooray tasks",
+            "loading_projects": "Loading projects…",
+            "select_project": "Select project",
+            "refresh": "Refresh tasks",
+            "no_tasks": "No Dooray tasks found",
+            "no_tasks_hint": "No tasks match the selected project and filter.",
+            "load_more": "Load more",
+            "open_workspace": "Open workspace",
+            "open_workspace_for": "Open workspace for {{value0}}",
+            "open_workspace_failed": "Unable to open the workspace for this task.",
+            "new_task": "New task",
+            "sort_number": "Task number",
+            "sort_subject": "Subject",
+            "sort_workflow": "Workflow",
+            "sort_created": "Created",
+            "sort_updated": "Updated",
+            "sort_loaded_only": "Sorted across loaded tasks only",
+            "milestone_all": "All milestones",
+            "milestone_loaded_only": "Filtered across loaded tasks only",
+            "workflow_all": "All stages",
+            "sort_milestone": "Milestone",
+            "sort_priority": "Priority",
+            "priority_all": "All priorities"
+          },
+          "useDoorayStartActions": {
+            "dirtyTitle": "Uncommitted changes block switching to {{value0}}",
+            "dirtyDescription": "Changed: {{value0}}. Stash keeps the work; discard throws it away.",
+            "stash": "Stash and switch",
+            "discard": "Discard and switch",
+            "keepBranch": "Don't switch",
+            "discardConfirmTitle": "Discard all uncommitted changes?",
+            "discardConfirmDescription": "This deletes the changes in {{value0}} permanently, including untracked files. It cannot be undone.",
+            "discardConfirm": "Discard permanently"
+          },
+          "doorayTaskBaseRefDialog": {
+            "title": "Where should {{value0}} start?",
+            "description": "The new branch is created from the base you pick. If the branch already exists, it is switched to as-is.",
+            "cancel": "Cancel",
+            "useCurrent": "From current branch",
+            "createFrom": "Create from {{value0}}",
+            "pickBase": "Pick a base",
+            "fetchFirst": "Fetch the base branch first (start from the latest tip)",
+            "submodulesLabel": "Also switch these submodules"
+          }
+        },
+        "store": {
+          "connection": {
+            "superseded": "Dooray connection was superseded by a newer request."
+          }
+        }
+      }
+    }
+  }
+}

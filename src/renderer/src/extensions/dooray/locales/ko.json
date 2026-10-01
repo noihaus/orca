@@ -1,0 +1,325 @@
+{
+  "auto": {
+    "ext": {
+      "dooray": {
+        "lib": {
+          "dooray": {
+            "start": {
+              "in": {
+                "current": {
+                  "workspace": {
+                    "no_active": "이 업무를 시작할 활성 워크스페이스가 없습니다.",
+                    "already_on": "이미 {{value0}} 브랜치입니다.",
+                    "dirty": "미커밋 변경이 있어 브랜치를 전환할 수 없습니다. 먼저 커밋하거나 stash 하세요.",
+                    "switched": "{{value0}} 로 전환했습니다.",
+                    "failed": "업무 브랜치 전환에 실패했습니다.",
+                    "target_missing": "설정된 대상 워크스페이스를 찾을 수 없습니다.",
+                    "unavailable": "이 클라이언트에서는 브랜치 전환을 사용할 수 없습니다.",
+                    "stashed": "변경사항을 stash 했습니다.",
+                    "skipped": "{{value0}} 로 전환했습니다. 체크아웃되지 않은 대상: {{value1}}",
+                    "switched_with_submodules": "{{value0}} 로 전환했습니다 ({{count}}개 체크아웃)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
+          "TaskPage": {
+            "dooray_connect_title": "두레이 연결",
+            "dooray_connect_description": "여기서 바로 두레이 업무를 보고, 댓글 달고, 작업을 시작하세요.",
+            "dooray_connect_button": "두레이 연결",
+            "dooray_hide_button": "두레이 숨기기",
+            "source_dooray": "Dooray"
+          },
+          "sidebar": {
+            "SidebarNav": {
+              "open_dooray_tasks": "두레이 업무 열기"
+            }
+          },
+          "settings": {
+            "TasksPane": {
+              "dooray_label": "Dooray",
+              "dooray_description": "작업 소스 선택기와 사이드바 바로가기에 두레이를 표시합니다."
+            },
+            "dooray": {
+              "integration": {
+                "card": {
+                  "credential_remote": "두레이 개인 API 토큰으로 연결합니다. 토큰은 선택한 원격 런타임으로 전송되어 그곳에 저장됩니다.",
+                  "credential_local": "두레이 개인 API 토큰으로 연결합니다. 토큰은 로컬에 암호화 저장됩니다.",
+                  "connected_description": "{{value0}} 계정으로 연결됨",
+                  "checking_description": "설정 동작을 표시하기 전에 두레이 접근을 확인하는 중입니다.",
+                  "description": "두레이를 연결해 업무를 보고 바로 작업을 시작하세요.",
+                  "reconnect": "다시 연결",
+                  "connect": "두레이 연결",
+                  "disconnect": "두레이 연결 해제"
+                }
+              }
+            },
+            "RepositoryDoorayStartSection": {
+              "title": "Dooray Task Start",
+              "description": "이 저장소에서 두레이 업무 시작이 동작하는 방식입니다.",
+              "longDescription": "두레이 업무에서 시작하면 새 워크트리를 만들거나, 기존 워크스페이스에서 업무 브랜치를 체크아웃할 수 있습니다.",
+              "modeLabel": "두레이 업무 시작 방식",
+              "newWorktree": "새 워크트리",
+              "existingWorkspace": "기존 워크스페이스",
+              "activeWorkspace": "활성 워크스페이스",
+              "scopeLabel": "브랜치 범위",
+              "workspaceOnly": "워크스페이스만",
+              "withSubmodules": "서브모듈 포함"
+            }
+          },
+          "right": {
+            "sidebar": {
+              "index": {
+                "doorayTasks": "두레이 업무"
+              },
+              "DoorayTasksPanel": {
+                "connect_title": "두레이 연결",
+                "connect_description": "두레이를 연결하면 여기서 업무를 볼 수 있습니다.",
+                "connect_button": "두레이 연결",
+                "panel_title": "두레이 업무",
+                "all_tasks": "전체 업무",
+                "toggle_sort": "정렬 방향 전환"
+              },
+              "DoorayActiveTaskCard": {
+                "title": "현재 업무",
+                "loading": "업무 불러오는 중…",
+                "no_task": "이 브랜치에 연결된 두레이 업무가 없습니다.",
+                "not_found": "{{value0}}/{{value1}} 업무를 찾을 수 없습니다.",
+                "description": "본문"
+              }
+            }
+          },
+          "onboarding": {
+            "OnboardingFlow": {
+              "integrationsTitle": "Connect your task sources",
+              "integrationsSubtitle": "Connect GitHub to:",
+              "doorayTitle": "두레이 연결",
+              "dooraySubtitle": "두레이 업무를 Orca 안으로. 이 빌드가 존재하는 이유입니다.",
+              "doorayFeaturesTitle": "방금 열린 기능들",
+              "doorayFeaturesSubtitle": "이 빌드가 Orca 위에 얹은 4가지입니다. 언제든 다시 볼 수 있습니다."
+            },
+            "DoorayRow": {
+              "name": "Dooray",
+              "connected": "연결됨",
+              "checking": "확인 중…",
+              "not_connected": "연결 안 됨",
+              "connected_description": "{{value0}} 계정으로 연결되었습니다. Dooray 업무에서 바로 워크스페이스를 시작할 수 있습니다.",
+              "description": "두레이 업무에서 바로 워크스페이스를 시작합니다. 먼저 개인 API 토큰을 발급받아 아래에 입력하세요.",
+              "hint_token": "1. API 토큰 — 아래 링크에서 개인 API 토큰을 발급받아 붙여넣으세요. (본인 계정으로 동작하므로 토큰은 공유하지 마세요)",
+              "hint_api_url": "2. API 주소 — 비워 두면 {{value0}} 이 사용됩니다.",
+              "hint_web_url": "3. 웹 주소 — 사용 중인 두레이 주소입니다. 예: {{value0}} (입력하면 업무 링크를 앱에서 바로 열 수 있습니다)",
+              "reconnect": "다시 연결",
+              "connect": "Dooray 연결",
+              "recheck": "다시 확인",
+              "hint_token_link": "토큰 발급 페이지 열기"
+            },
+            "DoorayStep": {
+              "capability_tasks": "Orca 를 벗어나지 않고 두레이 업무를 봅니다 — 필터·정렬·댓글 읽기/쓰기.",
+              "capability_workspace": "업무에서 바로 워크스페이스를 시작합니다. 브랜치 이름은 자동으로 지어집니다.",
+              "capability_status": "작업하면서 업무 진행 상태를 그때그때 바꿉니다.",
+              "token_note": "토큰은 본인 계정으로 동작하며 기기 키체인에 암호화 저장됩니다. 절대 공유하지 마세요."
+            },
+            "DoorayFeaturesStep": {
+              "tasks_title": "업무에서 작업 시작",
+              "tasks_body": "두레이 업무를 골라 바로 워크스페이스를 시작합니다 — 브랜치 이름은 자동. 기존 워크스페이스에서 업무 브랜치로 전환할 수도 있습니다.",
+              "submodules_title": "서브모듈도 같이 전환",
+              "submodules_body": "기본은 꺼짐. 프로젝트별로 켜면 업무 브랜치가 서브모듈에도 같이 만들어집니다 — 설정 › 저장소 › Dooray Task Start.",
+              "checks_title": "모든 PR 을 한 화면에",
+              "checks_body": "Checks 탭에 워크스페이스 PR 과 서브모듈 PR 이 각각 접이식 섹션으로 나오고, 체크·코멘트까지 보입니다.",
+              "review_title": "Orca 안에서 리뷰까지",
+              "review_body": "파일 탭에서 Start review 로 라인 코멘트를 모았다가 Approve · Comment · Request changes 로 한 번에 보냅니다.",
+              "footer": "이 내용은 함께 받은 README 에도 정리되어 있습니다."
+            }
+          },
+          "feature": {
+            "wall": {
+              "ConnectIntegrationsList": {
+                "code_host_tasks_summary": "이슈를 작업으로 사용할 수 있음 · 팀이 Dooray 또는 Linear에서 작업을 계획한다면 추가하세요"
+              },
+              "RepoSetupSuggestions": {
+                "branch_scope_title": "Switch submodules with the Dooray task branch",
+                "branch_scope_description": "Starting a task in an existing workspace switches this project only. Turn this on and its submodules move to the same branch: {{value0}}",
+                "branch_scope_enabled": "On — change which submodules in Settings → Repositories",
+                "branch_scope_enable": "Include submodules",
+                "branch_scope_saved": "Submodules will switch with the task branch",
+                "branch_scope_failed": "Failed to save the branch scope"
+              }
+            }
+          },
+          "DoorayIssueWorkspace": {
+            "workflow_failed": "두레이 업무 상태 변경에 실패했습니다.",
+            "sheet_title": "두레이 업무",
+            "sheet_description": "선택한 업무를 미리 보고, 댓글을 달고, 바로 작업을 시작합니다.",
+            "start_workspace": "워크스페이스 시작",
+            "close_preview": "두레이 업무 미리보기 닫기",
+            "close": "닫기",
+            "unassigned": "담당자 없음",
+            "no_description": "본문이 없습니다.",
+            "open_in_dooray": "두레이에서 열기",
+            "copy_url": "URL 복사",
+            "copy_task_number": "업무 번호 복사",
+            "copy_prompt": "프롬프트 복사",
+            "comment_placeholder": "두레이 댓글을 입력하세요...",
+            "comment": "댓글 달기",
+            "comments": "댓글",
+            "retry": "다시 시도",
+            "no_comments": "아직 댓글이 없습니다.",
+            "unknown": "알 수 없음",
+            "copied": "{{value0}} 복사됨",
+            "copy_failed": "{{value0}} 복사에 실패했습니다",
+            "comment_too_large": "댓글이 너무 길어 등록할 수 없습니다.",
+            "you": "나",
+            "comment_failed": "댓글 등록에 실패했습니다.",
+            "start_in_current": "현재 워크스페이스에서 시작",
+            "start_in_current_hint": "활성 워크스페이스를 feature/{{value0}} 로 전환합니다",
+            "start_in_current_disabled": "활성 워크스페이스가 없습니다 — 먼저 하나 여세요.",
+            "start_new_hint": "이 업무용 새 워크트리를 만듭니다."
+          },
+          "dooray": {
+            "connect": {
+              "dialog": {
+                "title": "두레이 연결",
+                "description": "두레이 개인 API 토큰으로 업무를 불러옵니다. 두레이 설정 → API 에서 발급하세요.",
+                "token_label": "API 토큰",
+                "token_placeholder": "두레이 개인 API 토큰",
+                "api_url_label": "API 주소",
+                "web_url_label": "웹 주소 (선택, 업무 링크용)",
+                "web_url_placeholder": "https://yourtenant.dooray.com",
+                "cancel": "취소",
+                "verifying": "확인 중…",
+                "connect": "연결",
+                "api_url_placeholder": "https://api.dooray.com"
+              }
+            },
+            "workspace": {
+              "start": {
+                "menu": {
+                  "default": "기본"
+                }
+              }
+            },
+            "new": {
+              "task": {
+                "dialog": {
+                  "created": "업무가 생성되었습니다.",
+                  "failed": "업무 생성에 실패했습니다.",
+                  "title": "새 두레이 업무",
+                  "description": "선택한 두레이 프로젝트에 업무를 생성합니다.",
+                  "project": "프로젝트",
+                  "subject": "제목",
+                  "subject_placeholder": "업무 제목",
+                  "body": "본문 (마크다운, 선택)",
+                  "assign_me": "나를 담당자로",
+                  "cancel": "취소",
+                  "creating": "생성 중…",
+                  "create": "업무 만들기",
+                  "template_failed": "템플릿을 불러오지 못했습니다.",
+                  "workflow_failed": "업무는 생성됐지만 업무 상태 적용에 실패했습니다: {{value0}}",
+                  "tags": "태그",
+                  "assignees": "담당자",
+                  "member_search": "이름으로 멤버 검색…",
+                  "cc": "참조",
+                  "template": "템플릿",
+                  "no_template": "템플릿 없음",
+                  "workflow": "업무 상태",
+                  "no_workflow": "기본",
+                  "priority": "우선순위",
+                  "attachments": "첨부파일",
+                  "attachments_failed": "업무는 생성됐지만 첨부 {{value0}}건이 실패했습니다: {{value1}}",
+                  "milestone": "단계",
+                  "no_milestone": "없음"
+                },
+                "fields": {
+                  "tags_selected": "태그 {{value0}}개 선택됨",
+                  "tags_placeholder": "태그 추가",
+                  "tags_search": "태그 검색…",
+                  "tags_empty": "일치하는 태그가 없습니다.",
+                  "remove_tag": "{{value0}} 태그 제거",
+                  "remove_member": "{{value0}} 제거",
+                  "attach_files": "파일 추가",
+                  "attach_paste_hint": "또는 Cmd+V 로 이미지 붙여넣기",
+                  "remove_attachment": "{{value0}} 제거",
+                  "milestone_include_closed": "완료된 단계 포함"
+                }
+              }
+            },
+            "tag": {
+              "field": {
+                "ungrouped": "기타",
+                "mandatory": "필수",
+                "missing_required": "필수 태그를 선택하세요: {{value0}}"
+              }
+            },
+            "priority": {
+              "highest": "매우 높음",
+              "high": "높음",
+              "normal": "보통",
+              "low": "낮음",
+              "lowest": "매우 낮음",
+              "none": "없음"
+            }
+          },
+          "TaskPageDooray": {
+            "unassigned": "담당자 없음",
+            "start_workspace_from": "{{value0}} 에서 워크스페이스 시작",
+            "open_in_dooray_aria": "{{value0}} 를 두레이에서 열기",
+            "open_in_dooray": "두레이에서 열기",
+            "filter_assigned": "내 업무",
+            "filter_all": "전체",
+            "filter_done": "완료",
+            "panel_title": "두레이 업무",
+            "loading_projects": "프로젝트 불러오는 중…",
+            "select_project": "프로젝트 선택",
+            "refresh": "업무 새로고침",
+            "no_tasks": "두레이 업무가 없습니다",
+            "no_tasks_hint": "선택한 프로젝트·필터에 해당하는 업무가 없습니다.",
+            "load_more": "더 불러오기",
+            "open_workspace": "워크스페이스 열기",
+            "open_workspace_for": "{{value0}} 워크스페이스 열기",
+            "open_workspace_failed": "이 업무의 워크스페이스를 열 수 없습니다.",
+            "new_task": "새 업무",
+            "sort_number": "업무 번호",
+            "sort_subject": "제목",
+            "sort_workflow": "업무 상태",
+            "sort_created": "생성일",
+            "sort_updated": "수정일",
+            "sort_loaded_only": "불러온 업무 안에서만 정렬됩니다",
+            "milestone_all": "모든 단계",
+            "milestone_loaded_only": "불러온 업무 안에서만 필터링됩니다",
+            "workflow_all": "모든 상태",
+            "sort_milestone": "단계",
+            "sort_priority": "우선순위",
+            "priority_all": "모든 우선순위"
+          },
+          "useDoorayStartActions": {
+            "dirtyTitle": "미커밋 변경 때문에 {{value0}} 로 전환할 수 없습니다",
+            "dirtyDescription": "변경됨: {{value0}}. Stash 는 작업을 보관하고, 버리기는 되돌릴 수 없습니다. 새로 만든 파일은 그대로 유지됩니다.",
+            "stash": "Stash 후 전환",
+            "discard": "버리고 전환",
+            "keepBranch": "전환 안 함",
+            "discardConfirmTitle": "모든 미커밋 변경을 버릴까요?",
+            "discardConfirmDescription": "{{value0}} 의 추적 중인 변경사항이 영구 삭제됩니다. 새로 만든(untracked) 파일은 유지됩니다. 되돌릴 수 없습니다.",
+            "discardConfirm": "영구 삭제"
+          },
+          "doorayTaskBaseRefDialog": {
+            "title": "{{value0}} 브랜치를 어디서 시작할까요?",
+            "description": "선택한 base 에서 새 브랜치를 만듭니다. 브랜치가 이미 있으면 그대로 전환만 합니다.",
+            "cancel": "취소",
+            "useCurrent": "현재 브랜치에서",
+            "createFrom": "{{value0}} 에서 생성",
+            "pickBase": "Base 브랜치를 선택하세요",
+            "fetchFirst": "생성 전에 base 브랜치를 fetch (최신 커밋에서 시작)",
+            "submodulesLabel": "서브모듈도 같이 전환"
+          }
+        },
+        "store": {
+          "connection": {
+            "superseded": "더 새로운 요청으로 두레이 연결이 대체되었습니다."
+          }
+        }
+      }
+    }
+  }
+}
