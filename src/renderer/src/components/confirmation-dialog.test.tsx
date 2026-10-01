@@ -13,6 +13,7 @@ vi.mock('@/store', () => ({
 import { ConfirmationDialogProvider } from './confirmation-dialog'
 import {
   useConfirmationDialog,
+  type ConfirmationDialogAlternateOptions,
   type ConfirmationDialogOptions
 } from './confirmation-dialog-context'
 
@@ -131,5 +132,83 @@ describe('ConfirmationDialogProvider', () => {
       'data-state',
       'unchecked'
     )
+  })
+
+  describe('alternate action', () => {
+    function AlternateHarness({
+      options,
+      onSettled
+    }: {
+      options: ConfirmationDialogAlternateOptions
+      onSettled: (result: boolean | 'alternate') => void
+    }): React.JSX.Element {
+      const confirm = useConfirmationDialog()
+      return (
+        <button type="button" onClick={() => void confirm(options).then(onSettled)}>
+          ask
+        </button>
+      )
+    }
+
+    function renderAlternate(options: ConfirmationDialogAlternateOptions) {
+      const onSettled = vi.fn()
+      render(
+        <ConfirmationDialogProvider>
+          <AlternateHarness options={options} onSettled={onSettled} />
+        </ConfirmationDialogProvider>
+      )
+      return { onSettled }
+    }
+
+    const options: ConfirmationDialogAlternateOptions = {
+      title: 'Switch branch?',
+      confirmLabel: 'Stash',
+      alternateLabel: 'Discard',
+      alternateVariant: 'destructive'
+    }
+
+    it('resolves "alternate" from the extra button, placed between Cancel and Confirm', async () => {
+      const { onSettled } = renderAlternate(options)
+      await userEvent.click(screen.getByRole('button', { name: 'ask' }))
+      const labels = (await screen.findAllByRole('button'))
+        .map((button) => button.textContent)
+        .filter((text) => ['Cancel', 'Discard', 'Stash'].includes(text ?? ''))
+      expect(labels).toEqual(['Cancel', 'Discard', 'Stash'])
+      expect(screen.getByRole('button', { name: 'Discard' })).toHaveAttribute(
+        'data-variant',
+        'destructive'
+      )
+      await userEvent.click(screen.getByRole('button', { name: 'Discard' }))
+      await waitFor(() => expect(onSettled).toHaveBeenCalledWith('alternate'))
+    })
+
+    it('still resolves true for confirm and false for cancel', async () => {
+      const first = renderAlternate(options)
+      await userEvent.click(screen.getByRole('button', { name: 'ask' }))
+      await userEvent.click(await screen.findByRole('button', { name: 'Stash' }))
+      await waitFor(() => expect(first.onSettled).toHaveBeenCalledWith(true))
+      cleanup()
+      const second = renderAlternate(options)
+      await userEvent.click(screen.getByRole('button', { name: 'ask' }))
+      await userEvent.click(await screen.findByRole('button', { name: 'Cancel' }))
+      await waitFor(() => expect(second.onSettled).toHaveBeenCalledWith(false))
+    })
+
+    it('does not save "don\'t ask again" when the alternate is chosen', async () => {
+      const onConfirmed = vi.fn()
+      const { onSettled } = renderAlternate({ ...options, dontAskAgain: { onConfirmed } })
+      await userEvent.click(screen.getByRole('button', { name: 'ask' }))
+      await userEvent.click(await screen.findByRole('checkbox'))
+      await userEvent.click(screen.getByRole('button', { name: 'Discard' }))
+      await waitFor(() => expect(onSettled).toHaveBeenCalledWith('alternate'))
+      expect(onConfirmed).not.toHaveBeenCalled()
+    })
+
+    it('renders no extra button for plain prompts', async () => {
+      renderDialog({ title: 'Delete artifact?' })
+      await userEvent.click(screen.getByRole('button', { name: 'ask' }))
+      await screen.findByRole('button', { name: 'Cancel' })
+      expect(screen.queryByRole('button', { name: 'Discard' })).toBeNull()
+    })
   })
 })

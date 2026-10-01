@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react' // fork-seam: confirmation-alternate-action
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/dialog'
 import {
   ConfirmationDialogContext,
-  type ConfirmationDialogContextValue,
-  type ConfirmationDialogOptions
+  createConfirmationDialogRequester, // fork-seam: confirmation-alternate-action
+  type ConfirmationDialogRequestOptions
 } from '@/components/confirmation-dialog-context'
 import { useAppStore } from '@/store'
 import { translate } from '@/i18n/i18n'
@@ -22,8 +22,8 @@ import { cn } from '@/lib/utils'
 
 type ConfirmationDialogRequest = {
   id: number
-  options: ConfirmationDialogOptions
-  resolve: (confirmed: boolean) => void
+  options: ConfirmationDialogRequestOptions // fork-seam: confirmation-alternate-action
+  resolve: (result: boolean | 'alternate') => void
 }
 
 export function ConfirmationDialogProvider({
@@ -56,31 +56,39 @@ export function ConfirmationDialogProvider({
     return () => setContextualToursBlockingSurfaceVisible(false)
   }, [activeRequest, setContextualToursBlockingSurfaceVisible])
 
-  const confirm = useCallback<ConfirmationDialogContextValue>((options) => {
-    return new Promise((resolve) => {
-      const request: ConfirmationDialogRequest = {
-        id: nextIdRef.current,
-        options,
-        resolve
-      }
-      nextIdRef.current += 1
-      setQueue((currentQueue) => [...currentQueue, request])
-    })
-  }, [])
+  const confirm = useMemo(
+    // fork-seam: confirmation-alternate-action
+    () =>
+      createConfirmationDialogRequester(
+        (options) =>
+          new Promise((resolve) => {
+            const request: ConfirmationDialogRequest = {
+              id: nextIdRef.current,
+              options,
+              resolve
+            }
+            nextIdRef.current += 1
+            setQueue((currentQueue) => [...currentQueue, request])
+          })
+      ),
+    []
+  )
 
   const settleActiveRequest = useCallback(
-    (confirmed: boolean) => {
+    (result: boolean | 'alternate') => {
+      // fork-seam: confirmation-alternate-action
       const request = activeRequestRef.current
       if (!request) {
         return
       }
       // Why: cancelling must not persist a preference the user backed out of.
-      if (confirmed && dontAskAgain) {
+      if (result === true && dontAskAgain) {
+        // fork-seam: confirmation-alternate-action
         request.options.dontAskAgain?.onConfirmed()
       }
       // Why: queued prompts must not inherit this request's preference.
       setDontAskAgain(false)
-      request.resolve(confirmed)
+      request.resolve(result) // fork-seam: confirmation-alternate-action
       setQueue((currentQueue) => {
         if (currentQueue[0]?.id === request.id) {
           return currentQueue.slice(1)
@@ -158,6 +166,15 @@ export function ConfirmationDialogProvider({
               {displayedRequest?.options.cancelLabel ??
                 translate('auto.components.confirmation.dialog.56f5c60e0c', 'Cancel')}
             </Button>
+            {displayedRequest?.options.alternateLabel ? ( // fork-seam: confirmation-alternate-action
+              <Button
+                type="button"
+                variant={displayedRequest.options.alternateVariant ?? 'outline'}
+                onClick={() => settleActiveRequest('alternate')}
+              >
+                {displayedRequest.options.alternateLabel}
+              </Button>
+            ) : null}
             <Button
               ref={confirmButtonRef}
               type="button"

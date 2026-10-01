@@ -17,9 +17,31 @@ export type ConfirmationDialogOptions = {
   dontAskAgain?: { label?: string; onConfirmed: () => void }
 }
 
-export type ConfirmationDialogContextValue = (
-  options: ConfirmationDialogOptions
-) => Promise<boolean>
+// Passing alternateLabel opts a call into the three-way result; plain calls keep Promise<boolean>.
+export type ConfirmationDialogAlternateOptions = ConfirmationDialogOptions & {
+  // fork-seam: confirmation-alternate-action
+  alternateLabel: string
+  alternateVariant?: 'outline' | 'secondary' | 'ghost' | 'destructive'
+}
+
+export type ConfirmationDialogRequestOptions = ConfirmationDialogOptions &
+  Partial<Pick<ConfirmationDialogAlternateOptions, 'alternateLabel' | 'alternateVariant'>>
+
+export type ConfirmationDialogContextValue = {
+  (options: ConfirmationDialogAlternateOptions): Promise<boolean | 'alternate'>
+  (options: ConfirmationDialogOptions): Promise<boolean>
+}
+
+export function createConfirmationDialogRequester(
+  enqueue: (options: ConfirmationDialogRequestOptions) => Promise<boolean | 'alternate'>
+): ConfirmationDialogContextValue {
+  function confirm(options: ConfirmationDialogAlternateOptions): Promise<boolean | 'alternate'>
+  function confirm(options: ConfirmationDialogOptions): Promise<boolean>
+  function confirm(options: ConfirmationDialogRequestOptions): Promise<boolean | 'alternate'> {
+    return enqueue(options)
+  }
+  return confirm
+}
 
 export const ConfirmationDialogContext = createContext<ConfirmationDialogContextValue | null>(null)
 
