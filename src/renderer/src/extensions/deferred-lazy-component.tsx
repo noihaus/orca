@@ -1,14 +1,16 @@
-import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
+import { createElement, lazy, type ComponentType, type LazyExoticComponent } from 'react'
 
 // Why: lazy() runs on first render, so importing the installed-extension list never calls React.
 export function deferredLazyComponent<P extends object>(
   load: () => Promise<ComponentType<P>>
 ): ComponentType<P> {
-  let Loaded: LazyExoticComponent<ComponentType<P>> | null = null
-  function DeferredLazyComponent(props: P): React.JSX.Element {
-    Loaded ??= lazy(() => load().then((component) => ({ default: component })))
-    const Component = Loaded
-    return <Component {...props} />
+  let loaded: LazyExoticComponent<ComponentType<P>> | null = null
+  const resolveLoaded = (): LazyExoticComponent<ComponentType<P>> => {
+    loaded ??= lazy(() => load().then((component) => ({ default: component })))
+    return loaded
   }
-  return DeferredLazyComponent
+  // createElement: the lazy type is memoized above, so its identity is stable across renders.
+  return function DeferredLazyComponent(props: P): React.JSX.Element {
+    return createElement(resolveLoaded(), props)
+  }
 }
