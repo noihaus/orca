@@ -1,0 +1,219 @@
+key	en	ko
+auto.lib.dooray.start.in.current.workspace.no_active	No active workspace to start this task in.	이 업무를 시작할 활성 워크스페이스가 없습니다.
+auto.lib.dooray.start.in.current.workspace.already_on	Already on {{value0}}.	이미 {{value0}} 브랜치입니다.
+auto.lib.dooray.start.in.current.workspace.dirty	Uncommitted changes in this workspace block switching branches. Commit or stash them first.	미커밋 변경이 있어 브랜치를 전환할 수 없습니다. 먼저 커밋하거나 stash 하세요.
+auto.lib.dooray.start.in.current.workspace.switched	Switched to {{value0}}.	{{value0}} 로 전환했습니다.
+auto.lib.dooray.start.in.current.workspace.failed	Failed to switch to the task branch.	업무 브랜치 전환에 실패했습니다.
+auto.lib.dooray.start.in.current.workspace.target_missing	The configured target workspace was not found.	설정된 대상 워크스페이스를 찾을 수 없습니다.
+auto.lib.dooray.start.in.current.workspace.unavailable	Branch switching is unavailable in this client.	이 클라이언트에서는 브랜치 전환을 사용할 수 없습니다.
+auto.lib.dooray.start.in.current.workspace.stashed	Changes stashed.	변경사항을 stash 했습니다.
+auto.lib.dooray.start.in.current.workspace.skipped	Switched to {{value0}}. Not checked out here: {{value1}}	{{value0}} 로 전환했습니다. 체크아웃되지 않은 대상: {{value1}}
+auto.lib.dooray.start.in.current.workspace.switched_with_submodules	Switched to {{value0}} ({{count}} checkouts).	{{value0}} 로 전환했습니다 ({{count}}개 체크아웃).
+auto.components.TaskPage.dooray_connect_title	Connect Dooray	두레이 연결
+auto.components.TaskPage.dooray_connect_description	Browse, comment, and start work from Dooray tasks directly from here.	여기서 바로 두레이 업무를 보고, 댓글 달고, 작업을 시작하세요.
+auto.components.TaskPage.dooray_connect_button	Connect Dooray	두레이 연결
+auto.components.TaskPage.dooray_hide_button	Hide Dooray	두레이 숨기기
+auto.components.TaskPage.source_dooray	Dooray	Dooray
+auto.components.sidebar.SidebarNav.open_dooray_tasks	Open Dooray tasks	두레이 업무 열기
+auto.components.settings.TasksPane.dooray_label	Dooray	Dooray
+auto.components.settings.TasksPane.dooray_description	Show Dooray in the Tasks source picker and sidebar shortcuts.	작업 소스 선택기와 사이드바 바로가기에 두레이를 표시합니다.
+auto.components.settings.dooray.integration.card.credential_remote	Connect Dooray with a personal API token. The token is sent to the selected remote runtime and stored there with runtime-supported encryption.	두레이 개인 API 토큰으로 연결합니다. 토큰은 선택한 원격 런타임으로 전송되어 그곳에 저장됩니다.
+auto.components.settings.dooray.integration.card.credential_local	Connect Dooray with a personal API token. The token is stored locally and encrypted when local runtime storage supports it.	두레이 개인 API 토큰으로 연결합니다. 토큰은 로컬에 암호화 저장됩니다.
+auto.components.settings.dooray.integration.card.connected_description	Connected as {{value0}}	{{value0}} 계정으로 연결됨
+auto.components.settings.dooray.integration.card.checking_description	Checking Dooray access before showing setup actions.	설정 동작을 표시하기 전에 두레이 접근을 확인하는 중입니다.
+auto.components.settings.dooray.integration.card.description	Connect Dooray to browse and start work from your tasks.	두레이를 연결해 업무를 보고 바로 작업을 시작하세요.
+auto.components.settings.dooray.integration.card.reconnect	Reconnect	다시 연결
+auto.components.settings.dooray.integration.card.connect	Connect Dooray	두레이 연결
+auto.components.settings.dooray.integration.card.disconnect	Disconnect Dooray	두레이 연결 해제
+auto.components.settings.RepositoryDoorayStartSection.title	Dooray Task Start	Dooray Task Start
+auto.components.settings.RepositoryDoorayStartSection.description	How Start behaves on Dooray tasks for this repository.	이 저장소에서 두레이 업무 시작이 동작하는 방식입니다.
+auto.components.settings.RepositoryDoorayStartSection.longDescription	Start on a Dooray task can create a new worktree, or check the task branch out in an existing workspace.	두레이 업무에서 시작하면 새 워크트리를 만들거나, 기존 워크스페이스에서 업무 브랜치를 체크아웃할 수 있습니다.
+auto.components.settings.RepositoryDoorayStartSection.modeLabel	Dooray task start mode	두레이 업무 시작 방식
+auto.components.settings.RepositoryDoorayStartSection.newWorktree	New worktree	새 워크트리
+auto.components.settings.RepositoryDoorayStartSection.existingWorkspace	Existing workspace	기존 워크스페이스
+auto.components.settings.RepositoryDoorayStartSection.activeWorkspace	Active workspace	활성 워크스페이스
+auto.components.settings.RepositoryDoorayStartSection.scopeLabel	Branch scope	브랜치 범위
+auto.components.settings.RepositoryDoorayStartSection.workspaceOnly	Workspace only	워크스페이스만
+auto.components.settings.RepositoryDoorayStartSection.withSubmodules	With submodules	서브모듈 포함
+auto.components.right.sidebar.index.doorayTasks	Dooray Tasks	두레이 업무
+auto.components.right.sidebar.DoorayTasksPanel.connect_title	Connect Dooray	두레이 연결
+auto.components.right.sidebar.DoorayTasksPanel.connect_description	Connect Dooray to browse your tasks here.	두레이를 연결하면 여기서 업무를 볼 수 있습니다.
+auto.components.right.sidebar.DoorayTasksPanel.connect_button	Connect Dooray	두레이 연결
+auto.components.right.sidebar.DoorayTasksPanel.panel_title	Dooray tasks	두레이 업무
+auto.components.right.sidebar.DoorayTasksPanel.all_tasks	All tasks	전체 업무
+auto.components.right.sidebar.DoorayTasksPanel.toggle_sort	Toggle sort direction	정렬 방향 전환
+auto.components.right.sidebar.DoorayActiveTaskCard.title	Current task	현재 업무
+auto.components.right.sidebar.DoorayActiveTaskCard.loading	Loading task…	업무 불러오는 중…
+auto.components.right.sidebar.DoorayActiveTaskCard.no_task	No Dooray task linked to this branch.	이 브랜치에 연결된 두레이 업무가 없습니다.
+auto.components.right.sidebar.DoorayActiveTaskCard.not_found	Task {{value0}}/{{value1}} was not found.	{{value0}}/{{value1}} 업무를 찾을 수 없습니다.
+auto.components.right.sidebar.DoorayActiveTaskCard.description	Description	본문
+auto.components.onboarding.OnboardingFlow.integrationsTitle	Connect your task sources	Connect your task sources
+auto.components.onboarding.OnboardingFlow.integrationsSubtitle	Connect GitHub to:	Connect GitHub to:
+auto.components.onboarding.OnboardingFlow.doorayTitle	Connect Dooray	두레이 연결
+auto.components.onboarding.OnboardingFlow.dooraySubtitle	Bring your tasks into Orca. This is what the Dooray Edition is for.	두레이 업무를 Orca 안으로. 이 빌드가 존재하는 이유입니다.
+auto.components.onboarding.OnboardingFlow.doorayFeaturesTitle	What you just unlocked	방금 열린 기능들
+auto.components.onboarding.OnboardingFlow.doorayFeaturesSubtitle	Four things this build adds on top of Orca. You can come back to these any time.	이 빌드가 Orca 위에 얹은 4가지입니다. 언제든 다시 볼 수 있습니다.
+auto.components.onboarding.DoorayRow.name	Dooray	Dooray
+auto.components.onboarding.DoorayRow.connected	Connected	연결됨
+auto.components.onboarding.DoorayRow.checking	Checking…	확인 중…
+auto.components.onboarding.DoorayRow.not_connected	Not connected	연결 안 됨
+auto.components.onboarding.DoorayRow.connected_description	Connected as {{value0}}. Dooray tasks are ready to start workspaces from.	{{value0}} 계정으로 연결되었습니다. Dooray 업무에서 바로 워크스페이스를 시작할 수 있습니다.
+auto.components.onboarding.DoorayRow.description	Start a workspace from a Dooray task, with its title and link attached.	두레이 업무에서 바로 워크스페이스를 시작합니다. 먼저 개인 API 토큰을 발급받아 아래에 입력하세요.
+auto.components.onboarding.DoorayRow.hint_token	API token: create a personal token in Dooray under Settings → API.	1. API 토큰 — 아래 링크에서 개인 API 토큰을 발급받아 붙여넣으세요. (본인 계정으로 동작하므로 토큰은 공유하지 마세요)
+auto.components.onboarding.DoorayRow.hint_api_url	API URL: {{value0}} (leave empty to use this default).	2. API 주소 — 비워 두면 {{value0}} 이 사용됩니다.
+auto.components.onboarding.DoorayRow.hint_web_url	Web URL: your tenant address, for example {{value0}}.	3. 웹 주소 — 사용 중인 두레이 주소입니다. 예: {{value0}} (입력하면 업무 링크를 앱에서 바로 열 수 있습니다)
+auto.components.onboarding.DoorayRow.reconnect	Reconnect	다시 연결
+auto.components.onboarding.DoorayRow.connect	Connect Dooray	Dooray 연결
+auto.components.onboarding.DoorayRow.recheck	Re-check	다시 확인
+auto.components.onboarding.DoorayRow.hint_token_link	Open token page	토큰 발급 페이지 열기
+auto.components.onboarding.DoorayStep.capability_tasks	Browse your Dooray tasks without leaving Orca — filter, sort, read and reply to comments.	Orca 를 벗어나지 않고 두레이 업무를 봅니다 — 필터·정렬·댓글 읽기/쓰기.
+auto.components.onboarding.DoorayStep.capability_workspace	Start a workspace straight from a task; the branch is named for you.	업무에서 바로 워크스페이스를 시작합니다. 브랜치 이름은 자동으로 지어집니다.
+auto.components.onboarding.DoorayStep.capability_status	Move a task through its workflow as you go.	작업하면서 업무 진행 상태를 그때그때 바꿉니다.
+auto.components.onboarding.DoorayStep.token_note	The token acts as you and is stored encrypted in your own keychain. Never share it.	토큰은 본인 계정으로 동작하며 기기 키체인에 암호화 저장됩니다. 절대 공유하지 마세요.
+auto.components.onboarding.DoorayFeaturesStep.tasks_title	Start work from a task	업무에서 작업 시작
+auto.components.onboarding.DoorayFeaturesStep.tasks_body	Pick a Dooray task and start a workspace from it — the branch is named for you. Or switch an existing workspace onto the task branch.	두레이 업무를 골라 바로 워크스페이스를 시작합니다 — 브랜치 이름은 자동. 기존 워크스페이스에서 업무 브랜치로 전환할 수도 있습니다.
+auto.components.onboarding.DoorayFeaturesStep.submodules_title	Submodules can follow along	서브모듈도 같이 전환
+auto.components.onboarding.DoorayFeaturesStep.submodules_body	Off by default. Turn it on per project and the task branch is created in your submodules too — Settings › Repositories › Dooray Task Start.	기본은 꺼짐. 프로젝트별로 켜면 업무 브랜치가 서브모듈에도 같이 만들어집니다 — 설정 › 저장소 › Dooray Task Start.
+auto.components.onboarding.DoorayFeaturesStep.checks_title	Every pull request in one place	모든 PR 을 한 화면에
+auto.components.onboarding.DoorayFeaturesStep.checks_body	The Checks tab lists the workspace PR and each submodule PR as its own collapsible section, with checks and comments.	Checks 탭에 워크스페이스 PR 과 서브모듈 PR 이 각각 접이식 섹션으로 나오고, 체크·코멘트까지 보입니다.
+auto.components.onboarding.DoorayFeaturesStep.review_title	Review without leaving Orca	Orca 안에서 리뷰까지
+auto.components.onboarding.DoorayFeaturesStep.review_body	Start review on the Files tab to collect line comments, then send them with Approve, Comment, or Request changes in one go.	파일 탭에서 Start review 로 라인 코멘트를 모았다가 Approve · Comment · Request changes 로 한 번에 보냅니다.
+auto.components.onboarding.DoorayFeaturesStep.footer	All of this is in the README that came with the download.	이 내용은 함께 받은 README 에도 정리되어 있습니다.
+auto.components.feature.wall.ConnectIntegrationsList.code_host_tasks_summary	issues available as tasks · add Dooray or Linear if your team plans work there	이슈를 작업으로 사용할 수 있음 · 팀이 Dooray 또는 Linear에서 작업을 계획한다면 추가하세요
+auto.components.feature.wall.RepoSetupSuggestions.branch_scope_title	Switch submodules with the Dooray task branch	Switch submodules with the Dooray task branch
+auto.components.feature.wall.RepoSetupSuggestions.branch_scope_description	Starting a task in an existing workspace switches this project only. Turn this on and its submodules move to the same branch: {{value0}}	Starting a task in an existing workspace switches this project only. Turn this on and its submodules move to the same branch: {{value0}}
+auto.components.feature.wall.RepoSetupSuggestions.branch_scope_enabled	On — change which submodules in Settings → Repositories	On — change which submodules in Settings → Repositories
+auto.components.feature.wall.RepoSetupSuggestions.branch_scope_enable	Include submodules	Include submodules
+auto.components.feature.wall.RepoSetupSuggestions.branch_scope_saved	Submodules will switch with the task branch	Submodules will switch with the task branch
+auto.components.feature.wall.RepoSetupSuggestions.branch_scope_failed	Failed to save the branch scope	Failed to save the branch scope
+auto.components.DoorayIssueWorkspace.workflow_failed	Failed to update Dooray workflow.	두레이 업무 상태 변경에 실패했습니다.
+auto.components.DoorayIssueWorkspace.sheet_title	Dooray task	두레이 업무
+auto.components.DoorayIssueWorkspace.sheet_description	Preview, comment, and start work from the selected task.	선택한 업무를 미리 보고, 댓글을 달고, 바로 작업을 시작합니다.
+auto.components.DoorayIssueWorkspace.start_workspace	Start workspace	워크스페이스 시작
+auto.components.DoorayIssueWorkspace.close_preview	Close Dooray task preview	두레이 업무 미리보기 닫기
+auto.components.DoorayIssueWorkspace.close	Close	닫기
+auto.components.DoorayIssueWorkspace.unassigned	Unassigned	담당자 없음
+auto.components.DoorayIssueWorkspace.no_description	No description provided.	본문이 없습니다.
+auto.components.DoorayIssueWorkspace.open_in_dooray	Open in Dooray	두레이에서 열기
+auto.components.DoorayIssueWorkspace.copy_url	Copy URL	URL 복사
+auto.components.DoorayIssueWorkspace.copy_task_number	Copy task number	업무 번호 복사
+auto.components.DoorayIssueWorkspace.copy_prompt	Copy prompt	프롬프트 복사
+auto.components.DoorayIssueWorkspace.comment_placeholder	Add a Dooray comment...	두레이 댓글을 입력하세요...
+auto.components.DoorayIssueWorkspace.comment	Comment	댓글 달기
+auto.components.DoorayIssueWorkspace.comments	Comments	댓글
+auto.components.DoorayIssueWorkspace.retry	Retry	다시 시도
+auto.components.DoorayIssueWorkspace.no_comments	No comments yet.	아직 댓글이 없습니다.
+auto.components.DoorayIssueWorkspace.unknown	Unknown	알 수 없음
+auto.components.DoorayIssueWorkspace.copied	{{value0}} copied	{{value0}} 복사됨
+auto.components.DoorayIssueWorkspace.copy_failed	Failed to copy {{value0}}	{{value0}} 복사에 실패했습니다
+auto.components.DoorayIssueWorkspace.comment_too_large	Comment is too large to submit safely.	댓글이 너무 길어 등록할 수 없습니다.
+auto.components.DoorayIssueWorkspace.you	You	나
+auto.components.DoorayIssueWorkspace.comment_failed	Failed to add comment.	댓글 등록에 실패했습니다.
+auto.components.DoorayIssueWorkspace.start_in_current	Start in current workspace	현재 워크스페이스에서 시작
+auto.components.DoorayIssueWorkspace.start_in_current_hint	Switch the active workspace to feature/{{value0}}	활성 워크스페이스를 feature/{{value0}} 로 전환합니다
+auto.components.DoorayIssueWorkspace.start_in_current_disabled	No active workspace — open one first.	활성 워크스페이스가 없습니다 — 먼저 하나 여세요.
+auto.components.DoorayIssueWorkspace.start_new_hint	Create a new worktree for this task.	이 업무용 새 워크트리를 만듭니다.
+auto.components.dooray.connect.dialog.title	Connect Dooray	두레이 연결
+auto.components.dooray.connect.dialog.description	Use a Dooray personal API token to browse tasks. Create one in Dooray under Settings → API.	두레이 개인 API 토큰으로 업무를 불러옵니다. 두레이 설정 → API 에서 발급하세요.
+auto.components.dooray.connect.dialog.token_label	API token	API 토큰
+auto.components.dooray.connect.dialog.token_placeholder	Dooray personal API token	두레이 개인 API 토큰
+auto.components.dooray.connect.dialog.api_url_label	API URL	API 주소
+auto.components.dooray.connect.dialog.web_url_label	Web URL (optional, for task links)	웹 주소 (선택, 업무 링크용)
+auto.components.dooray.connect.dialog.web_url_placeholder	https://yourtenant.dooray.com	https://yourtenant.dooray.com
+auto.components.dooray.connect.dialog.cancel	Cancel	취소
+auto.components.dooray.connect.dialog.verifying	Verifying…	확인 중…
+auto.components.dooray.connect.dialog.connect	Connect	연결
+auto.components.dooray.connect.dialog.api_url_placeholder	https://api.dooray.com	https://api.dooray.com
+auto.components.dooray.workspace.start.menu.default	default	기본
+auto.components.dooray.new.task.dialog.created	Task created.	업무가 생성되었습니다.
+auto.components.dooray.new.task.dialog.failed	Failed to create the task.	업무 생성에 실패했습니다.
+auto.components.dooray.new.task.dialog.title	New Dooray task	새 두레이 업무
+auto.components.dooray.new.task.dialog.description	Create a task in the selected Dooray project.	선택한 두레이 프로젝트에 업무를 생성합니다.
+auto.components.dooray.new.task.dialog.project	Project	프로젝트
+auto.components.dooray.new.task.dialog.subject	Subject	제목
+auto.components.dooray.new.task.dialog.subject_placeholder	Task subject	업무 제목
+auto.components.dooray.new.task.dialog.body	Description (markdown, optional)	본문 (마크다운, 선택)
+auto.components.dooray.new.task.dialog.assign_me	Assign to me	나를 담당자로
+auto.components.dooray.new.task.dialog.cancel	Cancel	취소
+auto.components.dooray.new.task.dialog.creating	Creating…	생성 중…
+auto.components.dooray.new.task.dialog.create	Create task	업무 만들기
+auto.components.dooray.new.task.dialog.template_failed	Failed to load the template.	템플릿을 불러오지 못했습니다.
+auto.components.dooray.new.task.dialog.workflow_failed	Task was created, but applying the workflow failed: {{value0}}	업무는 생성됐지만 업무 상태 적용에 실패했습니다: {{value0}}
+auto.components.dooray.new.task.dialog.tags	Tags	태그
+auto.components.dooray.new.task.dialog.assignees	Assignees	담당자
+auto.components.dooray.new.task.dialog.member_search	Search members by name…	이름으로 멤버 검색…
+auto.components.dooray.new.task.dialog.cc	CC	참조
+auto.components.dooray.new.task.dialog.template	Template	템플릿
+auto.components.dooray.new.task.dialog.no_template	No template	템플릿 없음
+auto.components.dooray.new.task.dialog.workflow	Workflow	업무 상태
+auto.components.dooray.new.task.dialog.no_workflow	Default	기본
+auto.components.dooray.new.task.dialog.priority	Priority	우선순위
+auto.components.dooray.new.task.dialog.attachments	Attachments	첨부파일
+auto.components.dooray.new.task.dialog.attachments_failed	Task was created, but {{value0}} attachment(s) failed: {{value1}}	업무는 생성됐지만 첨부 {{value0}}건이 실패했습니다: {{value1}}
+auto.components.dooray.new.task.dialog.milestone	Milestone	단계
+auto.components.dooray.new.task.dialog.no_milestone	None	없음
+auto.components.dooray.new.task.fields.tags_selected	{{value0}} tag(s) selected	태그 {{value0}}개 선택됨
+auto.components.dooray.new.task.fields.tags_placeholder	Add tags	태그 추가
+auto.components.dooray.new.task.fields.tags_search	Search tags…	태그 검색…
+auto.components.dooray.new.task.fields.tags_empty	No matching tags.	일치하는 태그가 없습니다.
+auto.components.dooray.new.task.fields.remove_tag	Remove tag {{value0}}	{{value0}} 태그 제거
+auto.components.dooray.new.task.fields.remove_member	Remove {{value0}}	{{value0}} 제거
+auto.components.dooray.new.task.fields.attach_files	Add files	파일 추가
+auto.components.dooray.new.task.fields.attach_paste_hint	or paste an image with Cmd+V	또는 Cmd+V 로 이미지 붙여넣기
+auto.components.dooray.new.task.fields.remove_attachment	Remove {{value0}}	{{value0}} 제거
+auto.components.dooray.new.task.fields.milestone_include_closed	Include closed	완료된 단계 포함
+auto.components.dooray.tag.field.ungrouped	Other	기타
+auto.components.dooray.tag.field.mandatory	Required	필수
+auto.components.dooray.tag.field.missing_required	Select a required tag from: {{value0}}	필수 태그를 선택하세요: {{value0}}
+auto.components.dooray.priority.highest	Highest	매우 높음
+auto.components.dooray.priority.high	High	높음
+auto.components.dooray.priority.normal	Normal	보통
+auto.components.dooray.priority.low	Low	낮음
+auto.components.dooray.priority.lowest	Lowest	매우 낮음
+auto.components.dooray.priority.none	None	없음
+auto.components.TaskPageDooray.unassigned	Unassigned	담당자 없음
+auto.components.TaskPageDooray.start_workspace_from	Start workspace from {{value0}}	{{value0}} 에서 워크스페이스 시작
+auto.components.TaskPageDooray.open_in_dooray_aria	Open {{value0}} in Dooray	{{value0}} 를 두레이에서 열기
+auto.components.TaskPageDooray.open_in_dooray	Open in Dooray	두레이에서 열기
+auto.components.TaskPageDooray.filter_assigned	Assigned to me	내 업무
+auto.components.TaskPageDooray.filter_all	All Open	전체
+auto.components.TaskPageDooray.filter_done	Done	완료
+auto.components.TaskPageDooray.panel_title	Dooray tasks	두레이 업무
+auto.components.TaskPageDooray.loading_projects	Loading projects…	프로젝트 불러오는 중…
+auto.components.TaskPageDooray.select_project	Select project	프로젝트 선택
+auto.components.TaskPageDooray.refresh	Refresh tasks	업무 새로고침
+auto.components.TaskPageDooray.no_tasks	No Dooray tasks found	두레이 업무가 없습니다
+auto.components.TaskPageDooray.no_tasks_hint	No tasks match the selected project and filter.	선택한 프로젝트·필터에 해당하는 업무가 없습니다.
+auto.components.TaskPageDooray.load_more	Load more	더 불러오기
+auto.components.TaskPageDooray.open_workspace	Open workspace	워크스페이스 열기
+auto.components.TaskPageDooray.open_workspace_for	Open workspace for {{value0}}	{{value0}} 워크스페이스 열기
+auto.components.TaskPageDooray.open_workspace_failed	Unable to open the workspace for this task.	이 업무의 워크스페이스를 열 수 없습니다.
+auto.components.TaskPageDooray.new_task	New task	새 업무
+auto.components.TaskPageDooray.sort_number	Task number	업무 번호
+auto.components.TaskPageDooray.sort_subject	Subject	제목
+auto.components.TaskPageDooray.sort_workflow	Workflow	업무 상태
+auto.components.TaskPageDooray.sort_created	Created	생성일
+auto.components.TaskPageDooray.sort_updated	Updated	수정일
+auto.components.TaskPageDooray.sort_loaded_only	Sorted across loaded tasks only	불러온 업무 안에서만 정렬됩니다
+auto.components.TaskPageDooray.milestone_all	All milestones	모든 단계
+auto.components.TaskPageDooray.milestone_loaded_only	Filtered across loaded tasks only	불러온 업무 안에서만 필터링됩니다
+auto.components.TaskPageDooray.workflow_all	All stages	모든 상태
+auto.components.TaskPageDooray.sort_milestone	Milestone	단계
+auto.components.TaskPageDooray.sort_priority	Priority	우선순위
+auto.components.TaskPageDooray.priority_all	All priorities	모든 우선순위
+auto.components.useDoorayStartActions.dirtyTitle	Uncommitted changes block switching to {{value0}}	미커밋 변경 때문에 {{value0}} 로 전환할 수 없습니다
+auto.components.useDoorayStartActions.dirtyDescription	Changed: {{value0}}. Stash keeps the work; discard throws it away.	변경됨: {{value0}}. Stash 는 작업을 보관하고, 버리기는 되돌릴 수 없습니다. 새로 만든 파일은 그대로 유지됩니다.
+auto.components.useDoorayStartActions.stash	Stash and switch	Stash 후 전환
+auto.components.useDoorayStartActions.discard	Discard and switch	버리고 전환
+auto.components.useDoorayStartActions.keepBranch	Don't switch	전환 안 함
+auto.components.useDoorayStartActions.discardConfirmTitle	Discard all uncommitted changes?	모든 미커밋 변경을 버릴까요?
+auto.components.useDoorayStartActions.discardConfirmDescription	This deletes the changes in {{value0}} permanently, including untracked files. It cannot be undone.	{{value0}} 의 추적 중인 변경사항이 영구 삭제됩니다. 새로 만든(untracked) 파일은 유지됩니다. 되돌릴 수 없습니다.
+auto.components.useDoorayStartActions.discardConfirm	Discard permanently	영구 삭제
+auto.components.doorayTaskBaseRefDialog.title	Where should {{value0}} start?	{{value0}} 브랜치를 어디서 시작할까요?
+auto.components.doorayTaskBaseRefDialog.description	The new branch is created from the base you pick. If the branch already exists, it is switched to as-is.	선택한 base 에서 새 브랜치를 만듭니다. 브랜치가 이미 있으면 그대로 전환만 합니다.
+auto.components.doorayTaskBaseRefDialog.cancel	Cancel	취소
+auto.components.doorayTaskBaseRefDialog.useCurrent	From current branch	현재 브랜치에서
+auto.components.doorayTaskBaseRefDialog.createFrom	Create from {{value0}}	{{value0}} 에서 생성
+auto.components.doorayTaskBaseRefDialog.pickBase	Pick a base	Base 브랜치를 선택하세요
+auto.components.doorayTaskBaseRefDialog.fetchFirst	Fetch the base branch first (start from the latest tip)	생성 전에 base 브랜치를 fetch (최신 커밋에서 시작)
+auto.components.doorayTaskBaseRefDialog.submodulesLabel	Also switch these submodules	서브모듈도 같이 전환
