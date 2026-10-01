@@ -30,3 +30,4 @@ auto.components.dooray.tasks.list_load_failed	Failed to load tasks.	업무 목�
 auto.components.dooray.tasks.projects_load_failed	Failed to load projects.	프로젝트 목록을 불러오지 못했습니다.
 auto.components.doorayTaskBaseRefDialog.target	Workspace: {{value0}}	워크스페이스: {{value0}}
 auto.components.dooray.errors.timed_out	Dooray did not respond in time.	두레이가 제때 응답하지 않았습니다.
+auto.lib.dooray.start.in.current.workspace.failed_after_stash	{{value0}} Your changes are in the stash entry "{{value1}}".	{{value0}} 변경 사항은 stash 항목 "{{value1}}"에 있습니다.

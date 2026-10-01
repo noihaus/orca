@@ -6,12 +6,10 @@ import { useAppStore } from '@/store'
 import type { DoorayIssue } from '../../../../../shared/extensions/dooray/dooray-types'
 import type { Repo } from '../../../../../shared/repo-types'
 import type { Worktree } from '../../../../../shared/worktree/types'
-import type {
-  TaskBranchPreloadApi,
-  TaskBranchSwitchResult
-} from '../../../../../shared/extensions/dooray/task-branch-types'
+import type { TaskBranchPreloadApi } from '../../../../../shared/extensions/dooray/task-branch-types'
 import { getDoorayTaskBranchName } from '../lib/dooray-branch-matching'
 import { readRepoDoorayStart } from './dooray-repo-start-settings'
+import { reportSwitchResults } from './dooray-switch-result-toasts'
 import { findDoorayWorktreeRepo, readDoorayStartAvailability } from './dooray-start-availability'
 import { normalizeDoorayBranch } from './dooray-start-workspace-options'
 import type { DoorayDirtyPrompt } from './dooray-dirty-workspace-prompt'
@@ -64,105 +62,6 @@ function finishOnWorktree(worktreeId: string, subject: string): void {
     })
     .catch((error: unknown) => renameFailed(readDoorayErrorMessage(error, String(error))))
   activateAndRevealWorktree(worktreeId)
-}
-
-function targetLabel(submodulePath: string): string {
-  return submodulePath === ''
-    ? translate(
-        'auto.ext.dooray.lib.dooray.start.in.current.workspace.parent_target',
-        'workspace root'
-      )
-    : submodulePath
-}
-
-// Created branches that did not start from the chosen base must not read as a plain success.
-function reportBaseFallbacks(
-  branch: string,
-  baseRef: string | null,
-  results: readonly TaskBranchSwitchResult[]
-): boolean {
-  if (!baseRef) {
-    return false
-  }
-  const created = results.flatMap((result) => (result.status === 'created' ? [result] : []))
-  const fromHead = created.filter((result) => result.baseFallback === 'head')
-  const fromLocal = created.filter((result) => result.fetchFailed && !result.baseFallback)
-  if (fromHead.length > 0) {
-    toast.warning(
-      translate(
-        'auto.ext.dooray.lib.dooray.start.in.current.workspace.base_fallback_head',
-        'Created {{value0}} from current HEAD because {{value1}} was not found: {{value2}}',
-        {
-          value0: branch,
-          value1: baseRef,
-          value2: fromHead.map((result) => targetLabel(result.submodulePath)).join(', ')
-        }
-      )
-    )
-  }
-  if (fromLocal.length > 0) {
-    toast.warning(
-      translate(
-        'auto.ext.dooray.lib.dooray.start.in.current.workspace.base_fetch_failed',
-        'Fetch failed; created {{value0}} from local {{value1}}: {{value2}}',
-        {
-          value0: branch,
-          value1: baseRef,
-          value2: fromLocal.map((result) => targetLabel(result.submodulePath)).join(', ')
-        }
-      )
-    )
-  }
-  return fromHead.length > 0 || fromLocal.length > 0
-}
-
-function reportSwitchResults(
-  branch: string,
-  baseRef: string | null,
-  results: readonly TaskBranchSwitchResult[],
-  withSubmodules: boolean
-): void {
-  const failed = results.flatMap((result) =>
-    result.status === 'failed' ? [`${result.submodulePath}: ${result.error}`] : []
-  )
-  const skipped = results.flatMap((result) =>
-    result.status === 'skipped-missing' ? [result.submodulePath] : []
-  )
-  const fellBack = reportBaseFallbacks(branch, baseRef, results)
-  if (failed.length > 0) {
-    toast.warning(
-      translate(
-        'auto.ext.dooray.lib.dooray.start.in.current.workspace.submodules_failed',
-        'Switched to {{value0}}, but these submodules did not switch: {{value1}}',
-        { value0: branch, value1: failed.join('; ') }
-      )
-    )
-  }
-  if (skipped.length > 0) {
-    toast.warning(
-      translate(
-        'auto.ext.dooray.lib.dooray.start.in.current.workspace.skipped',
-        'Switched to {{value0}}. Not checked out here: {{value1}}',
-        { value0: branch, value1: skipped.join(', ') }
-      )
-    )
-  }
-  if (failed.length > 0 || skipped.length > 0 || fellBack) {
-    return
-  }
-  toast.success(
-    withSubmodules
-      ? translate(
-          'auto.ext.dooray.lib.dooray.start.in.current.workspace.switched_with_submodules',
-          'Switched to {{value0}} ({{count}} checkouts).',
-          { value0: branch, count: results.length }
-        )
-      : translate(
-          'auto.ext.dooray.lib.dooray.start.in.current.workspace.switched',
-          'Switched to {{value0}}.',
-          { value0: branch }
-        )
-  )
 }
 
 export async function startDoorayTaskInCurrentWorkspace(
@@ -261,6 +160,7 @@ async function switchToTaskBranch(
       submodulePaths = [...choice.submodulePaths]
     }
   }
+  let stashMessage: string | null = null
   try {
     const request = { worktreePath: worktree.path, submodulePaths }
     const dirtyTargets = await taskBranch.inspect(request)
@@ -279,6 +179,7 @@ async function switchToTaskBranch(
       const scoped = { ...request, onlyTargets: dirtyTargets.map((dirty) => dirty.submodulePath) }
       if (resolution === 'stash') {
         await taskBranch.stash({ ...scoped, message: doorayStashMessage(branch) })
+        stashMessage = doorayStashMessage(branch)
         toast.success(
           translate(
             'auto.ext.dooray.lib.dooray.start.in.current.workspace.stashed',
@@ -298,14 +199,22 @@ async function switchToTaskBranch(
     finishOnWorktree(worktree.id, issue.subject)
     reportSwitchResults(branch, baseRef, results, submodulePaths.length > 0)
   } catch (error) {
-    toast.error(
-      readDoorayErrorMessage(
-        error,
-        translate(
-          'auto.ext.dooray.lib.dooray.start.in.current.workspace.failed',
-          'Failed to switch to the task branch.'
-        )
+    const message = readDoorayErrorMessage(
+      error,
+      translate(
+        'auto.ext.dooray.lib.dooray.start.in.current.workspace.failed',
+        'Failed to switch to the task branch.'
       )
+    )
+    // The work was stashed before the failure; say where it went.
+    toast.error(
+      stashMessage
+        ? translate(
+            'auto.ext.dooray.lib.dooray.start.in.current.workspace.failed_after_stash',
+            '{{value0}} Your changes are in the stash entry "{{value1}}".',
+            { value0: message, value1: stashMessage }
+          )
+        : message
     )
   }
 }

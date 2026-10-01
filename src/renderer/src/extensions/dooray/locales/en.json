@@ -26,7 +26,8 @@
                     "rename_failed": "Couldn't rename the workspace to the task title: {{value0}}",
                     "parent_target": "workspace root",
                     "base_fallback_head": "Created {{value0}} from current HEAD because {{value1}} was not found: {{value2}}",
-                    "base_fetch_failed": "Fetch failed; created {{value0}} from local {{value1}}: {{value2}}"
+                    "base_fetch_failed": "Fetch failed; created {{value0}} from local {{value1}}: {{value2}}",
+                    "failed_after_stash": "{{value0}} Your changes are in the stash entry \"{{value1}}\"."
                   }
                 }
               }

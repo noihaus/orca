@@ -26,7 +26,8 @@
                     "rename_failed": "워크스페이스 이름을 업무 제목으로 바꾸지 못했습니다: {{value0}}",
                     "parent_target": "워크스페이스 루트",
                     "base_fallback_head": "{{value1}}을(를) 찾지 못해 현재 HEAD에서 {{value0}}을(를) 만들었습니다: {{value2}}",
-                    "base_fetch_failed": "가져오기에 실패해 로컬 {{value1}}에서 {{value0}}을(를) 만들었습니다: {{value2}}"
+                    "base_fetch_failed": "가져오기에 실패해 로컬 {{value1}}에서 {{value0}}을(를) 만들었습니다: {{value2}}",
+                    "failed_after_stash": "{{value0}} 변경 사항은 stash 항목 \"{{value1}}\"에 있습니다."
                   }
                 }
               }

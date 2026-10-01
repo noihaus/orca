@@ -339,4 +339,14 @@ describe('startDoorayTaskInCurrentWorkspace', () => {
     await startDoorayTaskInCurrentWorkspace(issue)
     expect(mocks.toast.error).toHaveBeenCalledWith('boom')
   })
+
+  it('names the stash entry when the switch fails after stashing', async () => {
+    seed()
+    taskBranch.inspect.mockResolvedValue([{ submodulePath: '', changeCount: 2 }])
+    taskBranch.switch.mockRejectedValue(new Error('checkout failed'))
+    await startDoorayTaskInCurrentWorkspace(issue, { promptDirtyWorkspace: async () => 'stash' })
+    expect(mocks.toast.error).toHaveBeenCalledWith(
+      `checkout failed Your changes are in the stash entry "orca: ${BRANCH}".`
+    )
+  })
 })
