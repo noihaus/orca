@@ -8,8 +8,19 @@ describe('normalizeDoorayUrl', () => {
   it('drops query and hash', () => {
     expect(normalizeDoorayUrl('https://api.dooray.com/?x=1#h')).toBe('https://api.dooray.com')
   })
-  it('keeps http scheme and path prefix', () => {
-    expect(normalizeDoorayUrl('http://host.example/base//')).toBe('http://host.example/base')
+  it('keeps the path prefix', () => {
+    expect(normalizeDoorayUrl('https://host.example/base//')).toBe('https://host.example/base')
+  })
+  it('allows http only for loopback hosts', () => {
+    expect(normalizeDoorayUrl('http://localhost:8080/')).toBe('http://localhost:8080')
+    expect(normalizeDoorayUrl('http://127.0.0.1:9')).toBe('http://127.0.0.1:9')
+    expect(normalizeDoorayUrl('http://[::1]:9')).toBe('http://[::1]:9')
+    expect(() => normalizeDoorayUrl('http://host.example')).toThrow('Enter a valid Dooray URL.')
+  })
+  it('rejects non-http schemes', () => {
+    for (const url of ['ftp://host.example', 'file:///etc/passwd', 'javascript://x']) {
+      expect(() => normalizeDoorayUrl(url)).toThrow('Enter a valid Dooray URL.')
+    }
   })
   it('throws on missing host', () => {
     expect(() => normalizeDoorayUrl('http://')).toThrow('Enter a valid Dooray URL.')
