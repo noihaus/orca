@@ -1,3 +1,4 @@
+import type { BrowserWindow } from 'electron'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadUpdaterModule, warmUpdaterModule } from './updater-test-module-loader'
 
@@ -21,6 +22,11 @@ vi.mock('./local-builds/local-build-feed-server', () => moduleFactories.localBui
 
 warmUpdaterModule()
 
+function fakeWindow(send: () => void): BrowserWindow {
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the updater only touches webContents.send on the window
+  return { webContents: { send } } as unknown as BrowserWindow
+}
+
 describe('updater in the fork build', () => {
   const originalFlag = process.env.ORCA_ENABLE_AUTO_UPDATE
 
@@ -38,9 +44,8 @@ describe('updater in the fork build', () => {
 
   it('does not set up the auto updater or schedule checks when disabled', async () => {
     delete process.env.ORCA_ENABLE_AUTO_UPDATE
-    const mainWindow = { webContents: { send: vi.fn() } }
     const updater = await loadUpdaterModule()
-    updater.setupAutoUpdater(mainWindow as never)
+    updater.setupAutoUpdater(fakeWindow(vi.fn()))
     updater.checkForUpdates()
     updater.downloadUpdate()
     updater.quitAndInstall()
@@ -55,7 +60,7 @@ describe('updater in the fork build', () => {
     delete process.env.ORCA_ENABLE_AUTO_UPDATE
     const send = vi.fn()
     const updater = await loadUpdaterModule()
-    updater.setupAutoUpdater({ webContents: { send } } as never)
+    updater.setupAutoUpdater(fakeWindow(send))
     updater.checkForUpdatesFromMenu()
     expect(send).toHaveBeenLastCalledWith('updater:status', {
       state: 'not-available',
@@ -67,7 +72,7 @@ describe('updater in the fork build', () => {
   it('ORCA_ENABLE_AUTO_UPDATE=1 restores upstream behavior', async () => {
     process.env.ORCA_ENABLE_AUTO_UPDATE = '1'
     const updater = await loadUpdaterModule()
-    updater.setupAutoUpdater({ webContents: { send: vi.fn() } } as never)
+    updater.setupAutoUpdater(fakeWindow(vi.fn()))
     updater.downloadUpdate()
     expect(autoUpdaterMock.on).toHaveBeenCalled()
   })
