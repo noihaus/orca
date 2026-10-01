@@ -186,7 +186,8 @@
             "start_in_current": "Start in current workspace",
             "start_in_current_hint": "Switch the active workspace to feature/{{value0}}",
             "start_in_current_disabled": "No active workspace — open one first.",
-            "start_new_hint": "Create a new worktree for this task."
+            "start_new_hint": "Create a new worktree for this task.",
+            "comments_load_failed": "Failed to load comments."
           },
           "dooray": {
             "connect": {
@@ -279,7 +280,17 @@
               "token_required": "API token is required.",
               "invalid_url": "Enter a valid Dooray URL.",
               "no_member_profile": "Dooray did not return a member profile for this token.",
-              "not_connected": "Not connected to Dooray."
+              "not_connected": "Not connected to Dooray.",
+              "connection_failed": "Connection failed.",
+              "test_failed": "Test failed."
+            },
+            "viewer_unknown": "unknown",
+            "sidebar": {
+              "active_task_load_failed": "Failed to load task."
+            },
+            "tasks": {
+              "list_load_failed": "Failed to load tasks.",
+              "projects_load_failed": "Failed to load projects."
             }
           },
           "TaskPageDooray": {

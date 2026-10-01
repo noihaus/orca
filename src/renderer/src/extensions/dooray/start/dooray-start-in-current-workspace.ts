@@ -16,6 +16,7 @@ import { findDoorayWorktreeRepo, readDoorayStartAvailability } from './dooray-st
 import { normalizeDoorayBranch } from './dooray-start-workspace-options'
 import type { DoorayDirtyPrompt } from './dooray-dirty-workspace-prompt'
 import type { DoorayBaseRefPrompt } from './dooray-task-base-ref-context'
+import { readDoorayErrorMessage } from '../lib/dooray-error-messages'
 
 export type DoorayStartInCurrentOptions = {
   // Omitted/null = the active workspace.
@@ -61,7 +62,7 @@ function finishOnWorktree(worktreeId: string, subject: string): void {
         renameFailed(result.error)
       }
     })
-    .catch((error: unknown) => renameFailed(error instanceof Error ? error.message : String(error)))
+    .catch((error: unknown) => renameFailed(readDoorayErrorMessage(error, String(error))))
   activateAndRevealWorktree(worktreeId)
 }
 
@@ -297,12 +298,13 @@ async function switchToTaskBranch(
     reportSwitchResults(branch, baseRef, results, submodulePaths.length > 0)
   } catch (error) {
     toast.error(
-      error instanceof Error
-        ? error.message
-        : translate(
-            'auto.ext.dooray.lib.dooray.start.in.current.workspace.failed',
-            'Failed to switch to the task branch.'
-          )
+      readDoorayErrorMessage(
+        error,
+        translate(
+          'auto.ext.dooray.lib.dooray.start.in.current.workspace.failed',
+          'Failed to switch to the task branch.'
+        )
+      )
     )
   }
 }

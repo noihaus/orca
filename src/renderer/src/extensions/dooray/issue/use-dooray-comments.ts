@@ -11,6 +11,7 @@ import type {
   DoorayIssue
 } from '../../../../../shared/extensions/dooray/dooray-types'
 import { useDoorayApi } from '../use-dooray-api'
+import { readDoorayErrorMessage } from '../lib/dooray-error-messages'
 
 export function useDoorayComments(issue: DoorayIssue | null) {
   const api = useDoorayApi()
@@ -45,7 +46,15 @@ export function useDoorayComments(issue: DoorayIssue | null) {
         ])
       } catch (error) {
         if (requestId === requestIdRef.current) {
-          setCommentsError(error instanceof Error ? error.message : 'Failed to load comments.')
+          setCommentsError(
+            readDoorayErrorMessage(
+              error,
+              translate(
+                'auto.ext.dooray.components.DoorayIssueWorkspace.comments_load_failed',
+                'Failed to load comments.'
+              )
+            )
+          )
         }
       } finally {
         if (requestId === requestIdRef.current) {
@@ -116,12 +125,13 @@ export function useDoorayComments(issue: DoorayIssue | null) {
       setCommentDraft('')
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : translate(
-              'auto.ext.dooray.components.DoorayIssueWorkspace.comment_failed',
-              'Failed to add comment.'
-            )
+        readDoorayErrorMessage(
+          error,
+          translate(
+            'auto.ext.dooray.components.DoorayIssueWorkspace.comment_failed',
+            'Failed to add comment.'
+          )
+        )
       )
     } finally {
       if (requestId === requestIdRef.current) {

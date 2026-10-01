@@ -15,7 +15,7 @@ import { ProviderHostScopeControl } from '@/components/settings/ProviderHostScop
 import { translate } from '@/i18n/i18n'
 import { DoorayConnectDialog } from './DoorayConnectDialog'
 import { DoorayIcon } from './DoorayIcon'
-import { translateDoorayError } from './lib/dooray-error-messages'
+import { readDoorayErrorMessage, translateDoorayError } from './lib/dooray-error-messages'
 import { useDoorayConnectionStatus } from './use-dooray-connection-status'
 
 type VerificationResult = { state: 'ok' } | { state: 'error'; error: string }
@@ -44,19 +44,23 @@ export function DoorayIntegrationCard(): React.JSX.Element {
         'auto.ext.dooray.components.settings.dooray.integration.card.credential_local',
         'Connect Dooray with a personal API token. The token is stored locally and encrypted when local runtime storage supports it.'
       )
-  const viewerName = status.viewer?.name ?? status.viewer?.userCode ?? 'unknown'
+  const viewerName =
+    status.viewer?.name ??
+    status.viewer?.userCode ??
+    translate('auto.ext.dooray.components.dooray.viewer_unknown', 'unknown')
 
   const handleDisconnect = async (): Promise<void> => {
     try {
       await disconnectDooray()
     } catch (error) {
       toast.error(
-        error instanceof Error && error.message
-          ? translateDoorayError(error.message)
-          : translate(
-              'auto.ext.dooray.components.settings.dooray.integration.card.disconnect_failed',
-              'Failed to disconnect Dooray.'
-            )
+        readDoorayErrorMessage(
+          error,
+          translate(
+            'auto.ext.dooray.components.settings.dooray.integration.card.disconnect_failed',
+            'Failed to disconnect Dooray.'
+          )
+        )
       )
       return
     }

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { DoorayProject } from '../../../../../shared/extensions/dooray/dooray-types'
 import type { DoorayApi } from '../runtime-dooray-client'
+import { translate } from '@/i18n/i18n'
+import { readDoorayErrorMessage } from '../lib/dooray-error-messages'
 
 export const DOORAY_SELECTED_PROJECT_STORAGE_KEY = 'orca:dooray-selected-project'
 
@@ -51,7 +53,13 @@ export function useDoorayProjects(api: Pick<DoorayApi, 'listProjects'>) {
           setState((previous) => ({
             ...previous,
             loading: false,
-            error: error instanceof Error ? error.message : String(error)
+            error: readDoorayErrorMessage(
+              error,
+              translate(
+                'auto.ext.dooray.components.dooray.tasks.projects_load_failed',
+                'Failed to load projects.'
+              )
+            )
           }))
         }
       })

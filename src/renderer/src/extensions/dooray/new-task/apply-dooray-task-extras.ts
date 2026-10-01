@@ -2,7 +2,7 @@ import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import type { DoorayMutationResult } from '../../../../../shared/extensions/dooray/dooray-types'
 import type { DoorayApi } from '../runtime-dooray-client'
-import { translateDoorayError } from '../lib/dooray-error-messages'
+import { readDoorayErrorMessage, translateDoorayError } from '../lib/dooray-error-messages'
 import type { DoorayPendingAttachment } from './dooray-task-attachments'
 
 type DoorayTaskExtrasApi = Pick<DoorayApi, 'setWorkflow' | 'uploadIssueFile'>
@@ -15,7 +15,7 @@ type DoorayTaskExtrasArgs = {
 }
 
 function failureOf(error: unknown, fallback: string): DoorayMutationResult {
-  return { ok: false, error: error instanceof Error ? error.message : fallback }
+  return { ok: false, error: readDoorayErrorMessage(error, fallback) }
 }
 
 // The issue already exists, so these steps only report failures instead of aborting.

@@ -329,4 +329,13 @@ describe('startDoorayTaskInCurrentWorkspace', () => {
     expect(mocks.toast.error).toHaveBeenCalledWith('Could not switch the workspace')
     expect(updateWorktreeMeta).not.toHaveBeenCalled()
   })
+
+  it('shows an IPC-wrapped switch error without the Electron prefix', async () => {
+    seed()
+    taskBranch.switch.mockRejectedValue(
+      new Error("Error invoking remote method 'dooray:taskBranch:switch': Error: boom")
+    )
+    await startDoorayTaskInCurrentWorkspace(issue)
+    expect(mocks.toast.error).toHaveBeenCalledWith('boom')
+  })
 })

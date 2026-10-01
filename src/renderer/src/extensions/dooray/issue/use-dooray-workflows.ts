@@ -6,6 +6,7 @@ import type {
   DoorayWorkflow
 } from '../../../../../shared/extensions/dooray/dooray-types'
 import { useDoorayApi } from '../use-dooray-api'
+import { readDoorayErrorMessage } from '../lib/dooray-error-messages'
 
 // Workflow list for the issue's project, plus an optimistic change that rolls back on failure.
 export function useDoorayWorkflows(
@@ -75,12 +76,13 @@ export function useDoorayWorkflows(
           return
         }
         toast.error(
-          error instanceof Error
-            ? error.message
-            : translate(
-                'auto.ext.dooray.components.DoorayIssueWorkspace.workflow_failed',
-                'Failed to update Dooray workflow.'
-              )
+          readDoorayErrorMessage(
+            error,
+            translate(
+              'auto.ext.dooray.components.DoorayIssueWorkspace.workflow_failed',
+              'Failed to update Dooray workflow.'
+            )
+          )
         )
       } finally {
         if (currentIssueIdRef.current === issue.id) {

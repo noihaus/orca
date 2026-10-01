@@ -15,6 +15,8 @@ import {
 import { useDoorayApi } from '../use-dooray-api'
 import { useDoorayProjectFilters } from './use-dooray-project-filters'
 import { useDoorayProjects } from './use-dooray-projects'
+import { translate } from '@/i18n/i18n'
+import { readDoorayErrorMessage } from '../lib/dooray-error-messages'
 
 export { DOORAY_SELECTED_PROJECT_STORAGE_KEY } from './use-dooray-projects'
 
@@ -85,7 +87,13 @@ export function useDoorayIssueList({ withMilestones = false }: { withMilestones?
           if (requestId === requestIdRef.current) {
             setStatus({
               loading: false,
-              error: error instanceof Error ? error.message : String(error)
+              error: readDoorayErrorMessage(
+                error,
+                translate(
+                  'auto.ext.dooray.components.dooray.tasks.list_load_failed',
+                  'Failed to load tasks.'
+                )
+              )
             })
           }
         })

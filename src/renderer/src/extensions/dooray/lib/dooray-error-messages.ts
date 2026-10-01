@@ -1,16 +1,9 @@
 import { translate } from '@/i18n/i18n'
-
-const IPC_ERROR_PREFIX = /^Error invoking remote method '[^']*':\s*/
-const ERROR_NAME_PREFIX = /^(?:[A-Z]\w*)?Error:\s*/
-
-// Electron IPC rejections arrive as "Error invoking remote method 'x': SomeError: msg".
-function stripIpcErrorPrefix(message: string): string {
-  return message.replace(IPC_ERROR_PREFIX, '').replace(ERROR_NAME_PREFIX, '')
-}
+import { compactIpcErrorMessage, readIpcErrorMessage } from '@/lib/ipc-error'
 
 // Main-process error strings are English; map the known ones to the UI locale.
 export function translateDoorayError(rawMessage: string): string {
-  const message = stripIpcErrorPrefix(rawMessage)
+  const message = compactIpcErrorMessage(rawMessage) ?? rawMessage
   switch (message) {
     case 'API token is required.':
       return translate(
@@ -32,7 +25,18 @@ export function translateDoorayError(rawMessage: string): string {
         'auto.ext.dooray.components.dooray.errors.not_connected',
         'Not connected to Dooray.'
       )
+    case 'Connection failed.':
+      return translate(
+        'auto.ext.dooray.components.dooray.errors.connection_failed',
+        'Connection failed.'
+      )
     default:
       return message
   }
+}
+
+// User-visible text for a caught error: IPC wrapper stripped, known messages localized.
+export function readDoorayErrorMessage(error: unknown, fallback: string): string {
+  const message = readIpcErrorMessage(error)
+  return message ? translateDoorayError(message) : fallback
 }

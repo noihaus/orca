@@ -8,7 +8,7 @@ import type {
   DoorayPriority,
   DoorayProject
 } from '../../../../../shared/extensions/dooray/dooray-types'
-import { translateDoorayError } from '../lib/dooray-error-messages'
+import { readDoorayErrorMessage, translateDoorayError } from '../lib/dooray-error-messages'
 import { missingMandatoryTagGroups, pruneSelectOneTagIds } from '../lib/dooray-tag-groups'
 import { useDoorayApi } from '../use-dooray-api'
 import { applyDoorayTaskExtras } from './apply-dooray-task-extras'
@@ -176,12 +176,13 @@ export function useDoorayNewTaskForm({
         .catch(() => null)
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? translateDoorayError(error.message)
-          : translate(
-              'auto.ext.dooray.components.dooray.new.task.dialog.failed',
-              'Failed to create the task.'
-            )
+        readDoorayErrorMessage(
+          error,
+          translate(
+            'auto.ext.dooray.components.dooray.new.task.dialog.failed',
+            'Failed to create the task.'
+          )
+        )
       )
     } finally {
       onSubmittingChange(false)

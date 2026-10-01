@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { translateDoorayError } from './dooray-error-messages'
+import { readDoorayErrorMessage, translateDoorayError } from './dooray-error-messages'
 
 describe('translateDoorayError', () => {
   it('strips the Electron IPC prefix and the error class name', () => {
@@ -23,5 +23,23 @@ describe('translateDoorayError', () => {
 
   it('leaves plain messages untouched', () => {
     expect(translateDoorayError('Rate limited: try later')).toBe('Rate limited: try later')
+  })
+})
+
+describe('readDoorayErrorMessage', () => {
+  it('shows the message without the Electron IPC wrapper', () => {
+    expect(
+      readDoorayErrorMessage(
+        new Error("Error invoking remote method 'dooray:x': Error: boom"),
+        'fb'
+      )
+    ).toBe('boom')
+  })
+
+  it('falls back for non-Error values and empty messages', () => {
+    expect(readDoorayErrorMessage('boom', 'Failed.')).toBe('Failed.')
+    expect(
+      readDoorayErrorMessage(new Error("Error invoking remote method 'dooray:x': "), 'Failed.')
+    ).toBe('Failed.')
   })
 })

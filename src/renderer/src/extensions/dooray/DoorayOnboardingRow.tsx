@@ -63,7 +63,12 @@ export function DoorayOnboardingRow(): React.JSX.Element {
                   ? translate(
                       'auto.ext.dooray.components.onboarding.DoorayRow.connected_description',
                       'Connected as {{value0}}. Dooray tasks are ready to start workspaces from.',
-                      { value0: status.viewer?.name ?? status.viewer?.userCode ?? 'unknown' }
+                      {
+                        value0:
+                          status.viewer?.name ??
+                          status.viewer?.userCode ??
+                          translate('auto.ext.dooray.components.dooray.viewer_unknown', 'unknown')
+                      }
                     )
                   : translate(
                       'auto.ext.dooray.components.onboarding.DoorayRow.description',

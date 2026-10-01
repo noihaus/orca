@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { hasRemoteProviderRuntime } from '@/lib/provider-runtime-context'
 import { translate } from '@/i18n/i18n'
-import { translateDoorayError } from './lib/dooray-error-messages'
+import { readDoorayErrorMessage, translateDoorayError } from './lib/dooray-error-messages'
 
 type DoorayConnectDialogProps = {
   open: boolean
@@ -112,7 +112,13 @@ export function DoorayConnectDialog({
       if (mountedRef.current) {
         setConnectState('error')
         setConnectError(
-          error instanceof Error ? translateDoorayError(error.message) : 'Connection failed'
+          readDoorayErrorMessage(
+            error,
+            translate(
+              'auto.ext.dooray.components.dooray.errors.connection_failed',
+              'Connection failed.'
+            )
+          )
         )
       }
     }

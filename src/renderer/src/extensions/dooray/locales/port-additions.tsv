@@ -21,3 +21,10 @@ auto.lib.dooray.start.in.current.workspace.rename_failed	Couldn't rename the wor
 auto.lib.dooray.start.in.current.workspace.parent_target	workspace root	워크스페이스 루트
 auto.lib.dooray.start.in.current.workspace.base_fallback_head	Created {{value0}} from current HEAD because {{value1}} was not found: {{value2}}	{{value1}}을(를) 찾지 못해 현재 HEAD에서 {{value0}}을(를) 만들었습니다: {{value2}}
 auto.lib.dooray.start.in.current.workspace.base_fetch_failed	Fetch failed; created {{value0}} from local {{value1}}: {{value2}}	가져오기에 실패해 로컬 {{value1}}에서 {{value0}}을(를) 만들었습니다: {{value2}}
+auto.components.dooray.errors.connection_failed	Connection failed.	연결하지 못했습니다.
+auto.components.dooray.errors.test_failed	Test failed.	연결 테스트에 실패했습니다.
+auto.components.dooray.viewer_unknown	unknown	알 수 없음
+auto.components.DoorayIssueWorkspace.comments_load_failed	Failed to load comments.	댓글을 불러오지 못했습니다.
+auto.components.dooray.sidebar.active_task_load_failed	Failed to load task.	업무를 불러오지 못했습니다.
+auto.components.dooray.tasks.list_load_failed	Failed to load tasks.	업무 목록을 불러오지 못했습니다.
+auto.components.dooray.tasks.projects_load_failed	Failed to load projects.	프로젝트 목록을 불러오지 못했습니다.

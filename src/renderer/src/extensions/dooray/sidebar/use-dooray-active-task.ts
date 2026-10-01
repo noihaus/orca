@@ -6,6 +6,8 @@ import type {
 } from '../../../../../shared/extensions/dooray/dooray-types'
 import { parseDoorayTaskFromBranch } from '../lib/dooray-branch-matching'
 import { useDoorayApi } from '../use-dooray-api'
+import { translate } from '@/i18n/i18n'
+import { readDoorayErrorMessage } from '../lib/dooray-error-messages'
 
 // Folder workspaces and detached HEADs have no branch, so this is null there.
 export function useActiveWorktreeBranch(): string | null {
@@ -47,7 +49,13 @@ export function useDoorayActiveTask(activeBranch: string | null, projects: Doora
           setLookup({
             key,
             issue: null,
-            error: error instanceof Error ? error.message : 'Failed to load task.'
+            error: readDoorayErrorMessage(
+              error,
+              translate(
+                'auto.ext.dooray.components.dooray.sidebar.active_task_load_failed',
+                'Failed to load task.'
+              )
+            )
           })
         }
       })

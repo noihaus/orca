@@ -6,7 +6,7 @@ import type {
 } from '../../../../shared/extensions/dooray/dooray-types'
 import { getProviderRuntimeContextKey } from '@/lib/provider-runtime-context'
 import type { ExtensionStoreState } from '../renderer-extension-contract'
-import { preloadDoorayTranslator } from './dooray-deferred-translate'
+import { preloadDoorayTranslator, translateDoorayLabel } from './dooray-deferred-translate'
 import { bindDoorayStore } from './dooray-store-handle'
 import {
   doorayConnect,
@@ -113,7 +113,13 @@ export const createDooraySlice: StateCreator<ExtensionStoreState, [], [], Dooray
       } catch (error) {
         return {
           ok: false as const,
-          error: error instanceof Error ? error.message : 'Connection failed'
+          error:
+            error instanceof Error
+              ? error.message
+              : translateDoorayLabel(
+                  'auto.ext.dooray.components.dooray.errors.connection_failed',
+                  'Connection failed.'
+                )
         }
       }
     },
@@ -132,7 +138,16 @@ export const createDooraySlice: StateCreator<ExtensionStoreState, [], [], Dooray
         }
         return result
       } catch (error) {
-        return { ok: false as const, error: error instanceof Error ? error.message : 'Test failed' }
+        return {
+          ok: false as const,
+          error:
+            error instanceof Error
+              ? error.message
+              : translateDoorayLabel(
+                  'auto.ext.dooray.components.dooray.errors.test_failed',
+                  'Test failed.'
+                )
+        }
       }
     },
 
