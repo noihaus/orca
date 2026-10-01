@@ -36,10 +36,8 @@ type TargetChangeActionsInput = Pick<
 >
 
 import { useCallback } from 'react'
-import {
-  isLinearLinkedWorkItem,
-  getLinearLinkedWorkItemBranchName
-} from '@/lib/linear-linked-work-item'
+import { getLinearLinkedWorkItemBranchName } from '@/lib/linear-linked-work-item'
+import { resolveExtensionLinkedWorkItemBranch } from '@/extensions/extension-linked-work-item-branch' // fork-seam: linked-work-item-branch
 import { shouldPreserveWorkspaceSourceOnRepoChange } from '../../../../shared/new-workspace/workspace-source'
 import {
   buildProjectHostSetupOptions,
@@ -109,10 +107,9 @@ export function useTargetChangeActions(input: TargetChangeActionsInput) {
           hint = `was ${baseBranch}`
         }
       }
-      const preserveLinearLinkedWorkItem = isLinearLinkedWorkItem(linkedWorkItem)
-      const preservedLinearBranchName = preserveLinearLinkedWorkItem
-        ? getLinearLinkedWorkItemBranchName(linkedWorkItem)
-        : undefined
+      const preservedLinearBranchName = // fork-seam: linked-work-item-branch
+        getLinearLinkedWorkItemBranchName(linkedWorkItem) ??
+        resolveExtensionLinkedWorkItemBranch(linkedWorkItem)
       setRepoId(value)
       if (!options.preserveStartFrom) {
         setSelectedProjectHostSetupOverrideId(null)

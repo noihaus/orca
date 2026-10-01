@@ -38,6 +38,7 @@ import { getLinkedWorkItemSuggestedName, getLinkedWorkItemWorkspaceName } from '
 import type { GitHubWorkItem } from '../../../../shared/github/work-item-types'
 import { shouldApplyWorkspaceSourceAutoName } from '../../../../shared/new-workspace/workspace-source'
 import { isLinearLinkedWorkItem } from '@/lib/linear-linked-work-item'
+import { resolveExtensionLinkedWorkItemBranch } from '@/extensions/extension-linked-work-item-branch' // fork-seam: linked-work-item-branch
 import { resolveComposerManualBranchNameChange } from '../composer-branch-selection'
 
 export function useSourceIdentityActions(input: SourceIdentityActionsInput) {
@@ -171,7 +172,9 @@ export function useSourceIdentityActions(input: SourceIdentityActionsInput) {
 
   const handleRemoveLinkedWorkItem = useCallback((): void => {
     smartGitHubPrStartPointSelectionRef.current = null
-    const removedLinearItem = isLinearLinkedWorkItem(linkedWorkItem)
+    const removedLinearItem = // fork-seam: linked-work-item-branch
+      isLinearLinkedWorkItem(linkedWorkItem) ||
+      Boolean(resolveExtensionLinkedWorkItemBranch(linkedWorkItem))
     setLinkedWorkItem(null)
     setLinkedTaskSourceContext(null)
     setLinkedIssue('')

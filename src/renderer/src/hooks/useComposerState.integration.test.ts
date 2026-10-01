@@ -4,6 +4,19 @@ import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAppStore } from '@/store'
 import { useComposerState } from './useComposerState'
+import type { LinkedWorkItemSummary } from '@/lib/new-workspace'
+
+const { branchFixtureExtension } = vi.hoisted(() => ({
+  branchFixtureExtension: {
+    id: 'fixture',
+    resolveLinkedWorkItemBranch: (item: { jiraIdentifier?: string }) =>
+      item.jiraIdentifier ? `resolved/${item.jiraIdentifier}` : null
+  } as const
+}))
+
+vi.mock('@/extensions/installed-renderer-extensions', () => ({
+  INSTALLED_RENDERER_EXTENSIONS: [branchFixtureExtension]
+}))
 
 let originalApiDescriptor: PropertyDescriptor | undefined
 
@@ -68,5 +81,48 @@ describe('useComposerState integrated lifecycle', () => {
     expect(unsubscribes).toHaveLength(2)
     expect(unsubscribes[0]).toHaveBeenCalledTimes(1)
     expect(unsubscribes[1]).toHaveBeenCalledTimes(1)
+  })
+
+  describe('linked work item branch override', () => {
+    const baseItem: LinkedWorkItemSummary = {
+      provider: 'gitlab',
+      type: 'issue',
+      number: 7,
+      title: 'Task',
+      url: 'https://example.test/7'
+    }
+    const mount = (item: LinkedWorkItemSummary) =>
+      renderHook(() =>
+        useComposerState({
+          initialLinkedWorkItem: item,
+          persistDraft: false,
+          createGateMode: 'quick'
+        })
+      )
+
+    it('uses branchNameOverride verbatim, without slugifying', () => {
+      const { result } = mount({ ...baseItem, branchNameOverride: 'feature/X/1' })
+      expect(result.current.cardProps.branchNameOverride).toBe('feature/X/1')
+    })
+
+    it('falls back to the extension resolver when no explicit override is set', () => {
+      const { result } = mount({ ...baseItem, jiraIdentifier: 'ABC-1' })
+      expect(result.current.cardProps.branchNameOverride).toBe('resolved/ABC-1')
+    })
+
+    it('prefers the explicit override over the extension resolver', () => {
+      const { result } = mount({
+        ...baseItem,
+        jiraIdentifier: 'ABC-1',
+        branchNameOverride: 'feature/X/1'
+      })
+      expect(result.current.cardProps.branchNameOverride).toBe('feature/X/1')
+    })
+
+    it('clears the override when the linked item is removed', () => {
+      const { result } = mount({ ...baseItem, branchNameOverride: 'feature/X/1' })
+      act(() => result.current.cardProps.onRemoveLinkedWorkItem())
+      expect(result.current.cardProps.branchNameOverride).toBeUndefined()
+    })
   })
 })

@@ -85,6 +85,7 @@ export type NewWorkspaceDraft = {
     url: string
     linearIdentifier?: string
     linearBranchName?: string
+    branchNameOverride?: string // fork-seam: linked-work-item-branch
     jiraIdentifier?: string
     repoId?: string
   } | null

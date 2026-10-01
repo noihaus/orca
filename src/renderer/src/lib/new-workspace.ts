@@ -37,6 +37,8 @@ export type LinkedWorkItemSummary = Omit<FolderWorkspaceLinkedTask, 'provider'> 
   linearWorkspaceId?: string
   linearOrganizationUrlKey?: string
   linearBranchName?: string
+  // Exact git branch for the workspace; applied verbatim, never slugified.
+  branchNameOverride?: string // fork-seam: linked-work-item-branch
   linkedContext?: LinkedWorkItemContext
 }
 
