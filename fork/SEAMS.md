@@ -150,10 +150,12 @@
 
 ### `right-sidebar-extension-tab`
 
-- 목적: 우측 사이드바에 `ext:<id>/<panel>` 탭을 추가하고 저장된 탭 키를 유지한다.
+- 목적: 우측 사이드바에 `ext:<id>/<panel>` 탭을 추가하고 저장된 탭 키를 유지한다. 확장 탭은 맨 앞에 표시되지만, 저장된 탭이 숨겨졌을 때 자동 대체 탭으로는 고르지 않는다. 대체 탭은 upstream 규칙대로 확장이 아닌 첫 탭(보통 Explorer)이다(`firstAutoSelectableRightSidebarTab`).
+- `Panel`은 사이드바의 Suspense 안에서 렌더된다. `React.lazy`는 import 시점이 아니라 첫 렌더에서 만든다(`deferredLazyComponent`). react를 mock하는 upstream 테스트가 설치 목록을 간접 import해도 깨지지 않게 하기 위해서다.
 - 확장 등록: 두 목록이 모두 필요하다: shared manifest의 `INSTALLED_RIGHT_SIDEBAR_TAB_KEYS`와 renderer의 `rightSidebarTabs`. 드리프트 테스트가 일치를 검사한다.
 - 파일:
   - `src/main/persistence/applying-settings/ui-selection-normalization.ts`
+  - `src/renderer/src/components/right-sidebar/right-sidebar-effective-tab.ts`
   - `src/renderer/src/components/right-sidebar/right-sidebar-panel-content.tsx`
   - `src/renderer/src/components/right-sidebar/use-right-sidebar-activity-items.ts`
   - `src/renderer/src/store/right-sidebar-route.ts`

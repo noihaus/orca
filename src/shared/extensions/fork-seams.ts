@@ -114,6 +114,10 @@ export const FORK_SEAMS = [
   },
   {
     name: 'right-sidebar-extension-tab',
+    file: 'src/renderer/src/components/right-sidebar/right-sidebar-effective-tab.ts'
+  },
+  {
+    name: 'right-sidebar-extension-tab',
     file: 'src/renderer/src/components/right-sidebar/right-sidebar-panel-content.tsx'
   },
   {

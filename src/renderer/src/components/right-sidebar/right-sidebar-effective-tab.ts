@@ -1,5 +1,6 @@
 import type { ActiveRightSidebarTab } from '@/store/slices/editor'
 import type { ActivityBarItem } from './activity-bar-buttons'
+import { firstAutoSelectableRightSidebarTab } from '@/extensions/extension-right-sidebar-fallback' // fork-seam: right-sidebar-extension-tab
 
 type ResolveRightSidebarEffectiveTabParams = {
   normalizedActiveTab: ActiveRightSidebarTab
@@ -29,5 +30,5 @@ export function resolveRightSidebarEffectiveTab({
     return normalizedActiveTab
   }
 
-  return visibleItems[0].id
+  return firstAutoSelectableRightSidebarTab(visibleItems) // fork-seam: right-sidebar-extension-tab
 }
