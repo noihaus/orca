@@ -111,6 +111,15 @@ export class UpdaterSetup extends UpdaterDownloadInstall {
     super.dismissAvailableUpdate()
   }
 
+  /** Fork builds keep only the window ref so menu checks can still answer. */
+  attachWindowWithoutUpdater(mainWindow: BrowserWindow): void {
+    this.mainWindowRef = mainWindow
+  }
+
+  reportAutoUpdateDisabled(): void {
+    this.sendStatus({ state: 'not-available', userInitiated: true })
+  }
+
   setupAutoUpdater(mainWindow: BrowserWindow, opts?: UpdaterSetupOptions): void {
     this.mainWindowRef = mainWindow
     this.onBeforeQuitCleanup = opts?.onBeforeQuit ?? null

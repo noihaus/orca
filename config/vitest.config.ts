@@ -17,6 +17,8 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // Why: fork builds disable the updater by default; existing suites exercise the enabled path.
+    env: { ORCA_ENABLE_AUTO_UPDATE: '1' }, // fork-seam: auto-update-gate
     // Bun's external-module cache otherwise loses Zod named exports across mocked graphs.
     ...(process.versions.bun ? { server: { deps: { inline: ['zod'] } } } : {}),
     ...(process.env.ORCA_BALANCE_UNIT_SHARDS === '1'

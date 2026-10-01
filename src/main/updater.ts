@@ -11,6 +11,7 @@ import type {
 } from '../shared/remote-server-update'
 import type { ReleaseBuild, ReleaseChannel } from '../shared/release-channel'
 import type { ReleaseBuildListOptions } from './updater-release-build-cache'
+import { FORK_AUTO_UPDATE_ENABLED } from './extensions/fork-build' // fork-seam: auto-update-gate
 import { UpdaterSetup, type UpdaterSetupOptions } from './updater/updater-setup'
 import type { PreQuitCleanupFailureMode, UpdateInstallMode } from './updater/updater-state'
 
@@ -51,18 +52,35 @@ export function installRemoteServerUpdate(runtimeId: string): RemoteServerUpdate
 }
 
 export function checkForUpdates(): void {
+  if (!FORK_AUTO_UPDATE_ENABLED) {
+    // fork-seam: auto-update-gate
+    return
+  }
   updater.checkForUpdates()
 }
 
 export function checkForUpdatesFromMenu(options?: UpdateCheckOptions): void {
+  if (!FORK_AUTO_UPDATE_ENABLED) {
+    // fork-seam: auto-update-gate
+    updater.reportAutoUpdateDisabled()
+    return
+  }
   updater.checkForUpdatesFromMenu(options)
 }
 
 export function downloadUpdate(): void {
+  if (!FORK_AUTO_UPDATE_ENABLED) {
+    // fork-seam: auto-update-gate
+    return
+  }
   updater.downloadUpdate()
 }
 
 export function quitAndInstall(): void {
+  if (!FORK_AUTO_UPDATE_ENABLED) {
+    // fork-seam: auto-update-gate
+    return
+  }
   updater.quitAndInstall()
 }
 
@@ -94,5 +112,10 @@ export function dismissAvailableUpdate(): void {
 }
 
 export function setupAutoUpdater(mainWindow: BrowserWindow, opts?: UpdaterSetupOptions): void {
+  if (!FORK_AUTO_UPDATE_ENABLED) {
+    // fork-seam: auto-update-gate
+    updater.attachWindowWithoutUpdater(mainWindow)
+    return
+  }
   updater.setupAutoUpdater(mainWindow, opts)
 }
