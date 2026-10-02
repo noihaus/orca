@@ -1,12 +1,13 @@
 // @vitest-environment happy-dom
 
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, cleanup, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
   DoorayIssue,
   DoorayIssueList,
   DoorayListIssuesArgs
 } from '../../../../../shared/extensions/dooray/dooray-types'
+import { clearDoorayListPreferenceCache } from './dooray-filter-preferences'
 import { DOORAY_SELECTED_PROJECT_STORAGE_KEY, useDoorayIssueList } from './use-dooray-issue-list'
 
 type Deferred<T> = { promise: Promise<T>; resolve: (value: T) => void }
@@ -59,6 +60,7 @@ const projects = [
 
 beforeEach(() => {
   window.localStorage.clear()
+  clearDoorayListPreferenceCache()
   api.listProjects.mockResolvedValue(projects)
   api.listIssues.mockResolvedValue(page(2, 1, 2))
   api.listMilestones.mockResolvedValue([])
@@ -66,6 +68,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  cleanup()
   vi.restoreAllMocks()
   vi.clearAllMocks()
 })
@@ -211,8 +214,17 @@ describe('useDoorayIssueList filters and sorting', () => {
         issue(3, { milestoneName: 'S2', workflowId: 'w1', priority: 'high' })
       ]
     })
+    api.listMilestones.mockResolvedValue([
+      { id: 'm1', name: 'S1', startedAt: '', endedAt: '', status: 'open' },
+      { id: 'm2', name: 'S2', startedAt: '', endedAt: '', status: 'open' }
+    ])
+    api.listWorkflows.mockResolvedValue([
+      { id: 'w1', name: 'Open', workflowClass: 'registered' },
+      { id: 'w2', name: 'Doing', workflowClass: 'working' }
+    ])
     const { result } = renderHook(() => useDoorayIssueList({ withMilestones: true }))
     await waitFor(() => expect(result.current.rawIssues).toHaveLength(3))
+    await waitFor(() => expect(result.current.workflows).toHaveLength(2))
     expect(result.current.hasActiveClientFilter).toBe(false)
 
     act(() => result.current.setMilestoneFilter('S1'))

@@ -13,7 +13,7 @@ import {
   getDoorayIssueWorkspaceSeed
 } from '../lib/dooray-linked-work-item'
 import { useDoorayStartActions } from '../start/use-dooray-start-actions'
-import { useDoorayIssueList } from '../tasks/use-dooray-issue-list'
+import { useDooraySidebarIssueList } from '../tasks/use-dooray-issue-list'
 import { useDoorayWorkspaceActions } from '../tasks/use-dooray-workspace-actions'
 import { useDoorayConnectionStatus } from '../use-dooray-connection-status'
 import { DoorayActiveTaskCard } from './DoorayActiveTaskCard'
@@ -56,7 +56,7 @@ export function ConnectedDoorayTasksPanel({
 }): React.JSX.Element {
   const openModal = useAppStore((state) => state.openModal)
   const activeBranch = useActiveWorktreeBranch()
-  const list = useDoorayIssueList({ withMilestones: true })
+  const list = useDooraySidebarIssueList({ withMilestones: true })
   const { attachedIssueIds, openWorkspace } = useDoorayWorkspaceActions(list.rawIssues)
   const selectProject = useDoorayBranchProjectSync({
     activeBranch,
